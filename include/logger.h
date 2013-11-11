@@ -1,11 +1,14 @@
 //
-// developed by Sergey Markelov (09-2013)
+// developed by Sergey Markelov (11/10/2013)
 //
+
 #ifndef GENERIC_LOGGER
 #define GENERIC_LOGGER
 
 #include <stdio.h>
 
+// TODO: think about initializing these variables, so that I don't have to add default
+//       initialization section everywhere
 extern FILE *errStream;
 extern FILE *outStream;
 
@@ -65,5 +68,19 @@ extern FILE *outStream;
 #define ContinueError(result, resultSpecifier) \
     { _LOG(ERR_STREAM, ERROR_CONTINUE_PREFIX, \
            "[" resultSpecifier "] ", result); return result; }
+
+//
+// @brief operates the same to ContinueErrorEx, but doesn't return
+//
+#define IgnoreErrorEx(result, resultSpecifier, format, ...) \
+    { _LOG(ERR_STREAM, ERROR_CONTINUE_PREFIX, \
+           "[" resultSpecifier "] " format, result, ##__VA_ARGS__); }
+
+//
+// @brief operates the same to ContinueError, but doesn't return
+//
+#define IgnoreError(result, resultSpecifier) \
+    { _LOG(ERR_STREAM, ERROR_CONTINUE_PREFIX, \
+           "[" resultSpecifier "] ", result); }
 
 #endif

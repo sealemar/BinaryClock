@@ -1,7 +1,11 @@
+//
+// developed by Sergey Markelov (11/10/2013)
+//
+
 #include <ncurses.h>
 #include <unistd.h>
 #include <clock.h>
-#include "logger.h"
+#include <logger.h>
 
 FILE *errStream;
 FILE *outStream;
@@ -10,6 +14,7 @@ int main()
 {
     errStream = stderr;
     outStream = stdout;
+    clock_setPixel = emulator_setPixel;
 
     int res = clock_init();
     if(res) ContinueError(res, "%d");

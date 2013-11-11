@@ -1,0 +1,46 @@
+#
+# developed by Sergey Markelov (11/10/2013)
+#
+
+CC             := clang -std=c99
+INC            := -I../lib -I../include -include common.h
+MACROS         := -D _BSD_SOURCE -D PARAM_CHECKS
+CC_c_FLAGS     := -O0 -g -ftrapv
+CC_c           := $(CC) $(MACROS) $(INC) $(CC_c_FLAGS)
+SOURCES        += $(wildcard *.c)
+OBJECTS         = $(subst .c,.o,$(SOURCES))
+DEPENDENCIES    = $(subst .c,.d,$(SOURCES))
+FILES_TO_CLEAN += $(PROG) $(OBJECTS) $(DEPENDENCIES) $(CTAGS_FILE)
+LIBS           += -L../lib -lclock
+CTAGS           = ctags --sort=yes --fields=+ilaS --extra=+q
+CTAGS_SOURCES   = $(CTAGS_DIR)/ctags.sources
+CTAGS_DIR      ?= ../include
+CTAGS_FILE     ?= ../etc/tags
+
+.PHONY: all clean ctags
+.INTERMEDIATE: $(CTAGS_SOURCES)
+
+include $(subst .c,.d,$(SOURCES))
+
+%.d: %.c
+	$(CC_c) -M $(CPPFLAGS) $< > $@.$$$$; \
+	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
+	rm -f $@.$$$$
+
+%.o: %.c
+	$(CC_c) -c -o $@ $<
+
+$(PROG): $(OBJECTS)
+	$(CC) $(LIBS) -o $@ $(OBJECTS)
+
+ctags: $(CTAGS_FILE)
+
+$(CTAGS_SOURCES):
+	@find $(CTAGS_DIR) -type f -name "*.[ch]" > $@
+
+$(CTAGS_FILE): $(CTAGS_SOURCES)
+	@mkdir -p ../etc
+	$(CTAGS) --language-force=C --c-kinds=+px -f $@ -L $<
+
+clean:
+	rm -f $(FILES_TO_CLEAN)
