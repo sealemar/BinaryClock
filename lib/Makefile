@@ -2,15 +2,15 @@
 # developed by Sergey Markelov (11/10/2013)
 #
 
-LIBRARY        := libclock.a
-FILES_TO_CLEAN  = $(LIBRARY)
-SOURCES         = $(wildcard arch/*.c)
+PROG           := libclock.a
+SOURCES_DIRS    = arch
 CTAGS_FILE     := ../etc/lib.tags
 CTAGS_DIR      := ../lib
 
-all: $(LIBRARY)
+all: $(BIN_DIR)/$(LIBRARY)
 
 include ../include/Makefile.include
 
-$(LIBRARY): $(OBJECTS)
-	ar -rcs $@ $^
+$(BIN_DIR)/$(PROG): $(OBJECTS)
+	mkdir -p $(BIN_DIR)
+	$(AR) -rcs $@ $^

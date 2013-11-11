@@ -48,6 +48,7 @@ execute "autocmd BufWritePost " . s:projectDir . "/include/*.[ch] silent !make -
 " Session managemenr
 "
 function! s:saveSession()
+    execute "silent !mkdir -p " . s:projectDir . "/etc"
     if filereadable(s:sessionFile)
         execute "silent !mv " . s:sessionFile . " " . s:sessionOldFile
     endif

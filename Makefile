@@ -1,7 +1,7 @@
 # developed by Sergey Markelov (11/10/2013)
 #
 
-.PHONY: arduino emulator check clean ctags
+.PHONY: all arduino emulator check clean ctags
 
 all: arduino emulator
 
@@ -12,7 +12,7 @@ emulator:
 	make -C emulator
 
 check:
-	make -C test && ./tests
+	make -C test && test/bin/tests
 
 ctags:
 	make -C include -f Makefile.include ctags

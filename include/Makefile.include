@@ -2,16 +2,21 @@
 # developed by Sergey Markelov (11/10/2013)
 #
 
+AR             := ar
 CC             := clang -std=c99
 INC            := -I../lib -I../include -include common.h
 MACROS         := -D _BSD_SOURCE -D PARAM_CHECKS
 CC_c_FLAGS     := -O0 -g -ftrapv
 CC_c           := $(CC) $(MACROS) $(INC) $(CC_c_FLAGS)
-SOURCES        += $(wildcard *.c)
-OBJECTS         = $(subst .c,.o,$(SOURCES))
-DEPENDENCIES    = $(subst .c,.d,$(SOURCES))
-FILES_TO_CLEAN += $(PROG) $(OBJECTS) $(DEPENDENCIES) $(CTAGS_FILE)
-LIBS           += -L../lib -lclock
+SOURCES_DIRS   += .
+OBJ_DIR        := obj
+BIN_DIR        := bin
+DEPS_DIR       := deps
+SOURCES         = $(foreach srcdir,$(SOURCES_DIRS),$(wildcard $(if $(subst .,,$(srcdir)),$(srcdir)/,)*.c))
+OBJECTS         = $(addprefix $(OBJ_DIR)/,$(subst .c,.o,$(SOURCES)))
+DEPENDENCIES    = $(addprefix $(DEPS_DIR)/,$(subst .c,.d,$(SOURCES)))
+FILES_TO_CLEAN += $(CTAGS_FILE)
+LIBS           += -L../lib/$(BIN_DIR) -lclock
 CTAGS           = ctags --sort=yes --fields=+ilaS --extra=+q
 CTAGS_SOURCES   = $(CTAGS_DIR)/ctags.sources
 CTAGS_DIR      ?= ../include
@@ -20,17 +25,22 @@ CTAGS_FILE     ?= ../etc/tags
 .PHONY: all clean ctags
 .INTERMEDIATE: $(CTAGS_SOURCES)
 
-include $(subst .c,.d,$(SOURCES))
+all: $(BIN_DIR)/$(PROG)
 
-%.d: %.c
+include $(DEPENDENCIES)
+
+$(DEPS_DIR)/%.d: %.c
+	mkdir -p $(dir $@)
 	$(CC_c) -M $(CPPFLAGS) $< > $@.$$$$; \
-	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
+	sed 's,\($(subst .c,.o,$(notdir $<))\)[ :]*,$(OBJ_DIR)/$(if $(subst ./,,$(dir $<)),$(dir $<),)\1 $@ : ,g' < $@.$$$$ > $@; \
 	rm -f $@.$$$$
 
-%.o: %.c
+$(OBJ_DIR)/%.o: %.c
+	mkdir -p $(dir $@)
 	$(CC_c) -c -o $@ $<
 
-$(PROG): $(OBJECTS)
+$(BIN_DIR)/$(PROG): $(OBJECTS)
+	mkdir -p $(BIN_DIR)
 	$(CC) $(LIBS) -o $@ $(OBJECTS)
 
 ctags: $(CTAGS_FILE)
@@ -44,3 +54,4 @@ $(CTAGS_FILE): $(CTAGS_SOURCES)
 
 clean:
 	rm -f $(FILES_TO_CLEAN)
+	rm -fr $(OBJ_DIR) $(DEPS_DIR) $(BIN_DIR)

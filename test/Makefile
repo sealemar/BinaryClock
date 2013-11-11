@@ -7,11 +7,9 @@ PROG       := tests
 CTAGS_FILE := ../etc/test.tags
 CTAGS_DIR  := ../test
 
-all: $(PROG)
-
 include ../include/Makefile.include
 
-$(PROG): lib
+$(BIN_DIR)/$(PROG): lib
 
 lib:
 	make -C ../lib

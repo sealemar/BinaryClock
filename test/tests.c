@@ -16,8 +16,6 @@ int main()
 
     int errors = 0;
 
-    // TODO: Makefile - *.o, *.d -> obj/
-    // TODO: Makefile - lib*.a, exec -> bin/
     // TODO: think about author header
 
     int res = ut_clock_tests();
