@@ -27,13 +27,18 @@ CTAGS_FILE     ?= ../etc/tags
 
 all: $(BIN_DIR)/$(PROG)
 
-include $(DEPENDENCIES)
+# see http://www.gnu.org/software/make/manual/html_node/Goals.html
+# $(MAKECMDGOALS) is an internal variable which is set to the list of the
+# goals specified on the command line
+ifneq ($(MAKECMDGOALS),clean)
+    # silent include - don't annoy if dependencies are not exist yet
+    sinclude $(DEPENDENCIES)
+endif
 
 $(DEPS_DIR)/%.d: %.c
 	mkdir -p $(dir $@)
-	$(CC_c) -M $(CPPFLAGS) $< > $@.$$$$; \
-	sed 's,\($(subst .c,.o,$(notdir $<))\)[ :]*,$(OBJ_DIR)/$(if $(subst ./,,$(dir $<)),$(dir $<),)\1 $@ : ,g' < $@.$$$$ > $@; \
-	rm -f $@.$$$$
+	$(CC_c) -M $(CPPFLAGS) $< | \
+	sed 's,\($(subst .c,.o,$(notdir $<))\)\s*:,$(OBJ_DIR)/$(if $(subst ./,,$(dir $<)),$(dir $<),)\1 $@ :,' > $@
 
 $(OBJ_DIR)/%.o: %.c
 	mkdir -p $(dir $@)

@@ -2,7 +2,6 @@
 // developed by Sergey Markelov (11/10/2013)
 //
 
-#include <arch/clock_bits.h>
 #include <logger.h>
 #include "ut_clock.h"
 
@@ -17,6 +16,7 @@ int main()
     int errors = 0;
 
     // TODO: think about author header
+    // TODO: deps files are created every time make is called
 
     int res = ut_clock_tests();
     if(res) { IgnoreError(res, "%d"); ++errors; }
