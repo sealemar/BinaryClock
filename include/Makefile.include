@@ -3,15 +3,15 @@
 #
 
 AR             := ar
-CC             := clang -std=c99
+CC             := clang
 INC            := -I../lib -I../include -include common.h
 MACROS         := -D _BSD_SOURCE -D PARAM_CHECKS
-CC_c_FLAGS     := -O0 -g -ftrapv
+CC_c_FLAGS     := -O0 -g -std=c99 -ftrapv
 CC_c           := $(CC) $(MACROS) $(INC) $(CC_c_FLAGS)
 SOURCES_DIRS   += .
 OBJ_DIR        := obj
 BIN_DIR        := bin
-DEPS_DIR       := deps
+DEPS_DIR       := dep
 SOURCES         = $(foreach srcdir,$(SOURCES_DIRS),$(wildcard $(if $(subst .,,$(srcdir)),$(srcdir)/,)*.c))
 OBJECTS         = $(addprefix $(OBJ_DIR)/,$(subst .c,.o,$(SOURCES)))
 DEPENDENCIES    = $(addprefix $(DEPS_DIR)/,$(subst .c,.d,$(SOURCES)))
@@ -32,7 +32,7 @@ all: $(BIN_DIR)/$(PROG)
 # goals specified on the command line
 ifneq ($(MAKECMDGOALS),clean)
     # silent include - don't annoy if dependencies are not exist yet
-    sinclude $(DEPENDENCIES)
+    -include $(DEPENDENCIES)
 endif
 
 $(DEPS_DIR)/%.d: %.c

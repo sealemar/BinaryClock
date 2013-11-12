@@ -1,2 +1,7 @@
-etc/
+dep/
+obj/
+bin/
+
+/etc/
+
 .ycm_extra_conf.pyc

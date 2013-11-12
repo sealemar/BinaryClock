@@ -13,4 +13,4 @@ include ../include/Makefile.include
 
 $(BIN_DIR)/$(PROG): $(OBJECTS)
 	mkdir -p $(BIN_DIR)
-	$(AR) -rcs $@ $^
+	$(AR) -rvs $@ $?
