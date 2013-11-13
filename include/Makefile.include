@@ -12,6 +12,7 @@ SOURCES_DIRS   += .
 OBJ_DIR        := obj
 BIN_DIR        := bin
 DEPS_DIR       := dep
+ETC_DIR        := ../etc
 SOURCES         = $(foreach srcdir,$(SOURCES_DIRS),$(wildcard $(if $(subst .,,$(srcdir)),$(srcdir)/,)*.c))
 OBJECTS         = $(addprefix $(OBJ_DIR)/,$(subst .c,.o,$(SOURCES)))
 DEPENDENCIES    = $(addprefix $(DEPS_DIR)/,$(subst .c,.d,$(SOURCES)))
@@ -22,8 +23,9 @@ CTAGS_SOURCES   = $(CTAGS_DIR)/ctags.sources
 CTAGS_DIR      ?= ../include
 CTAGS_FILE     ?= ../etc/tags
 
-.PHONY: all clean ctags
+.PHONY: all clean ctags mkdirs
 .INTERMEDIATE: $(CTAGS_SOURCES)
+.SILENT: mkdirs
 
 all: $(BIN_DIR)/$(PROG)
 
@@ -36,25 +38,31 @@ ifneq ($(MAKECMDGOALS),clean)
 endif
 
 $(DEPS_DIR)/%.d: %.c
-	mkdir -p $(dir $@)
 	$(CC_c) -M $(CPPFLAGS) $< | \
 	sed 's,\($(subst .c,.o,$(notdir $<))\)\s*:,$(OBJ_DIR)/$(if $(subst ./,,$(dir $<)),$(dir $<),)\1 $@ :,' > $@
 
 $(OBJ_DIR)/%.o: %.c
-	mkdir -p $(dir $@)
 	$(CC_c) -c -o $@ $<
 
 $(BIN_DIR)/$(PROG): $(OBJECTS)
-	mkdir -p $(BIN_DIR)
 	$(CC) $(LIBS) -o $@ $(OBJECTS)
+
+$(OBJECTS) $(DEPENDENCIES): | mkdirs
+
+mkdirs:
+	mkdir -p $(foreach srcdir,$(SOURCES_DIRS),$(if $(subst .,,$(srcdir)),$(addprefix $(OBJ_DIR)/,$(srcdir)),$(OBJ_DIR)))
+	mkdir -p $(foreach srcdir,$(SOURCES_DIRS),$(if $(subst .,,$(srcdir)),$(addprefix $(DEPS_DIR)/,$(srcdir)),$(DEPS_DIR)))
+	mkdir -p $(BIN_DIR)
 
 ctags: $(CTAGS_FILE)
 
-$(CTAGS_SOURCES):
+$(ETC_DIR):
+	mkdir -p ../etc
+
+$(CTAGS_SOURCES): | $(ETC_DIR)
 	@find $(CTAGS_DIR) -type f -name "*.[ch]" > $@
 
 $(CTAGS_FILE): $(CTAGS_SOURCES)
-	@mkdir -p ../etc
 	$(CTAGS) --language-force=C --c-kinds=+px -f $@ -L $<
 
 clean:

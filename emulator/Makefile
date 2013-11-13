@@ -9,3 +9,8 @@ CTAGS_FILE  := ../etc/emulator.tags
 CTAGS_DIR   := ../emulator
 
 include ../include/Makefile.include
+
+$(BIN_DIR)/$(PROG): lib
+
+lib:
+	make -C ../lib

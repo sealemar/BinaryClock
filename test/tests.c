@@ -16,7 +16,6 @@ int main()
     int errors = 0;
 
     // TODO: think about author header
-    // TODO: deps files are created every time make is called
 
     int res = ut_clock_tests();
     if(res) { IgnoreError(res, "%d"); ++errors; }
