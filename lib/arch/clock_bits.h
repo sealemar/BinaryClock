@@ -13,6 +13,11 @@
 #define ON  1
 #define OFF 0
 
+#define CLOCK_SCREEN_WIDTH     8
+#define CLOCK_SCREEN_HEIGHT    8
+
+#define CLOCK_PATTERN_SIZE      (CLOCK_SCREEN_HEIGHT)
+
 //
 // @brief switches one pixel on or off
 // @param x x coordinate (0 < x < SCREEN_WIDTH)

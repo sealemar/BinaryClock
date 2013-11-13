@@ -4,7 +4,7 @@
 
 AR             := ar
 CC             := clang
-INC            := -I../lib -I../include -include common.h
+INC            += -I../lib -I../include -include common.h
 MACROS         := -D _BSD_SOURCE -D PARAM_CHECKS
 CC_c_FLAGS     := -O0 -g -std=c99 -ftrapv
 CC_c           := $(CC) $(MACROS) $(INC) $(CC_c_FLAGS)

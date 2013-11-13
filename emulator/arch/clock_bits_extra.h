@@ -5,26 +5,16 @@
 #ifndef BINARY_CLOCK_EMULATOR_ARCH_CLOCK_BITS_EXTRA_H
 #define BINARY_CLOCK_EMULATOR_ARCH_CLOCK_BITS_EXTRA_H
 
-#include <ncurses.h>
-#include <arch/clock_bits.h>
+#define PIXEL_ON   'o'
+#define PIXEL_OFF  '-'
+#define COLOR_ON     1
+#define COLOR_OFF    2
 
-inline static void setPixel(int x, int y, Bool turnOn)
-{
-    const int pixel = turnOn ? PIXEL_ON | A_BOLD : PIXEL_OFF | A_DIM;
-    x <<= 1;
+//
+// @brief sets pixel, but doesn't refresh the screen
+//
+void setPixelRaw(int x, int y, Bool turnOn);
 
-    if(has_colors())
-    {
-        const int attr = turnOn
-                       ? COLOR_PAIR(COLOR_ON)
-                       : COLOR_PAIR(COLOR_OFF);
-
-        mvaddch(y, x, pixel | attr);
-    }
-    else
-    {
-        mvaddch(y, x, pixel);
-    }
-}
+int emulator_setPixel(int x, int y, Bool turnOn);
 
 #endif

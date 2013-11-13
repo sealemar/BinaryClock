@@ -5,7 +5,7 @@
 #ifndef BINARY_CLOCK_LIB_ALPHABET_H
 #define BINARY_CLOCK_LIB_ALPHABET_H
 
-#include "clock.h"
+#include "arch/clock_bits.h"
 
 #define CLOCK_BLANK              0
 #define CLOCK_0                  1
@@ -51,7 +51,10 @@
 #define CLOCK_COLON             41
 #define CLOCK_SMILEY_FACE_SMILE 42
 #define CLOCK_SMILEY_FACE_SAD   43
+#define CLOCK_ALPHABET_LAST     CLOCK_SMILEY_FACE_SAD
 
-extern const unsigned char CLOCK_ALPHABET[][CLOCK_SCREEN_HEIGHT];
+extern const unsigned char CLOCK_ALPHABET[][CLOCK_PATTERN_SIZE];
+
+#define CLOCK_ALPHABET_SIZE     (CLOCK_ALPHABET_LAST + 1)
 
 #endif

@@ -5,16 +5,17 @@
 #ifndef BINARY_CLOCK_LIB_CLOCK_H
 #define BINARY_CLOCK_LIB_CLOCK_H
 
-#define CLOCK_SCREEN_WIDTH     8
-#define CLOCK_SCREEN_HEIGHT    8
+#include "arch/clock_bits.h"
 
 //
 // @brief draws a pattern on the screen
-// @param pattern is one of CLOCK_ALPHABET[CLOCK_*] from alphabet.h
+// @param pattern should be one of defined in alphabet.h
+// @see alphabet.h
+//
 // @returns 0 on success
 // EINVAL - if _pattern_ is NULL
 //
-int drawPattern(const unsigned char* pattern);
+int clock_drawPattern(const unsigned char pattern[CLOCK_PATTERN_SIZE]);
 
 //
 // @brief slides pattern from right to left
@@ -28,11 +29,11 @@ int drawPattern(const unsigned char* pattern);
 //          if _step_ > CLOCK_SCREEN_WIDTH
 //          if _isLastStep_ is NULL
 //
-int slidePattern(
+int clock_slidePattern(
         const unsigned char *patternFrom,
         const unsigned char *patternTo,
         unsigned char        step,
         int                 *isLastStep,
-        unsigned char        pattern[CLOCK_SCREEN_HEIGHT]);
+        unsigned char        pattern[CLOCK_PATTERN_SIZE]);
 
 #endif

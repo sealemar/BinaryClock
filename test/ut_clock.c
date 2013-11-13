@@ -135,7 +135,7 @@ int test_clock_slidePattern_returnsCorrectResult()
     const unsigned char *patternTo = patterns[8];
     for(unsigned char step = 0; !isLastStep; ++step)
     {
-        int res = slidePattern(patternFrom, patternTo, step, &isLastStep, currentPattern);
+        int res = clock_slidePattern(patternFrom, patternTo, step, &isLastStep, currentPattern);
         if(res) ContinueError(res, "%d");
 
         // check pattern

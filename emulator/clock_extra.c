@@ -3,18 +3,18 @@
 //
 
 #include <ncurses.h>
-#include <logger.h>
 
-#define PIXEL_ON   'o'
-#define PIXEL_OFF  '-'
-#define COLOR_ON     1
-#define COLOR_OFF    2
+#include <logger.h>
+#include <clock.h>
+#include "clock_extra.h"
 
 //
 // @brief initializes clock
 //
 int clock_init()
 {
+    clock_setPixel = emulator_setPixel;
+
     initscr();              // Start curses mode
     raw();                  // Line buffering disabled
     keypad(stdscr, TRUE);   // We get F1, F2 etc..
@@ -40,7 +40,7 @@ void clock_clearScreen()
     {
         for(int y = 0; y < CLOCK_SCREEN_HEIGHT; ++y)
         {
-            _setPixel(x, y, FALSE);
+            setPixelRaw(x, y, FALSE);
         }
     }
     refresh();

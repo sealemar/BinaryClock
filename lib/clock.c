@@ -9,9 +9,13 @@
 
 //
 // @brief draws a pattern on the screen
-// @see PATTERN_* above
+// @param pattern should be one of defined in alphabet.h
+// @see alphabet.h
 //
-int drawPattern(const unsigned char* pattern)
+// @returns 0 on success
+// EINVAL - if _pattern_ is NULL
+//
+int clock_drawPattern(const unsigned char* pattern)
 {
 #ifdef PARAM_CHECKS
     if(pattern == NULL)
@@ -41,7 +45,7 @@ int drawPattern(const unsigned char* pattern)
 //          if _step_ > CLOCK_SCREEN_WIDTH
 //          if _isLastStep_ is NULL
 //
-int slidePattern(
+int clock_slidePattern(
         const unsigned char *patternFrom,
         const unsigned char *patternTo,
         unsigned char        step,
