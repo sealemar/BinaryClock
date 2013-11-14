@@ -3,8 +3,7 @@
 #
 
 AR             := ar
-CC             := gcc
-LD             := gcc
+CC             := clang
 INC            += -I../lib -I../include -include common.h
 MACROS         := -D PARAM_CHECKS
 CC_c_FLAGS     := -O0 -g -std=c99 -ftrapv
@@ -46,7 +45,7 @@ $(OBJ_DIR)/%.o: %.c
 	$(CC_c) -c -o $@ $<
 
 $(BIN_DIR)/$(PROG): $(OBJECTS)
-	$(LD) -o $@ $(OBJECTS) $(LIBS)
+	$(CC) -o $@ $(OBJECTS) $(LIBS)
 
 $(OBJECTS) $(DEPENDENCIES): | mkdirs
 
