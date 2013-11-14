@@ -129,7 +129,7 @@ int test_clock_slidePattern_returnsCorrectResult()
         { 0x38, 0x44, 0x04, 0x08, 0x10, 0x20, 0x7c, 0x00 }
     };
 
-    int isLastStep = FALSE;
+    Bool isLastStep = FALSE;
     unsigned char currentPattern[CLOCK_SCREEN_HEIGHT];
     const unsigned char *patternFrom = patterns[0];
     const unsigned char *patternTo = patterns[8];

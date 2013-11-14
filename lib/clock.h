@@ -33,7 +33,7 @@ int clock_slidePattern(
         const unsigned char  patternFrom[CLOCK_PATTERN_SIZE],
         const unsigned char  patternTo[CLOCK_PATTERN_SIZE],
         unsigned char        step,
-        int                 *isLastStep,
+        Bool                *isLastStep,
         unsigned char        pattern[CLOCK_PATTERN_SIZE]);
 
 #endif

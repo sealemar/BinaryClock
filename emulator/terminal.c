@@ -33,13 +33,16 @@ int main()
 //     }
 
     int i = 0;
+    int ch;
     do {
         res = clock_drawPattern(CLOCK_ALPHABET[i]);
         if(res) ContinueError(res, "%d");
 
-        ++i;
+        ch = getch();
+        if(ch == 'h' || ch == 'k') --i;
+        else ++i;
         i %= CLOCK_ALPHABET_SIZE;
-    } while (getch() != 27);
+    } while (ch != 27);
 
     endwin();
 

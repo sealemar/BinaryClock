@@ -22,12 +22,12 @@ int clock_drawPattern(const unsigned char pattern[CLOCK_PATTERN_SIZE])
         OriginateErrorEx(EINVAL, "%d", "pattern is NULL");
 #endif
 
-    for(int i = 0; i < CLOCK_SCREEN_HEIGHT; ++i)
+    for(int y = 0; y < CLOCK_SCREEN_HEIGHT; ++y)
     {
-        const unsigned char ch = pattern[i];
+        const unsigned char ch = pattern[y];
 
-        for(int j = 0; j < CLOCK_SCREEN_WIDTH; ++j)
-            clock_setPixel(0, i, ch & 0x01 << j);
+        for(int x = 0; x < CLOCK_SCREEN_WIDTH; ++x)
+            clock_setPixel(x, y, ch & 1 << (CLOCK_SCREEN_WIDTH - x - 1));
     }
 
     return 0;
@@ -49,7 +49,7 @@ int clock_slidePattern(
         const unsigned char  patternFrom[CLOCK_PATTERN_SIZE],
         const unsigned char  patternTo[CLOCK_PATTERN_SIZE],
         unsigned char        step,
-        int                 *isLastStep,
+        Bool                *isLastStep,
         unsigned char        pattern[CLOCK_SCREEN_HEIGHT])
 {
 #ifdef PARAM_CHECKS
