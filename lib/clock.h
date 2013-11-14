@@ -30,8 +30,8 @@ int clock_drawPattern(const unsigned char pattern[CLOCK_PATTERN_SIZE]);
 //          if _isLastStep_ is NULL
 //
 int clock_slidePattern(
-        const unsigned char *patternFrom,
-        const unsigned char *patternTo,
+        const unsigned char  patternFrom[CLOCK_PATTERN_SIZE],
+        const unsigned char  patternTo[CLOCK_PATTERN_SIZE],
         unsigned char        step,
         int                 *isLastStep,
         unsigned char        pattern[CLOCK_PATTERN_SIZE]);

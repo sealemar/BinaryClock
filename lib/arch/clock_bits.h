@@ -26,6 +26,6 @@
 // @returns 0 on ok
 // EINVAL - if _x_ or _y_ is out of range
 //
-extern int (* clock_setPixel)(int x, int y, int turnOn);
+extern int (* clock_setPixel)(int x, int y, Bool turnOn);
 
 #endif

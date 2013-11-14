@@ -6,4 +6,4 @@
 
 // stubs
 
-int (* clock_setPixel)(int x, int y, int turnOn) = NULL;
+int (* clock_setPixel)(int x, int y, Bool turnOn) = NULL;

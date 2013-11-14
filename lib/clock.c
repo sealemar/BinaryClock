@@ -15,7 +15,7 @@
 // @returns 0 on success
 // EINVAL - if _pattern_ is NULL
 //
-int clock_drawPattern(const unsigned char* pattern)
+int clock_drawPattern(const unsigned char pattern[CLOCK_PATTERN_SIZE])
 {
 #ifdef PARAM_CHECKS
     if(pattern == NULL)
@@ -46,8 +46,8 @@ int clock_drawPattern(const unsigned char* pattern)
 //          if _isLastStep_ is NULL
 //
 int clock_slidePattern(
-        const unsigned char *patternFrom,
-        const unsigned char *patternTo,
+        const unsigned char  patternFrom[CLOCK_PATTERN_SIZE],
+        const unsigned char  patternTo[CLOCK_PATTERN_SIZE],
         unsigned char        step,
         int                 *isLastStep,
         unsigned char        pattern[CLOCK_SCREEN_HEIGHT])

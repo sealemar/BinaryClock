@@ -9,21 +9,24 @@ MACROS         := -D PARAM_CHECKS
 CC_c_FLAGS     := -O0 -g -std=c99 -ftrapv
 CC_c           := $(CC) $(MACROS) $(INC) $(CC_c_FLAGS)
 SOURCES_DIRS   += .
-OBJ_DIR        := obj
-BIN_DIR        := bin
-DEPS_DIR       := dep
+BUILD_DIR      := build
+
+# shouldn't be .
+OBJ_DIR        := $(BUILD_DIR)/obj
+BIN_DIR        := $(BUILD_DIR)/bin
+DEPS_DIR       := $(BUILD_DIR)/dep
+
 ETC_DIR        := ../etc
 SOURCES         = $(foreach srcdir,$(SOURCES_DIRS),$(wildcard $(if $(subst .,,$(srcdir)),$(srcdir)/,)*.c))
 OBJECTS         = $(addprefix $(OBJ_DIR)/,$(subst .c,.o,$(SOURCES)))
 DEPENDENCIES    = $(addprefix $(DEPS_DIR)/,$(subst .c,.d,$(SOURCES)))
-FILES_TO_CLEAN += $(CTAGS_FILE)
 LIBS           += -lc -L../lib/$(BIN_DIR) -lclock
 CTAGS           = ctags --sort=yes --fields=+ilaS --extra=+q
 CTAGS_SOURCES   = $(CTAGS_DIR)/ctags.sources
 CTAGS_DIR      ?= ../include
 CTAGS_FILE     ?= ../etc/tags
 
-# override this to 0 in Makefile from where this one is called to
+# set $(USE_GENERIC_CC) to 0 in Makefile from where this one is called to
 # get your own $(BIN_DIR)/$(PROG) recipe
 USE_GENERIC_CC ?= 1
 
@@ -37,8 +40,10 @@ all: $(BIN_DIR)/$(PROG)
 # $(MAKECMDGOALS) is an internal variable which is set to the list of the
 # goals specified on the command line
 ifneq ($(MAKECMDGOALS),clean)
+ifneq ($(MAKECMDGOALS),distclean)
     # silent include - don't annoy if dependencies are not exist yet
     -include $(DEPENDENCIES)
+endif
 endif
 
 $(DEPS_DIR)/%.d: %.c
@@ -74,5 +79,8 @@ $(CTAGS_FILE): $(CTAGS_SOURCES)
 	$(CTAGS) --language-force=C --c-kinds=+px -f $@ -L $<
 
 clean:
-	rm -f $(FILES_TO_CLEAN)
-	rm -fr $(OBJ_DIR) $(DEPS_DIR) $(BIN_DIR)
+	rm -f $(OBJECTS) $(DEPENDENCIES) $(BIN_DIR)/$(PROG)
+
+distclean:
+	rm -f $(CTAGS_FILE)
+	rm -fr $(if $(subst .,,$(BUILD_DIR)),$(BUILD_DIR),$(OBJ_DIR) $(BIN_DIR) $(DEPS_DIR))
