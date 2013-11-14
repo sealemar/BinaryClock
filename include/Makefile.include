@@ -3,9 +3,10 @@
 #
 
 AR             := ar
-CC             := clang
+CC             := gcc
+LD             := gcc
 INC            += -I../lib -I../include -include common.h
-MACROS         := -D _BSD_SOURCE -D PARAM_CHECKS
+MACROS         := -D PARAM_CHECKS
 CC_c_FLAGS     := -O0 -g -std=c99 -ftrapv
 CC_c           := $(CC) $(MACROS) $(INC) $(CC_c_FLAGS)
 SOURCES_DIRS   += .
@@ -17,7 +18,7 @@ SOURCES         = $(foreach srcdir,$(SOURCES_DIRS),$(wildcard $(if $(subst .,,$(
 OBJECTS         = $(addprefix $(OBJ_DIR)/,$(subst .c,.o,$(SOURCES)))
 DEPENDENCIES    = $(addprefix $(DEPS_DIR)/,$(subst .c,.d,$(SOURCES)))
 FILES_TO_CLEAN += $(CTAGS_FILE)
-LIBS           += -L../lib/$(BIN_DIR) -lclock
+LIBS           += -lc -L../lib/$(BIN_DIR) -lclock
 CTAGS           = ctags --sort=yes --fields=+ilaS --extra=+q
 CTAGS_SOURCES   = $(CTAGS_DIR)/ctags.sources
 CTAGS_DIR      ?= ../include
@@ -45,7 +46,7 @@ $(OBJ_DIR)/%.o: %.c
 	$(CC_c) -c -o $@ $<
 
 $(BIN_DIR)/$(PROG): $(OBJECTS)
-	$(CC) $(LIBS) -o $@ $(OBJECTS)
+	$(LD) -o $@ $(OBJECTS) $(LIBS)
 
 $(OBJECTS) $(DEPENDENCIES): | mkdirs
 

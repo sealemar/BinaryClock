@@ -10,4 +10,4 @@ CTAGS_DIR      := ../lib
 include ../include/Makefile.include
 
 $(BIN_DIR)/$(PROG): $(OBJECTS)
-	$(AR) -rvs $@ $?
+	$(AR) rvs $@ $?
