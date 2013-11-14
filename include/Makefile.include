@@ -23,6 +23,10 @@ CTAGS_SOURCES   = $(CTAGS_DIR)/ctags.sources
 CTAGS_DIR      ?= ../include
 CTAGS_FILE     ?= ../etc/tags
 
+# override this to 0 in Makefile from where this one is called to
+# get your own $(BIN_DIR)/$(PROG) recipe
+USE_GENERIC_CC ?= 1
+
 .PHONY: all clean ctags mkdirs
 .INTERMEDIATE: $(CTAGS_SOURCES)
 .SILENT: mkdirs
@@ -44,8 +48,12 @@ $(DEPS_DIR)/%.d: %.c
 $(OBJ_DIR)/%.o: %.c
 	$(CC_c) -c -o $@ $<
 
+# this target may be overridden in Makefile from where this one is called
+# if $(USE_GENERIC_CC) is set to 0 there
+ifeq ($(USE_GENERIC_CC),1)
 $(BIN_DIR)/$(PROG): $(OBJECTS)
 	$(CC) -o $@ $(OBJECTS) $(LIBS)
+endif
 
 $(OBJECTS) $(DEPENDENCIES): | mkdirs
 
