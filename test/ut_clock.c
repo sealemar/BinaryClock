@@ -117,13 +117,6 @@ int test_clock_slidePattern_returnsCorrectResult()
 //
 
 
-//
-// This test was written before I realized that all the patterns are mirrored.
-// I implemented the patterns mistakenly setting bits from left to right, but
-// in real life they go from right to left. However, for this test that really
-// doesn't matter, but the commented steps above are really mirrored versions
-// of what is shown.
-//
     const unsigned char patterns[][CLOCK_SCREEN_HEIGHT] = {
         { 0x3c, 0x42, 0xa5, 0x81, 0x99, 0xa5, 0x42, 0x3c },
         { 0x78, 0x84, 0x4a, 0x02, 0x32, 0x4a, 0x84, 0x78 },
