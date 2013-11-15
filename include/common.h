@@ -7,10 +7,6 @@
 
 typedef enum { FALSE = 0, TRUE } Bool;
 
-#ifndef NULL
-#define NULL 0
-#endif
-
 #define countof(x) (sizeof(x) / sizeof(*x))
 
 #endif
