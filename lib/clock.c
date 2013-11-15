@@ -27,7 +27,7 @@ int clock_drawPattern(const unsigned char pattern[CLOCK_PATTERN_SIZE])
         const unsigned char ch = pattern[y];
 
         for(int x = 0; x < CLOCK_SCREEN_WIDTH; ++x)
-            clock_setPixel(x, y, ch & 1 << (CLOCK_SCREEN_WIDTH - x - 1));
+            clock_setPixel(x, y, ch & 1 << x);
     }
 
     return 0;

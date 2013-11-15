@@ -3,6 +3,7 @@ obj/
 bin/
 
 /etc/
+/arduino/build*/
 
 .ycm_extra_conf.pyc
 .*.swp

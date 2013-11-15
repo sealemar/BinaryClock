@@ -20,7 +20,7 @@ int main()
     if(res) ContinueError(res, "%d");
 
     clock_clearScreen();
-
+//
 //     for(int y = 0; y < CLOCK_SCREEN_HEIGHT; ++y)
 //     {
 //         for(int x = 0; x < CLOCK_SCREEN_WIDTH; ++x)
@@ -31,7 +31,7 @@ int main()
 //             clock_setPixel(x, y, 0);
 //         }
 //     }
-
+//
     int i = 0;
     int ch;
     do {
@@ -39,9 +39,15 @@ int main()
         if(res) ContinueError(res, "%d");
 
         ch = getch();
-        if(ch == 'h' || ch == 'k') --i;
-        else ++i;
-        i %= CLOCK_ALPHABET_SIZE;
+        if(ch == 'h' || ch == 'k') {
+            --i;
+            if(i == -1) {
+                i = CLOCK_ALPHABET_SIZE - 1;
+            }
+        } else {
+            ++i;
+            i %= CLOCK_ALPHABET_SIZE;
+        }
     } while (ch != 27);
 
     endwin();
