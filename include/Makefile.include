@@ -22,9 +22,9 @@ OBJECTS         = $(addprefix $(OBJ_DIR)/,$(subst .c,.o,$(SOURCES)))
 DEPENDENCIES    = $(addprefix $(DEPS_DIR)/,$(subst .c,.d,$(SOURCES)))
 LIBS           += -lc -L../lib/$(BIN_DIR) -lclock
 CTAGS           = ctags --sort=yes --fields=+ilaS --extra=+q
-CTAGS_SOURCES   = $(CTAGS_DIR)/ctags.sources
 CTAGS_DIR      ?= ../include
 CTAGS_FILE     ?= ../etc/tags
+CTAGS_SOURCES   = $(CTAGS_DIR)/ctags.sources
 
 # set $(USE_GENERIC_CC) to 0 in Makefile from where this one is called to
 # get your own $(BIN_DIR)/$(PROG) recipe
@@ -41,8 +41,10 @@ all: $(BIN_DIR)/$(PROG)
 # goals specified on the command line
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),distclean)
+ifneq ($(MAKECMDGOALS),ctags)
     # silent include - don't annoy if dependencies are not exist yet
     -include $(DEPENDENCIES)
+endif
 endif
 endif
 
@@ -67,16 +69,14 @@ mkdirs:
 	mkdir -p $(foreach srcdir,$(SOURCES_DIRS),$(if $(subst .,,$(srcdir)),$(addprefix $(DEPS_DIR)/,$(srcdir)),$(DEPS_DIR)))
 	mkdir -p $(BIN_DIR)
 
-ctags: $(CTAGS_FILE)
+ctags: $(CTAGS_SOURCES)
+	$(CTAGS) --language-force=C --c-kinds=+px -f $(CTAGS_FILE) -L $<
 
 $(ETC_DIR):
 	mkdir -p ../etc
 
 $(CTAGS_SOURCES): | $(ETC_DIR)
 	@find $(CTAGS_DIR) -type f -name "*.[ch]" > $@
-
-$(CTAGS_FILE): $(CTAGS_SOURCES)
-	$(CTAGS) --language-force=C --c-kinds=+px -f $@ -L $<
 
 clean:
 	rm -f $(OBJECTS) $(DEPENDENCIES) $(BIN_DIR)/$(PROG)

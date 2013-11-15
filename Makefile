@@ -29,7 +29,7 @@ clean:
 	make -C include -f Makefile.include clean
 
 distclean:
-	make -C arduino distclean
+	make -C arduino clean
 	make -C emulator distclean
 	make -C test distclean
 	make -C lib distclean

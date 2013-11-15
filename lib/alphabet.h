@@ -49,8 +49,10 @@
 #define CLOCK_MULTIPLY          39
 #define CLOCK_SLASH             40
 #define CLOCK_COLON             41
-#define CLOCK_SMILEY_FACE_SMILE 42
-#define CLOCK_SMILEY_FACE_SAD   43
+#define CLOCK_POINT             42
+#define CLOCK_EXCLAMATION_MARK  43
+#define CLOCK_SMILEY_FACE_SMILE 44
+#define CLOCK_SMILEY_FACE_SAD   45
 #define CLOCK_ALPHABET_LAST     CLOCK_SMILEY_FACE_SAD
 
 extern const unsigned char CLOCK_ALPHABET[][CLOCK_PATTERN_SIZE];
