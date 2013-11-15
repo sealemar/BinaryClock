@@ -2,7 +2,9 @@
 // developed by Sergey Markelov (11/10/2013)
 //
 
+#include <stdlib.h>
 #include <ncurses.h>
+
 #include <clock.h>
 #include <logger.h>
 #include <alphabet.h>
@@ -70,6 +72,23 @@ int slideText(const char* text)
     return 0;
 }
 
+int checkDisplayBinaryNumber()
+{
+    for(unsigned int i = 0, last = (1 << CLOCK_SCREEN_HEIGHT); i < last; ++i) {
+        clock_clearScreen();
+        int res = clock_displayBinaryNumber(i, 2, 2);
+        if(res) ContinueError(res, "%d");
+        if(getch() == 27) return 0;
+    }
+
+    return 0;
+}
+
+void atExit()
+{
+    endwin();
+}
+
 int main()
 {
     errStream = stderr;
@@ -77,15 +96,14 @@ int main()
 
     int res = clock_init();
     if(res) ContinueError(res, "%d");
+    atexit(atExit);
 
     clock_clearScreen();
 
     //res = slideText(" Hello world!!!");
-    res = clock_displayBinaryNumber(0x1c, 2, 2);
+    res = checkDisplayBinaryNumber();
     if(res) ContinueError(res, "%d");
     getch();
-
-    endwin();
 
     return 0;
 }

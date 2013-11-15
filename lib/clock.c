@@ -213,7 +213,7 @@ int clock_displayBinaryNumber(unsigned int number, unsigned int width, unsigned 
 {
 #ifdef PARAM_CHECKS
     if(number >> CLOCK_SCREEN_HEIGHT)
-        OriginateErrorEx(EINVAL, "%d", "number[%u] should be < %u", number, (1 << (CLOCK_SCREEN_HEIGHT + 1)));
+        OriginateErrorEx(EINVAL, "%d", "number[%u] should be < %u", number, (1 << CLOCK_SCREEN_HEIGHT));
     if(width > CLOCK_MAX_BINARY_WIDTH || width == 0)
         OriginateErrorEx(EINVAL, "%d", "width[%u] should be 0 < width < %u", width, CLOCK_MAX_BINARY_WIDTH);
     if(pos >= CLOCK_SCREEN_WIDTH - width)
@@ -224,10 +224,19 @@ int clock_displayBinaryNumber(unsigned int number, unsigned int width, unsigned 
     for( ; number; number &= (number - 1)) {
 
         // find setBit
-        for(unsigned int t = number; t != 1; t >>= setBit, ++setBit);
+        for(unsigned int t = number >> (setBit - 1); !(t & 1); t >>= 1, ++setBit)
+        {
+            number = number;
+        }
 
         for(unsigned int x = pos, xLast = pos + width; x < xLast; ++x) {
+#ifdef PARAM_CHECKS
+            int res =
+#endif
             clock_setPixel(x, CLOCK_SCREEN_HEIGHT - setBit, TRUE);
+#ifdef PARAM_CHECKS
+            if(res) ContinueError(res, "%d");
+#endif
         }
     }
 
