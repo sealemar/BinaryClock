@@ -221,13 +221,14 @@ int clock_displayBinaryNumber(unsigned int number, unsigned int width, unsigned 
 #endif
 
     unsigned int setBit = 1;
+
+    // Drop the least significant bit with each iteration
     for( ; number; number &= (number - 1)) {
 
         // find setBit
-        for(unsigned int t = number >> (setBit - 1); !(t & 1); t >>= 1, ++setBit)
-        {
-            number = number;
-        }
+        for(unsigned int t = number >> (setBit - 1);
+            !(t & 1);
+            t >>= 1, ++setBit) { }
 
         for(unsigned int x = pos, xLast = pos + width; x < xLast; ++x) {
 #ifdef PARAM_CHECKS
