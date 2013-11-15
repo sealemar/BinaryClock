@@ -107,7 +107,7 @@ int clock_slidePattern(
     if(patternTo == NULL)
         OriginateErrorEx(EINVAL, "%d", "patternTo is NULL");
     if(step > CLOCK_SCREEN_WIDTH)
-        OriginateErrorEx(EINVAL, "%d", "step should be 0 < step <= CLOCK_SCREEN_WIDTH");
+        OriginateErrorEx(EINVAL, "%d", "step should be 0 < step[%u] <= CLOCK_SCREEN_WIDTH[%d]", step, CLOCK_SCREEN_WIDTH);
     if(isLastStep == NULL)
         OriginateErrorEx(EINVAL, "%d", "isLastStep is NULL");
     if(pattern == NULL)
@@ -157,7 +157,7 @@ int clock_slideText(
     if(text == NULL)
         OriginateErrorEx(EINVAL, "%d", "text is NULL");
     if(step > lastStep)
-        OriginateErrorEx(EINVAL, "%d", "step should be <= %zu for text '%s'", lastStep, text);
+        OriginateErrorEx(EINVAL, "%d", "step[%zu] should be <= %zu for text '%s'", step, lastStep, text);
     if(isLastStep == NULL)
         OriginateErrorEx(EINVAL, "%d", "isLastStep is NULL");
     if(pattern == NULL)
@@ -197,4 +197,39 @@ int clock_slideText(
 
     return ret;
 #endif
+}
+
+//
+// @brief displays a given number in a binary format on the clock screen
+// @param number a number to display
+// @param width a width of a binary bar [ 0 < width < CLOCK_MAX_BINARY_WIDTH ]
+// @param pos an offset on x axis of where to start displaying the _number_ [ 0 <= pos < CLOCK_SCREEN_WIDTH - width ]
+// @returns 0 on success
+// EINVAL - if _number_ in binary format is taller than CLOCK_SCREEN_HEIGH bits
+//          if _width_ > CLOCK_MAX_BINARY_WIDTH || width == 0
+//          if _pos_ >= CLOCK_SCREEN_WIDTH - width
+//
+int clock_displayBinaryNumber(unsigned int number, unsigned int width, unsigned int pos)
+{
+#ifdef PARAM_CHECKS
+    if(number >> CLOCK_SCREEN_HEIGHT)
+        OriginateErrorEx(EINVAL, "%d", "number[%u] should be < %u", number, (1 << (CLOCK_SCREEN_HEIGHT + 1)));
+    if(width > CLOCK_MAX_BINARY_WIDTH || width == 0)
+        OriginateErrorEx(EINVAL, "%d", "width[%u] should be 0 < width < %u", width, CLOCK_MAX_BINARY_WIDTH);
+    if(pos >= CLOCK_SCREEN_WIDTH - width)
+        OriginateErrorEx(EINVAL, "%d", "pos[%u] should be < %u", pos, CLOCK_SCREEN_WIDTH - width);
+#endif
+
+    unsigned int setBit = 1;
+    for( ; number; number &= (number - 1)) {
+
+        // find setBit
+        for(unsigned int t = number; t != 1; t >>= setBit, ++setBit);
+
+        for(unsigned int x = pos, xLast = pos + width; x < xLast; ++x) {
+            clock_setPixel(x, CLOCK_SCREEN_HEIGHT - setBit, TRUE);
+        }
+    }
+
+    return 0;
 }

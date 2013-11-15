@@ -80,8 +80,10 @@ int main()
 
     clock_clearScreen();
 
-    res = slideText(" Hello world!!!");
+    //res = slideText(" Hello world!!!");
+    res = clock_displayBinaryNumber(0x1c, 2, 2);
     if(res) ContinueError(res, "%d");
+    getch();
 
     endwin();
 

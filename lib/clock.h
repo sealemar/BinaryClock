@@ -68,4 +68,17 @@ int clock_slideText(
         size_t         step,
         Bool          *isLastStep,
         unsigned char  pattern[CLOCK_PATTERN_SIZE]);
+
+//
+// @brief displays a given number in a binary format on the clock screen
+// @param number a number to display
+// @param width a width of a binary bar [ 0 < width < CLOCK_MAX_BINARY_WIDTH ]
+// @param pos an offset on x axis of where to start displaying the _number_ [ 0 <= pos < CLOCK_SCREEN_WIDTH - width ]
+// @returns 0 on success
+// EINVAL - if _number_ in binary format is taller than CLOCK_SCREEN_HEIGH bits
+//          if _width_ > CLOCK_MAX_BINARY_WIDTH || width == 0
+//          if _pos_ >= CLOCK_SCREEN_WIDTH - width
+//
+int clock_displayBinaryNumber(unsigned int number, unsigned int width, unsigned int pos);
+
 #endif
