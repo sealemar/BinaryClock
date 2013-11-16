@@ -22,6 +22,12 @@ extern FILE *outStream;
 #define STRINGIFY(x) #x
 #define TOSTRING(x)  STRINGIFY(x)
 
+#define LogRaw(stream, format, ...) \
+    { fprintf(stream, format, ##__VA_ARGS__); }
+
+#define LogLnRaw(stream, format, ...) \
+    { fprintf(stream, format "\n", ##__VA_ARGS__); }
+
 #define _LOG(stream, prefix, format, ...) \
     { fprintf(stream, "%s (%s) - " format "\n", prefix __FILE__ ":" TOSTRING(__LINE__), __func__, ##__VA_ARGS__); }
 

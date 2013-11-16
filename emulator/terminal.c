@@ -74,8 +74,9 @@ int slideText(const char* text)
 
 int checkDisplayBinaryNumber()
 {
+    clock_clearScreen();
+
     for(unsigned int i = 0, last = (1 << CLOCK_SCREEN_HEIGHT); i < last; ++i) {
-        clock_clearScreen();
         int res = clock_displayBinaryNumber(i, 2, 2);
         if(res) ContinueError(res, "%d");
         if(getch() == 27) return 0;

@@ -2,11 +2,27 @@
 // developed by Sergey Markelov (11/10/2013)
 //
 
-#include <clock.h>
-#include <logger.h>
-#include "ut_clock.h"
+#include <string.h>
 
-int test_clock_slidePattern_returnsCorrectResult()
+#include <alphabet.h>
+#include <clock.h>
+#include "ut_clock.h"
+#include "arch/clock_bits_extra.h"
+
+static int validatePattern(
+    const unsigned char expected[CLOCK_PATTERN_SIZE],
+    const unsigned char actual[CLOCK_PATTERN_SIZE])
+{
+    for(int i = 0; i < CLOCK_SCREEN_HEIGHT; ++i) {
+        if(expected[i] != actual[i]) {
+            OriginateErrorEx(-1, "%d", "expected[%d] (%02x) != actual[%d] (%02x)", i, expected[i], i, actual[i]);
+        }
+    }
+
+    return 0;
+}
+
+static int test_clock_slidePattern_returnsCorrectResult()
 {
 // step 0
 //
@@ -138,14 +154,44 @@ int test_clock_slidePattern_returnsCorrectResult()
         int res = clock_slidePattern(patternFrom, patternTo, step, &isLastStep, currentPattern);
         if(res) ContinueError(res, "%d");
 
-        // check pattern
-        for(int i = 0; i < CLOCK_SCREEN_HEIGHT; ++i)
-        {
-            if(currentPattern[i] != patterns[step][i])
-            {
-                OriginateErrorEx(-1, "%d", "currentPattern[i] != patterns[step][i]. i = %d, step = %d, "
-                                           "currentPattern[i] = %d, patterns[step][i] = %d",
-                                 i, step, currentPattern[i], patterns[step][i]);
+        res = validatePattern(patterns[step], currentPattern);
+        if(res) ContinueErrorEx(res, "%d", "step = %d", step);
+    }
+
+    return 0;
+}
+
+static int test_clock_drawPattern_correct()
+{
+    test_clearScreen();
+
+    int res = clock_drawPattern(CLOCK_ALPHABET[CLOCK_1]);
+    if(res) ContinueError(res, "%d");
+
+    res = test_compareScreenPattern(CLOCK_ALPHABET[CLOCK_1]);
+    if(res) OriginateErrorEx(res, "%d", "pattern CLOCK_ALPHABET[CLOCK_1] doesn't match the screen");
+
+    return 0;
+}
+
+static int test_clock_displayBinaryNumber_correct()
+{
+    unsigned char pat = 3 << 4;
+
+    test_clearScreen();
+
+    for(unsigned int i = 0, last = (1 << CLOCK_SCREEN_HEIGHT); i < last; ++i) {
+        int res = clock_displayBinaryNumber(i, 2, 2);
+        if(res) ContinueError(res, "%d");
+
+        for(unsigned int y = 0; y < CLOCK_SCREEN_HEIGHT; ++y) {
+            unsigned char expected = (i & 1U << y) ? pat : 0;
+            unsigned int yReverted = CLOCK_SCREEN_HEIGHT - y - 1;
+            res = test_compareScreenBits(yReverted, expected);
+            if(res) {
+                test_dumpScreenBits();
+                OriginateErrorEx(res, "%d", "failed testing %u. Bits %u. Expected = 0x%02X. Actual = 0x%02X",
+                                            i, y, expected, test_getScreenBits(yReverted));
             }
         }
     }
@@ -153,15 +199,42 @@ int test_clock_slidePattern_returnsCorrectResult()
     return 0;
 }
 
-int ut_clock_tests()
+static int test_clock_slideText_correct()
 {
-    int errors = 0;
+    const char text[] = "TH1S TEXT2TEXT:SHOULD.BE-CORRECTLY*PROCESSED!!!";
     int res;
 
-    res = test_clock_slidePattern_returnsCorrectResult();
-    if(res) { IgnoreError(res, "%d"); ++errors; }
+    for(size_t i = 0, len = strlen(text); i < len; ++i) {
+        Bool isLastStep;
+        unsigned char pattern[CLOCK_PATTERN_SIZE];
 
-    Log("1 test ran. %d tests succeded, %d failed", 1 - errors, errors);
+        res = clock_slideText(text, i * CLOCK_SCREEN_WIDTH, &isLastStep, pattern);
+        if(res) ContinueError(res, "%d");
+
+        if((i == len -1 && !isLastStep) || (isLastStep && i != len -1)) {
+            OriginateErrorEx(-1, "%d", "unexpected isLastStep = %s. i = %zu, len = %zu, text = '%s'",
+                                       isLastStep ? "true" : "false", i, len, text);
+        }
+
+        int index;
+        res = clock_getAlphabetIndexByCharacter(text[i], &index);
+        if(res) ContinueError(res, "%d");
+
+        res = validatePattern(CLOCK_ALPHABET[index], pattern);
+        if(res) ContinueErrorEx(res, "%d", "pattern is not valid. i = %zu, text = '%s', index = %d", i, text, index);
+    }
 
     return 0;
+}
+
+TestUnit testSuite[] = {
+    { test_clock_slidePattern_returnsCorrectResult, "test_clock_slidePattern_returnsCorrectResult", FALSE },
+    { test_clock_drawPattern_correct, "test_clock_drawPattern_correct", FALSE },
+    { test_clock_displayBinaryNumber_correct, "test_clock_displayBinaryNumber_correct", FALSE },
+    { test_clock_slideText_correct, "test_clock_slideText_correct", FALSE },
+};
+
+int ut_clock_tests()
+{
+    return runTestSuite(testSuite);
 }

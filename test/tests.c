@@ -2,26 +2,21 @@
 // developed by Sergey Markelov (11/10/2013)
 //
 
-#include <logger.h>
+#include "arch/clock_bits_extra.h"
 #include "ut_clock.h"
 
 FILE *errStream;
 FILE *outStream;
 
+TestUnit testSuites[] = {
+    { ut_clock_tests, "ut_clock_tests", FALSE },
+};
+
 int main()
 {
     errStream = stderr;
     outStream = stdout;
+    clock_setPixel = test_setPixel;
 
-    int errors = 0;
-
-    // TODO: think about author header
-
-    int res = ut_clock_tests();
-    if(res) { IgnoreError(res, "%d"); ++errors; }
-
-    // TODO: refactor with struct and extra information when a new unit test is added
-    Log("1 test suite ran. %d tests suites succeded, %d failed", 1 - errors, errors);
-
-    return 0;
+    return runTestSuite(testSuites);
 }

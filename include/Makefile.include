@@ -4,9 +4,13 @@
 
 AR             := ar
 CC             := clang
-INC            += -I../lib -I../include -include common.h -include stddef.h
+
+# a specific implementation may either define $(INC) to prepend includes or
+# $(POST_INCLUDE) to append includes
+INC            += -I../lib -I../include -include common.h -include stddef.h $(POST_INCLUDE)
+
 MACROS         := -D PARAM_CHECKS
-CC_c_FLAGS     := -O0 -g -std=c99 -ftrapv
+CC_c_FLAGS     := -O0 -g -std=c99 -ftrapv -Wall
 CC_c           := $(CC) $(MACROS) $(INC) $(CC_c_FLAGS)
 SOURCES_DIRS   += .
 BUILD_DIR      := build

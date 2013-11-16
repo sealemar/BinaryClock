@@ -37,6 +37,42 @@ int clock_drawPattern(const unsigned char pattern[CLOCK_PATTERN_SIZE])
 }
 
 //
+// @brief displays a given number in a binary format on the clock screen
+// @param number a number to display
+// @param width a width of a binary bar [ 0 < width < CLOCK_MAX_BINARY_WIDTH ]
+// @param pos an offset on x axis of where to start displaying the _number_ [ 0 <= pos < CLOCK_SCREEN_WIDTH - width ]
+// @returns 0 on success
+// EINVAL - if _number_ in binary format is taller than CLOCK_SCREEN_HEIGH bits
+//          if _width_ > CLOCK_MAX_BINARY_WIDTH || width == 0
+//          if _pos_ >= CLOCK_SCREEN_WIDTH - width
+//
+int clock_displayBinaryNumber(unsigned int number, unsigned int width, unsigned int pos)
+{
+#ifdef PARAM_CHECKS
+    if(number >> CLOCK_SCREEN_HEIGHT)
+        OriginateErrorEx(EINVAL, "%d", "number[%u] should be < %u", number, (1 << CLOCK_SCREEN_HEIGHT));
+    if(width > CLOCK_MAX_BINARY_WIDTH || width == 0)
+        OriginateErrorEx(EINVAL, "%d", "width[%u] should be 0 < width < %u", width, CLOCK_MAX_BINARY_WIDTH);
+    if(pos >= CLOCK_SCREEN_WIDTH - width)
+        OriginateErrorEx(EINVAL, "%d", "pos[%u] should be < %u", pos, CLOCK_SCREEN_WIDTH - width);
+#endif
+
+    for(unsigned int y = 0; y < CLOCK_SCREEN_HEIGHT; ++y) {
+        for(unsigned int x = pos, xLast = pos + width; x < xLast; ++x) {
+#ifdef PARAM_CHECKS
+            int res =
+#endif
+            clock_setPixel(x, CLOCK_SCREEN_HEIGHT - y - 1, number & 1U << y);
+#ifdef PARAM_CHECKS
+            if(res) ContinueError(res, "%d");
+#endif
+        }
+    }
+
+    return 0;
+}
+
+//
 // @brief finds a suitable index from CLOCK_ALPHABET by a given character
 // @param ch ASCII character to find an index for
 // @param clockAlphabetIndex a closest suitable index from CLOCK_ALPHABET for _ch_
@@ -197,49 +233,4 @@ int clock_slideText(
 
     return ret;
 #endif
-}
-
-//
-// @brief displays a given number in a binary format on the clock screen
-// @param number a number to display
-// @param width a width of a binary bar [ 0 < width < CLOCK_MAX_BINARY_WIDTH ]
-// @param pos an offset on x axis of where to start displaying the _number_ [ 0 <= pos < CLOCK_SCREEN_WIDTH - width ]
-// @returns 0 on success
-// EINVAL - if _number_ in binary format is taller than CLOCK_SCREEN_HEIGH bits
-//          if _width_ > CLOCK_MAX_BINARY_WIDTH || width == 0
-//          if _pos_ >= CLOCK_SCREEN_WIDTH - width
-//
-int clock_displayBinaryNumber(unsigned int number, unsigned int width, unsigned int pos)
-{
-#ifdef PARAM_CHECKS
-    if(number >> CLOCK_SCREEN_HEIGHT)
-        OriginateErrorEx(EINVAL, "%d", "number[%u] should be < %u", number, (1 << CLOCK_SCREEN_HEIGHT));
-    if(width > CLOCK_MAX_BINARY_WIDTH || width == 0)
-        OriginateErrorEx(EINVAL, "%d", "width[%u] should be 0 < width < %u", width, CLOCK_MAX_BINARY_WIDTH);
-    if(pos >= CLOCK_SCREEN_WIDTH - width)
-        OriginateErrorEx(EINVAL, "%d", "pos[%u] should be < %u", pos, CLOCK_SCREEN_WIDTH - width);
-#endif
-
-    unsigned int setBit = 1;
-
-    // Drop the least significant bit with each iteration
-    for( ; number; number &= (number - 1)) {
-
-        // find setBit
-        for(unsigned int t = number >> (setBit - 1);
-            !(t & 1);
-            t >>= 1, ++setBit) { }
-
-        for(unsigned int x = pos, xLast = pos + width; x < xLast; ++x) {
-#ifdef PARAM_CHECKS
-            int res =
-#endif
-            clock_setPixel(x, CLOCK_SCREEN_HEIGHT - setBit, TRUE);
-#ifdef PARAM_CHECKS
-            if(res) ContinueError(res, "%d");
-#endif
-        }
-    }
-
-    return 0;
 }

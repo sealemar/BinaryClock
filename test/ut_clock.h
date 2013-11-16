@@ -10,6 +10,4 @@
 //
 int ut_clock_tests();
 
-int test_clock_slidePattern_returnsCorrectResult();
-
 #endif

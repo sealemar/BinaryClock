@@ -20,6 +20,8 @@
 #define CLOCK_PATTERN_SIZE      (CLOCK_SCREEN_HEIGHT)
 
 //
+// @note the implementation needs to set clock_setPixel to point to a real function.
+//       It is stubbed to NULL by default
 // @brief switches one pixel on or off
 // @param x x coordinate (0 < x < SCREEN_WIDTH)
 // @param y y coordinate (0 < y < SCREEN_HEIGHT)
