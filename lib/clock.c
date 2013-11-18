@@ -229,7 +229,7 @@ int clock_slideText(
            &patternIsLastStep,
             pattern);
 #ifdef PARAM_CHECKS
-    if(ret) ContinueError(EINVAL, "%d");
+    if(ret) ContinueError(ret, "%d");
 
     return ret;
 #endif

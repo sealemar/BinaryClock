@@ -16,11 +16,13 @@ int _runTestSuite(const char *fileName, unsigned long line, const char *func, Te
     int errors = 0;
 
     for(size_t i = 0; i < testsCount; ++i) {
-        int res = testSuite[i].func();
+        TestUnit *unit = &testSuite[i];
+        LogLnRaw(OUT_STREAM, "Starting %s:%s --- [%s]", fileName, func, unit->functionName);
+        int res = unit->func();
         if(res) {
             IgnoreError(res, "%d");
             ++errors;
-            testSuite[i].isFailed = TRUE;
+            unit->isFailed = TRUE;
             LogLnRaw(ERR_STREAM, "");
         }
     }
