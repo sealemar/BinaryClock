@@ -11,7 +11,7 @@
 
 static unsigned long UptimeMillis = 0; // the number of milliseconds since the program has started
 
-#define SECONDS_IN_A_DAY    86400
+#define MILLIS_IN_A_DAY    86400000UL
 
 inline static unsigned int _daysInMonth(DateTime *dt)
 {
@@ -82,18 +82,19 @@ int clock_addMillisToDateTime(unsigned long millis, DateTime *dt)
         OriginateErrorEx(EINVAL, "%d", "dt is NULL");
 #endif
 
-    // Get seconds
-    millis /= 1000;
-
     //
     // Since _v_ is unsigned long and all of DateTime member variables
     // are unsigned int, first calculate days part, then start from the
-    // seconds.
+    // milliseconds.
     //
-    dt->day += millis / SECONDS_IN_A_DAY;
-    millis %= SECONDS_IN_A_DAY;
+    dt->day += millis / MILLIS_IN_A_DAY;
+    millis %= MILLIS_IN_A_DAY;
 
-    dt->second += millis;
+    dt->millisecond += millis;
+    if(dt->millisecond >= 1000) {
+        dt->second      += dt->millisecond / 1000;
+        dt->millisecond %= 1000;
+    }
     if(dt->second >= 60) {
         dt->minute += dt->second / 60;
         dt->second %= 60;

@@ -6,6 +6,7 @@
 #define BINARY_CLOCK_TEST_ARCH_CLOCK_BITS_EXTRA_H
 
 #include <clock.h>
+#include <clock_time.h>
 
 int test_setPixel(int x, int y, Bool turnOn);
 void test_clearScreen();

@@ -27,6 +27,7 @@ typedef struct {
     unsigned int hour;
     unsigned int minute;
     unsigned int second;
+    unsigned int millisecond;
 } DateTime;
 
 //
