@@ -33,6 +33,8 @@ import ycm_core
 
 youcompletemeHome = os.environ['HOME'] + '/.vim/bunlde/YouCompleteMe/cpp/ycm/'
 
+ProjectHome = os.path.dirname(os.path.realpath(__file__))
+
 # These are the compilation flags that will be used in case there's no
 # compilation database set (by default, one is not set).
 # CHANGE THIS LIST OF FLAGS. YES, THIS IS THE DROID YOU HAVE BEEN LOOKING FOR.
@@ -64,24 +66,26 @@ flags = [
 youcompletemeHome + '../llvm/include',
 '-isystem',
 youcompletemeHome + '../llvm/tools/clang/include',
+'-I',
+ProjectHome + '/../lib',
+'-I',
+ProjectHome + '/../include',
+'-I',
+'/opt/local/include',
+'-I',
+'/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/include',
+'-D',
+'PARAM_CHECKS',
 '-include',
 'errno.h',
 '-include',
 'stddef.h',
 '-include',
+'common.h',
+'-include',
 'logger.h',
 '-include',
-'test_ut/test_ut.h',
-'-include',
-'common.h',
-'-I',
-'./lib',
-'-I',
-'./include',
-'-I',
-'/opt/local/include',
-'-I',
-'/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/include',
+ProjectHome + '/test_ut/test_ut.h',
 '-I',
 youcompletemeHome + './ClangCompleter',
 '-isystem',

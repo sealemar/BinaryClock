@@ -2,8 +2,11 @@
 // developed by Sergey Markelov (11/17/2013)
 //
 
+#ifdef PARAM_CHECKS
 #include <errno.h>
 #include <logger.h>
+#endif
+
 #include "clock_time.h"
 
 static unsigned long UptimeMillis = 0; // the number of milliseconds since the program has started
@@ -33,6 +36,8 @@ inline static unsigned int _daysInMonth(DateTime *dt)
 
 //
 // @brief Updates the program uptime to a given number of milliseconds.
+// @param millis the current uptime in milliseconds
+// @returns the number of milliseconds since this function was called the last time
 //
 // @note This function handles integer overflows.
 //
@@ -44,10 +49,6 @@ inline static unsigned int _daysInMonth(DateTime *dt)
 //       Returns the number of milliseconds since the Arduino board began running the current program.
 //       This number will overflow (go back to zero), after approximately 50 days.
 //
-// @param millis the current uptime in milliseconds
-//
-// @returns the number of milliseconds since this function was called the last time
-//
 unsigned long clock_updateUptimeMillis(unsigned long millis)
 {
     if(UptimeMillis == millis) return 0;
@@ -56,9 +57,9 @@ unsigned long clock_updateUptimeMillis(unsigned long millis)
 
     if(millis < UptimeMillis) {
         // The number was overflown
-        delta = ~(0UL) - UptimeMillis + 1 + millis;
+        delta = MAX_UPTIME_MILLIS - UptimeMillis + 1 + millis;
     } else {
-        delta = UptimeMillis - millis;
+        delta = millis - UptimeMillis;
     }
 
     // Now update the uptime

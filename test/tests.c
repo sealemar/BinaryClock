@@ -5,12 +5,14 @@
 #include <clock.h>
 #include "clock_extra.h"
 #include "ut_clock.h"
+#include "ut_clock_time.h"
 
 FILE *errStream;
 FILE *outStream;
 
-TestUnit testSuites[] = {
-    { ut_clock_tests, "ut_clock_tests", FALSE },
+static TestUnit testSuites[] = {
+    { ut_clock, "ut_clock", FALSE },
+    { ut_clock_time, "ut_clock_time", FALSE },
 };
 
 int main()

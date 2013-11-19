@@ -226,14 +226,50 @@ static int test_clock_slideText_correct()
     return 0;
 }
 
-TestUnit testSuite[] = {
-    { test_clock_slidePattern_returnsCorrectResult, "test_clock_slidePattern_returnsCorrectResult", FALSE },
-    { test_clock_drawPattern_correct, "test_clock_drawPattern_correct", FALSE },
-    { test_clock_displayBinaryNumber_correct, "test_clock_displayBinaryNumber_correct", FALSE },
-    { test_clock_slideText_correct, "test_clock_slideText_correct", FALSE },
+int validate_getAlphabetIndexByCharacter_ERANGE(unsigned char ch, int expectedAlphabetIndex)
+{
+    int index = 0;
+    int res = clock_getAlphabetIndexByCharacter(ch, &index);
+    if(res != ERANGE) {
+        if(res) ContinueError(res, "%d");
+        OriginateErrorEx(res, "%d", "Unexpected error from clock_getAlphabetIndexByCharacter('%c', &index). "
+                                    "Expected ERANGE", ch);
+    }
+    if(index != expectedAlphabetIndex) {
+        OriginateErrorEx(res, "%d", "Unexpected index from clock_getAlphabetIndexByCharacter('%c', &index). "
+                                    "index = %d, expected = %d", ch, index, expectedAlphabetIndex);
+    }
+
+    return 0;
+}
+
+static int test_clock_getAlphabetIndexByCharacter_returns_ERANGE_andCorrectIndex()
+{
+    int res;
+    for(unsigned char ch = 'a'; ch <= 'z'; ++ch) {
+        res = validate_getAlphabetIndexByCharacter_ERANGE(ch, CLOCK_A + (ch - 'a'));
+        if(res) ContinueError(res, "%d");
+    }
+
+    //
+    // Test a random character which is not defined in the alphabet.
+    // Expected resulting index is CLOCK_BLANK.
+    //
+    res = validate_getAlphabetIndexByCharacter_ERANGE('~', CLOCK_BLANK);
+    if(res) ContinueError(res, "%d");
+
+    return 0;
+}
+
+static TestUnit testSuite[] = {
+    { test_clock_slidePattern_returnsCorrectResult, "clock_slidePattern() returns correct result", FALSE },
+    { test_clock_drawPattern_correct, "clock_drawPattern() correct", FALSE },
+    { test_clock_displayBinaryNumber_correct, "clock_displayBinaryNumber() correct", FALSE },
+    { test_clock_slideText_correct, "clock_slideText() correct", FALSE },
+    { test_clock_getAlphabetIndexByCharacter_returns_ERANGE_andCorrectIndex, "clock_getAlphabetIndexByCharacter() returns ERANGE and correct index", FALSE },
 };
 
-int ut_clock_tests()
+int ut_clock()
 {
     return runTestSuite(testSuite);
 }

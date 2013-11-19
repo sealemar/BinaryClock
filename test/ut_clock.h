@@ -8,6 +8,6 @@
 //
 // @brief runs all tests from this suite
 //
-int ut_clock_tests();
+int ut_clock();
 
 #endif

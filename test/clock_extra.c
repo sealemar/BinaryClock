@@ -4,7 +4,7 @@
 #include <memory.h>
 #include "clock_extra.h"
 
-static unsigned char screen[CLOCK_PATTERN_SIZE] = { 0 };
+static unsigned char Screen[CLOCK_PATTERN_SIZE] = { 0 };
 
 int test_setPixel(int x, int y, Bool turnOn)
 {
@@ -14,9 +14,9 @@ int test_setPixel(int x, int y, Bool turnOn)
         OriginateErrorEx(EINVAL, "%d", "y[%d] should be 0 < y < %d", y, CLOCK_SCREEN_HEIGHT);
 
     if(turnOn) {
-        screen[y] |= 1 << (CLOCK_SCREEN_WIDTH - x - 1);
+        Screen[y] |= 1 << (CLOCK_SCREEN_WIDTH - x - 1);
     } else {
-        screen[y] &= ~(1 << (CLOCK_SCREEN_WIDTH - x - 1));
+        Screen[y] &= ~(1 << (CLOCK_SCREEN_WIDTH - x - 1));
     }
 
     return 0;
@@ -24,7 +24,7 @@ int test_setPixel(int x, int y, Bool turnOn)
 
 void test_clearScreen()
 {
-    memset(screen, 0, sizeof(screen));
+    memset(Screen, 0, sizeof(Screen));
 }
 
 int test_compareScreenPattern(const unsigned char pattern[CLOCK_PATTERN_SIZE])
@@ -32,7 +32,7 @@ int test_compareScreenPattern(const unsigned char pattern[CLOCK_PATTERN_SIZE])
     if(pattern == NULL)
         OriginateErrorEx(EINVAL, "%d", "pattern is NULL");
 
-    return memcmp(screen, pattern, sizeof(screen));
+    return memcmp(Screen, pattern, sizeof(Screen));
 }
 
 int test_compareScreenBits(unsigned int index, unsigned char bits)
@@ -40,20 +40,20 @@ int test_compareScreenBits(unsigned int index, unsigned char bits)
     if(index > CLOCK_PATTERN_SIZE)
         OriginateErrorEx(EINVAL, "%d", "index[%u] should be < %d", index, CLOCK_PATTERN_SIZE);
 
-    return (screen[index] == bits) ? 0 : -1;
+    return (Screen[index] == bits) ? 0 : -1;
 }
 
 unsigned char test_getScreenBits(unsigned int index)
 {
-    return screen[index];
+    return Screen[index];
 }
 
 void test_dumpScreenBits()
 {
     LogRaw(OUT_STREAM, "screen bits = { ");
 
-    for(unsigned int i = 0; i < countof(screen); ++i) {
-        LogRaw(OUT_STREAM, "0x%02X, ", screen[i]);
+    for(unsigned int i = 0; i < countof(Screen); ++i) {
+        LogRaw(OUT_STREAM, "0x%02X, ", Screen[i]);
     }
 
     LogLnRaw(OUT_STREAM, "}");

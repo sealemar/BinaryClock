@@ -2,10 +2,13 @@
 // developed by Sergey Markelov (11/10/2013)
 //
 
+#ifdef PARAM_CHECKS
 #include <errno.h>
 #include <string.h>
 
 #include <logger.h>
+#endif
+
 #include "alphabet.h"
 #include "clock.h"
 
