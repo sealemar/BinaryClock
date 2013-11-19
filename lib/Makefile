@@ -3,7 +3,6 @@
 #
 
 PROG           := libclock.a
-SOURCES_DIRS    = arch
 CTAGS_FILE     := ../etc/lib.tags
 CTAGS_DIR      := ../lib
 USE_GENERIC_CC := 0

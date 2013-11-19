@@ -5,9 +5,8 @@
 #include <string.h>
 
 #include <alphabet.h>
-#include <clock.h>
+#include "clock_extra.h"
 #include "ut_clock.h"
-#include "arch/clock_bits_extra.h"
 
 static int validatePattern(
     const unsigned char expected[CLOCK_PATTERN_SIZE],

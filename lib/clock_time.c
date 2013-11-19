@@ -2,6 +2,8 @@
 // developed by Sergey Markelov (11/17/2013)
 //
 
+#include <errno.h>
+#include <logger.h>
 #include "clock_time.h"
 
 static unsigned long UptimeMillis = 0; // the number of milliseconds since the program has started

@@ -5,7 +5,7 @@
 #ifndef BINARY_CLOCK_LIB_ALPHABET_H
 #define BINARY_CLOCK_LIB_ALPHABET_H
 
-#include "arch/clock_bits.h"
+#include "clock.h"
 
 #define CLOCK_BLANK              0
 #define CLOCK_0                  1

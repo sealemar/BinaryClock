@@ -8,7 +8,8 @@
 #include <logger.h>
 #include "alphabet.h"
 #include "clock.h"
-#include "arch/clock_bits.h"
+
+int (* clock_setPixel)(int x, int y, Bool turnOn) = NULL;
 
 //
 // @brief draws a pattern on the screen

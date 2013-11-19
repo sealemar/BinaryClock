@@ -16,15 +16,19 @@ function! s:initC(type)
     execute "setlocal tags+=" . s:projectDir . "/etc/tags"
 
     if a:type == 'arduino'
+        execute "setlocal path+=" . s:projectDir . "/arduino"
         execute "setlocal tags+=" . s:projectDir . "/etc/arduino.tags"
         execute "setlocal tags+=" . s:projectDir . "/etc/lib.tags"
     elseif a:type == 'emulator'
+        execute "setlocal path+=" . s:projectDir . "/emulator"
         execute "setlocal tags+=" . s:projectDir . "/etc/emulator.tags"
         execute "setlocal tags+=" . s:projectDir . "/etc/lib.tags"
     elseif a:type == 'test'
+        execute "setlocal path+=" . s:projectDir . "/test"
         execute "setlocal tags+=" . s:projectDir . "/etc/test.tags"
         execute "setlocal tags+=" . s:projectDir . "/etc/lib.tags"
     elseif a:type == 'lib'
+        execute "setlocal path+=" . s:projectDir . "/lib"
         execute "setlocal tags+=" . s:projectDir . "/etc/lib.tags"
     endif
 endfunction

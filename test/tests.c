@@ -2,7 +2,8 @@
 // developed by Sergey Markelov (11/10/2013)
 //
 
-#include "arch/clock_bits_extra.h"
+#include <clock.h>
+#include "clock_extra.h"
 #include "ut_clock.h"
 
 FILE *errStream;

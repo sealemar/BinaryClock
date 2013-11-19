@@ -5,7 +5,7 @@
 #ifndef BINARY_CLOCK_TEST_ARCH_CLOCK_BITS_EXTRA_H
 #define BINARY_CLOCK_TEST_ARCH_CLOCK_BITS_EXTRA_H
 
-#include <arch/clock_bits.h>
+#include <clock.h>
 
 int test_setPixel(int x, int y, Bool turnOn);
 void test_clearScreen();

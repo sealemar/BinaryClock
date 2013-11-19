@@ -5,7 +5,31 @@
 #ifndef BINARY_CLOCK_LIB_CLOCK_H
 #define BINARY_CLOCK_LIB_CLOCK_H
 
-#include "arch/clock_bits.h"
+//
+// @description Architecture dependant clock bits
+// Third-party should implement these functions
+//
+
+#define ON  1
+#define OFF 0
+
+#define CLOCK_SCREEN_WIDTH     8
+#define CLOCK_SCREEN_HEIGHT    8
+#define CLOCK_MAX_BINARY_WIDTH 2U
+
+#define CLOCK_PATTERN_SIZE      (CLOCK_SCREEN_HEIGHT)
+
+//
+// @note the implementation needs to set clock_setPixel to point to a real function.
+//       It is stubbed to NULL by default
+// @brief switches one pixel on or off
+// @param x x coordinate (0 < x < SCREEN_WIDTH)
+// @param y y coordinate (0 < y < SCREEN_HEIGHT)
+// @param turnOn if not 0, the pixel will be turned on
+// @returns 0 on ok
+// EINVAL - if _x_ or _y_ is out of range
+//
+extern int (* clock_setPixel)(int x, int y, Bool turnOn);
 
 //
 // @brief draws a pattern on the screen

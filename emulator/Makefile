@@ -4,7 +4,6 @@
 
 PROG        := terminal-binary-clock
 LIBS         = -lncurses
-SOURCES_DIRS = arch
 CTAGS_FILE  := ../etc/emulator.tags
 CTAGS_DIR   := ../emulator
 

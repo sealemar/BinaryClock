@@ -5,7 +5,7 @@
 
 INC          := -include errno.h
 POST_INCLUDE := -include logger.h -include test_ut/test_ut.h
-SOURCES_DIRS  = arch test_ut
+SOURCES_DIRS  = test_ut
 PROG         := tests
 CTAGS_FILE   := ../etc/test.tags
 CTAGS_DIR    := ../test

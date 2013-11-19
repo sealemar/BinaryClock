@@ -2,7 +2,7 @@
 // developed by Sergey Markelov (11/15/2013)
 //
 #include <memory.h>
-#include "clock_bits_extra.h"
+#include "clock_extra.h"
 
 static unsigned char screen[CLOCK_PATTERN_SIZE] = { 0 };
 
