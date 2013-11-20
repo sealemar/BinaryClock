@@ -9,7 +9,7 @@
 
 #define DATE_TIME_STRING_SIZE (sizeof(DateTime) * 12)
 
-char *dateTimeToString(const DateTime *dt, char s[DATE_TIME_STRING_SIZE])
+static char *dateTimeToString(const DateTime *dt, char s[DATE_TIME_STRING_SIZE])
 {
     snprintf(s, DATE_TIME_STRING_SIZE, "%04d-%02d-%02d @ %2d:%02d:%02d.%03d",
              dt->year, dt->month, dt->day, dt->hour, dt->minute, dt->second, dt->millisecond);
@@ -18,11 +18,8 @@ char *dateTimeToString(const DateTime *dt, char s[DATE_TIME_STRING_SIZE])
     return s;
 }
 
-static int validate_dateTime(DateTime *dt1, unsigned long millisToAddToDt1, const DateTime *dt2)
+static int assert_dateTime(DateTime *dt1, const DateTime *dt2)
 {
-    int res = dateTime_addMillis(dt1, millisToAddToDt1);
-    if(res) ContinueError(res, "%d");
-
     if(memcmp(dt1, dt2, sizeof(DateTime))) {
         char dt1Str[DATE_TIME_STRING_SIZE];
         char dt2Str[DATE_TIME_STRING_SIZE];
@@ -50,7 +47,9 @@ static int test_dateTime_addMillis_correct()
 
     memcpy(&dt2, &dt1, sizeof(dt2));
 
-    int res = validate_dateTime(&dt1, 0, &dt2);
+    int res = dateTime_addMillis(&dt1, 0);
+    if(res) ContinueError(res, "%d");
+    res = assert_dateTime(&dt1, &dt2);
     if(res) ContinueError(res, "%d");
 
 
@@ -60,7 +59,9 @@ static int test_dateTime_addMillis_correct()
     dt2.minute = 0;
     dt2.second = 0;
 
-    res = validate_dateTime(&dt1, 1000UL * (26 + (53 * 60)), &dt2);
+    res = dateTime_addMillis(&dt1, 1000UL * (26 + (53 * 60)));
+    if(res) ContinueError(res, "%d");
+    res = assert_dateTime(&dt1, &dt2);
     if(res) ContinueError(res, "%d");
 
 
@@ -74,7 +75,9 @@ static int test_dateTime_addMillis_correct()
     dt2.second      = 35;
     dt2.millisecond = 999;
 
-    res = validate_dateTime(&dt1, 1000UL * ((((((40 * 24) + 20) * 60) + 15) * 60) + 35) + 999, &dt2);
+    res = dateTime_addMillis(&dt1, 1000UL * ((((((40 * 24) + 20) * 60) + 15) * 60) + 35) + 999);
+    if(res) ContinueError(res, "%d");
+    res = assert_dateTime(&dt1, &dt2);
     if(res) ContinueError(res, "%d");
 
 
@@ -86,7 +89,9 @@ static int test_dateTime_addMillis_correct()
     dt2.second      = 36;
     dt2.millisecond = 0;
 
-    res = validate_dateTime(&dt1, MILLIS_IN_A_DAY * 34 + 1, &dt2);
+    res = dateTime_addMillis(&dt1, MILLIS_IN_A_DAY * 34 + 1);
+    if(res) ContinueError(res, "%d");
+    res = assert_dateTime(&dt1, &dt2);
     if(res) ContinueError(res, "%d");
 
 
@@ -95,7 +100,9 @@ static int test_dateTime_addMillis_correct()
     dt2.month = MARCH;
     dt2.day   = 1;
 
-    res = validate_dateTime(&dt1, MILLIS_IN_A_DAY * 28, &dt2);
+    res = dateTime_addMillis(&dt1, MILLIS_IN_A_DAY * 28);
+    if(res) ContinueError(res, "%d");
+    res = assert_dateTime(&dt1, &dt2);
     if(res) ContinueError(res, "%d");
 
 
@@ -106,7 +113,66 @@ static int test_dateTime_addMillis_correct()
     dt1.day = 1;
     dt2.day = 29;
 
-    res = validate_dateTime(&dt1, MILLIS_IN_A_DAY * 28, &dt2);
+    res = dateTime_addMillis(&dt1, MILLIS_IN_A_DAY * 28);
+    if(res) ContinueError(res, "%d");
+    res = assert_dateTime(&dt1, &dt2);
+    if(res) ContinueError(res, "%d");
+
+    return 0;
+}
+
+static int test_dateTime_normalize_handlesOverflows()
+{
+    DateTime dt1 = { 0 };
+    DateTime dt2 = { 0 };
+
+
+    //
+    // 120 seconds
+    //
+
+    dt1.year        = 2013;
+    dt1.month       = NOVEMBER;
+    dt1.day         = 18;
+    dt1.hour        = 22;
+    dt1.minute      = 6;
+    dt1.second      = 120;
+    dt1.millisecond = 0;
+
+    memcpy(&dt2, &dt1, sizeof(dt2));
+
+    dt2.minute = 8;
+    dt2.second = 0;
+
+    int res = dateTime_normalize(&dt1);
+    if(res) ContinueError(res, "%d");
+    res = assert_dateTime(&dt1, &dt2);
+    if(res) ContinueError(res, "%d");
+
+
+    //
+    // 31 months, 180 days, 220 hours, 68 minutes, 10000 seconds, 5001 milliseconds
+    //
+
+    dt1.year        = 2013;
+    dt1.month       = 31;
+    dt1.day         = 180;
+    dt1.hour        = 220;
+    dt1.minute      = 68;
+    dt1.second      = 10000;
+    dt1.millisecond = 5001;
+
+    dt2.year        = 2016;
+    dt2.month       = JANUARY;
+    dt2.day         = 5;
+    dt2.hour        = 7;
+    dt2.minute      = 54;
+    dt2.second      = 45;
+    dt2.millisecond = 1;
+
+    res = dateTime_normalize(&dt1);
+    if(res) ContinueError(res, "%d");
+    res = assert_dateTime(&dt1, &dt2);
     if(res) ContinueError(res, "%d");
 
     return 0;
@@ -114,6 +180,7 @@ static int test_dateTime_addMillis_correct()
 
 static TestUnit testSuite[] = {
     { test_dateTime_addMillis_correct, "dateTime_addMillis() correct", FALSE },
+    { test_dateTime_normalize_handlesOverflows, "dateTime_normalize() handles overflows", FALSE },
 };
 
 int ut_date_time()
