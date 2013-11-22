@@ -3,7 +3,7 @@
 #
 
 AR             := ar
-CC             := cc
+CC             := clang
 
 # a specific implementation may either define $(INC) to prepend includes or
 # $(POST_INCLUDE) to append includes

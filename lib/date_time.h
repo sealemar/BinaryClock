@@ -7,18 +7,18 @@
 
 #define MILLIS_IN_A_DAY   86400000UL
 
-#define JANUARY    1
-#define FEBRUARY   2
-#define MARCH      3
-#define APRIL      4
-#define MAY        5
-#define JUNE       6
-#define JULY       7
-#define AUGUST     8
-#define SEPTEMBER  9
-#define OCTOBER   10
-#define NOVEMBER  11
-#define DECEMBER  12
+#define JANUARY    0
+#define FEBRUARY   1
+#define MARCH      2
+#define APRIL      3
+#define MAY        4
+#define JUNE       5
+#define JULY       6
+#define AUGUST     7
+#define SEPTEMBER  8
+#define OCTOBER    9
+#define NOVEMBER  10
+#define DECEMBER  11
 
 typedef struct {
     int year;
@@ -41,6 +41,17 @@ typedef struct {
 // @returns 0 on success
 // EINVAL - if _dt_ is NULL
 //
+// @note When dealing with underflows, day 0 will mean previous month
+//       last day. Day -1 will mean previous month, last day -1, i.e.
+//
+//       dt.month = FEBRUARY;
+//       dt.day   = 0;
+//
+//       dateTime_normalize(&dt);
+//
+//       dt.month = JANUARY;
+//       dt.day   = 31;
+//
 int dateTime_normalize(DateTime *dt);
 
 //
@@ -51,7 +62,8 @@ int dateTime_normalize(DateTime *dt);
 // EINVAL - if _dt_ is NULL
 //
 // @note This function should be used on _dt_ after getting a delta of
-//       uptime with lib/clock_time::clock_updateUptimeMillis()
+//       uptime with lib/clock_time::clock_updateUptimeMillis().
+//       dateTime_addMillis() calls dateTime_normalize() internally.
 //
 int dateTime_addMillis(DateTime *dt, unsigned long millis);
 
