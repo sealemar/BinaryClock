@@ -5,6 +5,8 @@
 #ifndef BINARY_CLOCK_LIB_CLOCK_H
 #define BINARY_CLOCK_LIB_CLOCK_H
 
+#include "date_time.h"
+
 //
 // @description Architecture dependant clock bits
 // Third-party should implement these functions
@@ -52,6 +54,22 @@ int clock_drawPattern(const unsigned char pattern[CLOCK_PATTERN_SIZE]);
 //          if _pos_ >= CLOCK_SCREEN_WIDTH - width
 //
 int clock_displayBinaryNumber(unsigned int number, unsigned int width, unsigned int pos);
+
+//
+// @brief displays time from a given DateTime
+// @param dt a pointer to DateTime which time should be displayed
+// @returns 0 on success
+// EINVAL - if _dt_ is NULL
+//
+int clock_displayTime(const DateTime *dt);
+
+//
+// @brief displays date from a given DateTime
+// @param dt a pointer to DateTime which date should be displayed
+// @returns 0 on success
+// EINVAL - if _dt_ is NULL
+//
+int clock_displayDate(const DateTime *dt);
 
 //
 // @brief finds a suitable index from CLOCK_ALPHABET by a given character

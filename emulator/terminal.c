@@ -85,6 +85,28 @@ int checkDisplayBinaryNumber()
     return 0;
 }
 
+int displayDateTime()
+{
+    DateTime dt;
+
+    dt.year = 2013;
+    dt.month = NOVEMBER;
+    dt.day = 22;
+    dt.hour = 23;
+    dt.minute = 27;
+    dt.second = 17;
+
+    int res = clock_displayDate(&dt);
+    if(res) ContinueError(res, "%d");
+
+    getch();
+
+    res = clock_displayTime(&dt);
+    if(res) ContinueError(res, "%d");
+
+    return 0;
+}
+
 void atExit()
 {
     endwin();
@@ -102,7 +124,8 @@ int main()
     clock_clearScreen();
 
     //res = slideText(" Hello world!!!");
-    res = checkDisplayBinaryNumber();
+//     res = checkDisplayBinaryNumber();
+    res = displayDateTime();
     if(res) ContinueError(res, "%d");
     getch();
 

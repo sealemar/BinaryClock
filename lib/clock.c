@@ -12,6 +12,18 @@
 #include "alphabet.h"
 #include "clock.h"
 
+#define DATE_TIME_BINARY_WIDTH 2
+
+#ifdef PARAM_CHECKS
+#define _clock_displayBinaryNumber(number, width, pos) { \
+    int _res = clock_displayBinaryNumber(number, width, pos); \
+    if(_res) ContinueError(_res, "%d"); }
+#else
+#define _clock_displayBinaryNumber(number, width, pos) \
+    clock_displayBinaryNumber(number, width, pos);
+#endif
+
+
 int (* clock_setPixel)(int x, int y, Bool turnOn) = NULL;
 
 //
@@ -57,7 +69,7 @@ int clock_displayBinaryNumber(unsigned int number, unsigned int width, unsigned 
         OriginateErrorEx(EINVAL, "%d", "number[%u] should be < %u", number, (1 << CLOCK_SCREEN_HEIGHT));
     if(width > CLOCK_MAX_BINARY_WIDTH || width == 0)
         OriginateErrorEx(EINVAL, "%d", "width[%u] should be 0 < width < %u", width, CLOCK_MAX_BINARY_WIDTH);
-    if(pos >= CLOCK_SCREEN_WIDTH - width)
+    if(pos > CLOCK_SCREEN_WIDTH - width)
         OriginateErrorEx(EINVAL, "%d", "pos[%u] should be < %u", pos, CLOCK_SCREEN_WIDTH - width);
 #endif
 
@@ -72,6 +84,46 @@ int clock_displayBinaryNumber(unsigned int number, unsigned int width, unsigned 
 #endif
         }
     }
+
+    return 0;
+}
+
+//
+// @brief displays time from a given DateTime
+// @param dt a pointer to DateTime which time should be displayed
+// @returns 0 on success
+// EINVAL - if _dt_ is NULL
+//
+int clock_displayTime(const DateTime *dt)
+{
+#ifdef PARAM_CHECKS
+    if(dt == NULL)
+        OriginateErrorEx(EINVAL, "%d", "dt is NULL");
+#endif
+
+    _clock_displayBinaryNumber(dt->hour,   DATE_TIME_BINARY_WIDTH, 0);
+    _clock_displayBinaryNumber(dt->minute, DATE_TIME_BINARY_WIDTH, 3);
+    _clock_displayBinaryNumber(dt->second, DATE_TIME_BINARY_WIDTH, 6);
+
+    return 0;
+}
+
+//
+// @brief displays date from a given DateTime
+// @param dt a pointer to DateTime which date should be displayed
+// @returns 0 on success
+// EINVAL - if _dt_ is NULL
+//
+int clock_displayDate(const DateTime *dt)
+{
+#ifdef PARAM_CHECKS
+    if(dt == NULL)
+        OriginateErrorEx(EINVAL, "%d", "dt is NULL");
+#endif
+
+    _clock_displayBinaryNumber(dt->year % 100, DATE_TIME_BINARY_WIDTH, 0);
+    _clock_displayBinaryNumber(dt->month + 1, DATE_TIME_BINARY_WIDTH, 3);
+    _clock_displayBinaryNumber(dt->day, DATE_TIME_BINARY_WIDTH, 6);
 
     return 0;
 }
