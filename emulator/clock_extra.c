@@ -17,6 +17,20 @@ static WINDOW *WndClockFace = NULL;
 static WINDOW *WndButtons   = NULL;
 static WINDOW *WndNotes     = NULL;
 
+typedef struct {
+    const int x;
+    const int y;
+    const int letter;
+    Bool isOn;
+} Button;
+
+static Button Buttons[] = {
+    { 0, 0, '1', FALSE },
+    { 0, 2, '2', FALSE },
+    { 0, 4, '3', FALSE },
+    { 0, 6, '4', FALSE },
+};
+
 #define _destroyWindow(wnd) \
     if(wnd) { \
         int _res = delwin(wnd); \
@@ -74,6 +88,33 @@ static int createWindows()
     _newwin(WndClockFace, CLOCK_SCREEN_HEIGHT, CLOCK_SCREEN_WIDTH << 1, 2, 0);
     _newwin(WndButtons, CLOCK_SCREEN_HEIGHT, 0, 2, (CLOCK_SCREEN_WIDTH << 1) + 3);
     _newwin(WndNotes, 0, 0, CLOCK_SCREEN_HEIGHT + 5, 0);
+
+    return 0;
+}
+
+static int initWindowBanner()
+{
+    _mvwprintw(WndBanner, 0, 0, "%s", BannerStr);
+    _wrefresh(WndBanner);
+
+    return 0;
+}
+
+static int initWindowButtons()
+{
+    const Button *btn = Buttons;
+
+    for(size_t i = 0; i < countof(Buttons); ++i, ++btn) {
+        const int attr = has_colors()
+                       ? btn->isOn ? COLOR_PAIR(COLOR_OFF) : COLOR_PAIR(COLOR_OFF)
+                       : 0;
+
+        _mvwaddch(WndButtons, btn->y, btn->x, '|' | attr);
+        _mvwaddch(WndButtons, btn->y, btn->x + 1, btn->letter | attr);
+        _mvwaddch(WndButtons, btn->y, btn->x + 2, '|' | attr);
+    }
+
+    _wrefresh(WndButtons);
 
     return 0;
 }
@@ -144,9 +185,13 @@ int clock_init()
     int res = createWindows();
     if(res) ContinueError(res, "%d");
 
-    _mvwprintw(WndBanner, 0, 0, "%s", BannerStr);
     refresh();
-    _wrefresh(WndBanner);
+
+    res = initWindowBanner();
+    if(res) ContinueError(res, "%d");
+
+    res = initWindowButtons();
+    if(res) ContinueError(res, "%d");
 
     return 0;
 }
