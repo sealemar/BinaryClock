@@ -13,11 +13,18 @@
 //
 // @brief sets pixel, but doesn't refresh the screen
 //
-void setPixelRaw(int x, int y, Bool turnOn);
+int setPixelRaw(int x, int y, Bool turnOn);
 
 int emulator_setPixel(int x, int y, Bool turnOn);
 
 int clock_init();
-void clock_clearScreen();
+
+//
+// @brief If clock_init() was called, this function must be called
+//        to deinitialize and free resources.
+//
+void clock_deinit();
+
+int clock_clearScreen();
 
 #endif

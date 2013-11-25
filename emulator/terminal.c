@@ -109,7 +109,7 @@ int displayDateTime()
 
 void atExit()
 {
-    endwin();
+    clock_deinit();
 }
 
 int main()
