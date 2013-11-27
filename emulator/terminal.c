@@ -28,10 +28,7 @@ int main()
     Call(emulator_init());
     atexit(atExit);
 
-    clock_clearScreen();
-
     ClockState cs;
-
     Call(clock_init(&cs));
 
     while(getch() != 27)
@@ -39,11 +36,6 @@ int main()
         emulator_delay(DELAY_BETWEEN_LOOP_ITERATIONS);
         Call(clock_update(&cs));
     }
-
-//     res = checkDisplayBinaryNumber();
-//     res = displayDateTime();
-//     if(res) ContinueError(res, "%d");
-//     getch();
 
     return 0;
 }

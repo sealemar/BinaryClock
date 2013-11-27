@@ -22,15 +22,16 @@ static WINDOW *WndNotes     = NULL;
 typedef struct {
     const int x;
     const int y;
-    const int letter;
+    const char *title;
+    const int ch;       // Character which controls the button. Is compared against getch() result
     Bool isOn;
 } Button;
 
 static Button Buttons[] = {
-    { 0, 0, '1', FALSE },
-    { 0, 2, '2', FALSE },
-    { 0, 4, '3', FALSE },
-    { 0, 6, '4', FALSE },
+    { 0, 0, "1", '1', FALSE },
+    { 0, 2, "2", '2', FALSE },
+    { 0, 4, "3", '3', FALSE },
+    { 0, 6, "4", '4', FALSE },
 };
 
 #define _destroyWindow(wnd) \
@@ -111,9 +112,8 @@ static int initWindowButtons()
                        ? btn->isOn ? COLOR_PAIR(COLOR_OFF) : COLOR_PAIR(COLOR_OFF)
                        : 0;
 
-        _mvwaddch(WndButtons, btn->y, btn->x, '|' | attr);
-        _mvwaddch(WndButtons, btn->y, btn->x + 1, btn->letter | attr);
-        _mvwaddch(WndButtons, btn->y, btn->x + 2, '|' | attr);
+        wattrset(WndButtons, attr);
+        _mvwprintw(WndButtons, btn->y, btn->x, "|%s|", btn->title);
     }
 
     _wrefresh(WndButtons);
@@ -208,6 +208,8 @@ int emulator_init()
 
     Call(initWindowBanner());
     Call(initWindowButtons());
+
+    clock_clearScreen();
 
     return 0;
 }
