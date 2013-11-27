@@ -25,6 +25,7 @@
 
 
 int (* clock_setPixel)(int x, int y, Bool turnOn) = NULL;
+unsigned long (* clock_uptimeMillis)() = NULL;
 
 //
 // @brief draws a pattern on the screen
@@ -101,9 +102,9 @@ int clock_displayTime(const DateTime *dt)
         OriginateErrorEx(EINVAL, "%d", "dt is NULL");
 #endif
 
-    _clock_displayBinaryNumber(dt->hour,   DATE_TIME_BINARY_WIDTH, 0);
-    _clock_displayBinaryNumber(dt->minute, DATE_TIME_BINARY_WIDTH, 3);
-    _clock_displayBinaryNumber(dt->second, DATE_TIME_BINARY_WIDTH, 6);
+    Call(clock_displayBinaryNumber(dt->hour,   DATE_TIME_BINARY_WIDTH, 0));
+    Call(clock_displayBinaryNumber(dt->minute, DATE_TIME_BINARY_WIDTH, 3));
+    Call(clock_displayBinaryNumber(dt->second, DATE_TIME_BINARY_WIDTH, 6));
 
     return 0;
 }
@@ -121,9 +122,9 @@ int clock_displayDate(const DateTime *dt)
         OriginateErrorEx(EINVAL, "%d", "dt is NULL");
 #endif
 
-    _clock_displayBinaryNumber(dt->year % 100, DATE_TIME_BINARY_WIDTH, 0);
-    _clock_displayBinaryNumber(dt->month + 1, DATE_TIME_BINARY_WIDTH, 3);
-    _clock_displayBinaryNumber(dt->day, DATE_TIME_BINARY_WIDTH, 6);
+    Call(clock_displayBinaryNumber(dt->year % 100, DATE_TIME_BINARY_WIDTH, 0));
+    Call(clock_displayBinaryNumber(dt->month + 1, DATE_TIME_BINARY_WIDTH, 3));
+    Call(clock_displayBinaryNumber(dt->day, DATE_TIME_BINARY_WIDTH, 6));
 
     return 0;
 }

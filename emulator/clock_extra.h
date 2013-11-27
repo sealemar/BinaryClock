@@ -17,6 +17,8 @@ int setPixelRaw(int x, int y, Bool turnOn);
 
 int emulator_setPixel(int x, int y, Bool turnOn);
 
+void emulator_delay(unsigned long);
+
 int clock_init();
 
 //

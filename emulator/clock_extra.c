@@ -4,6 +4,7 @@
 
 #include <ncurses.h>
 #include <errno.h>
+#include <unistd.h>     // for usleep()
 
 #include <logger.h>
 #include <clock.h>
@@ -162,6 +163,11 @@ int emulator_setPixel(int x, int y, Bool turnOn)
     return 0;
 }
 
+void emulator_delay(unsigned long millis)
+{
+    usleep(millis * 1000);
+}
+
 //
 // @brief initializes clock
 //
@@ -174,6 +180,7 @@ int clock_init()
     keypad(stdscr, TRUE);   // We get F1, F2 etc..
     noecho();               // Don't echo() while we do getch
     curs_set(0);            // make the cursor invisible
+    timeout(0);             // getch() in non blocking mode
 
     if(has_colors())
     {

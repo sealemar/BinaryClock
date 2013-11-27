@@ -2,14 +2,21 @@
 // developed by Sergey Markelov (11/17/2013)
 //
 
-#include "clock_time.h"
+#ifdef PARAM_CHECKS
+#include <errno.h>
+#include <logger.h>
+#endif
 
-static unsigned long UptimeMillis = 0; // the number of milliseconds since the program has started
+#include "clock_time.h"
 
 //
 // @brief Updates the program uptime to a given number of milliseconds.
 // @param millis the current uptime in milliseconds
-// @returns the number of milliseconds since this function was called the last time
+// @param lastMillis time when this function was last called
+// @param delta the delta between clockState->lastUptime and millis will be returned here
+// @returns 0 if success
+// EINVAL if lastMillis is NULL
+//        if delta is NULL
 //
 // @note This function handles integer overflows.
 //
@@ -21,21 +28,28 @@ static unsigned long UptimeMillis = 0; // the number of milliseconds since the p
 //       Returns the number of milliseconds since the Arduino board began running the current program.
 //       This number will overflow (go back to zero), after approximately 50 days.
 //
-unsigned long clock_updateUptimeMillis(unsigned long millis)
+int clock_updateUptimeMillis(unsigned long millis, unsigned long *lastMillis, unsigned long *delta)
 {
-    if(UptimeMillis == millis) return 0;
+#ifdef PARAM_CHECKS
+    if(lastMillis == NULL)
+        OriginateErrorEx(EINVAL, "%d", "lastMillis is NULL");
+    if(delta == NULL)
+        OriginateErrorEx(EINVAL, "%d", "delta is NULL");
+#endif
 
-    unsigned long delta = 0;
+    *delta = 0;
 
-    if(millis < UptimeMillis) {
+    if(*lastMillis == millis) return 0;
+
+    if(millis < (*lastMillis)) {
         // The number was overflown
-        delta = MAX_UPTIME_MILLIS - UptimeMillis + 1 + millis;
+        *delta = MAX_UPTIME_MILLIS - (*lastMillis) + 1 + millis;
     } else {
-        delta = millis - UptimeMillis;
+        *delta = millis - (*lastMillis);
     }
 
     // Now update the uptime
-    UptimeMillis = millis;
+    *lastMillis = millis;
 
-    return delta;
+    return 0;
 }

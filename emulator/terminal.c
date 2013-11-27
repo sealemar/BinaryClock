@@ -5,107 +5,15 @@
 #include <stdlib.h>
 #include <ncurses.h>
 
-#include <clock.h>
 #include <logger.h>
+#include <clock_main.h>
 #include <alphabet.h>
 #include "clock_extra.h"
 
 FILE *errStream;
 FILE *outStream;
 
-int checkClockScreen()
-{
-    for(int y = 0; y < CLOCK_SCREEN_HEIGHT; ++y)
-    {
-        for(int x = 0; x < CLOCK_SCREEN_WIDTH; ++x)
-        {
-            int res = clock_setPixel(x, y, 1);
-            if(res) ContinueError(res, "%d");
-            clock_setPixel(x, y, 0);
-            if(getch() == 27) return 0;
-        }
-    }
-
-    return 0;
-}
-
-int traverseAlphabet()
-{
-    int i = 0;
-    int ch;
-    do {
-        int res = clock_drawPattern(CLOCK_ALPHABET[i]);
-        if(res) ContinueError(res, "%d");
-
-        ch = getch();
-        if(ch == 'h' || ch == 'k') {
-            --i;
-            if(i == -1) {
-                i = CLOCK_ALPHABET_SIZE - 1;
-            }
-        } else {
-            ++i;
-            i %= CLOCK_ALPHABET_SIZE;
-        }
-    } while (ch != 27);
-
-    return 0;
-}
-
-int slideText(const char* text)
-{
-    Bool isLastStep = FALSE;
-
-    for(size_t step = 0; !isLastStep; ++step) {
-        unsigned char pattern[CLOCK_PATTERN_SIZE];
-
-        int res = clock_slideText(text, step, &isLastStep, pattern);
-        //int res = clock_slidePattern(CLOCK_ALPHABET[CLOCK_SMILEY_FACE_SAD], CLOCK_ALPHABET[CLOCK_SMILEY_FACE_SMILE], step, &isLastStep, pattern);
-        if(res) ContinueError(res, "%d");
-
-        res = clock_drawPattern(pattern);
-        if(res) ContinueError(res, "%d");
-
-        if(getch() == 27) return 0;
-    }
-
-    return 0;
-}
-
-int checkDisplayBinaryNumber()
-{
-    clock_clearScreen();
-
-    for(unsigned int i = 0, last = (1 << CLOCK_SCREEN_HEIGHT); i < last; ++i) {
-        int res = clock_displayBinaryNumber(i, 2, 2);
-        if(res) ContinueError(res, "%d");
-        if(getch() == 27) return 0;
-    }
-
-    return 0;
-}
-
-int displayDateTime()
-{
-    DateTime dt;
-
-    dt.year = 2013;
-    dt.month = NOVEMBER;
-    dt.day = 22;
-    dt.hour = 23;
-    dt.minute = 27;
-    dt.second = 17;
-
-    int res = clock_displayDate(&dt);
-    if(res) ContinueError(res, "%d");
-
-    getch();
-
-    res = clock_displayTime(&dt);
-    if(res) ContinueError(res, "%d");
-
-    return 0;
-}
+#define DELAY_BETWEEN_LOOP_ITERATIONS 100
 
 void atExit()
 {
@@ -123,11 +31,19 @@ int main()
 
     clock_clearScreen();
 
-    //res = slideText(" Hello world!!!");
+    ClockState cs = { 0 };
+
+    while(getch() != 27)
+    {
+        emulator_delay(DELAY_BETWEEN_LOOP_ITERATIONS);
+        res = clock_update(&cs);
+        if(res) ContinueError(res, "%d");
+    }
+
 //     res = checkDisplayBinaryNumber();
-    res = displayDateTime();
-    if(res) ContinueError(res, "%d");
-    getch();
+//     res = displayDateTime();
+//     if(res) ContinueError(res, "%d");
+//     getch();
 
     return 0;
 }

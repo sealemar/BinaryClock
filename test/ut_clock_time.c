@@ -5,9 +5,16 @@
 #include <clock_time.h>
 #include "ut_clock_time.h"
 
-static int assert_clock_updateUptimeMillis_delta(unsigned long updateMillis, unsigned long expectedDelta)
+static int assert_clock_updateUptimeMillis_delta(
+        unsigned long updateMillis,
+        unsigned long expectedDelta,
+        unsigned long *lastMillis)
 {
-    unsigned long delta = clock_updateUptimeMillis(updateMillis);
+    if(lastMillis == NULL) OriginateErrorEx(EINVAL, "%d", "lastMillis is NULL");
+
+    unsigned long delta;
+    int res = clock_updateUptimeMillis(updateMillis, lastMillis, &delta);
+    if(res) ContinueError(res, "%d");
     if(delta != expectedDelta) {
         OriginateErrorEx(-1, "%d", "Unexpected delta = %lu. Expected = %lu", delta, expectedDelta);
     }
@@ -18,21 +25,24 @@ static int assert_clock_updateUptimeMillis_delta(unsigned long updateMillis, uns
 
 static int test_clock_updateUptimeMillis_returnsCorrectDelta()
 {
-    clock_updateUptimeMillis(0);
-
-    int res;
-    res = assert_clock_updateUptimeMillis_delta(0, 0);
+    unsigned long lastMillis;
+    unsigned long delta;
+    int res = clock_updateUptimeMillis(0, &lastMillis, &delta);
     if(res) ContinueError(res, "%d");
 
-    res = assert_clock_updateUptimeMillis_delta(100, 100);
+    res = assert_clock_updateUptimeMillis_delta(0, 0, &lastMillis);
     if(res) ContinueError(res, "%d");
 
-    res = assert_clock_updateUptimeMillis_delta(5000, 4900);
+    res = assert_clock_updateUptimeMillis_delta(100, 100, &lastMillis);
     if(res) ContinueError(res, "%d");
 
-    clock_updateUptimeMillis(MAX_UPTIME_MILLIS - 5);
+    res = assert_clock_updateUptimeMillis_delta(5000, 4900, &lastMillis);
+    if(res) ContinueError(res, "%d");
 
-    res = assert_clock_updateUptimeMillis_delta(MAX_UPTIME_MILLIS, 5);
+    res = clock_updateUptimeMillis(MAX_UPTIME_MILLIS - 5, &lastMillis, &delta);
+    if(res) ContinueError(res, "%d");
+
+    res = assert_clock_updateUptimeMillis_delta(MAX_UPTIME_MILLIS, 5, &lastMillis);
     if(res) ContinueError(res, "%d");
 
     return 0;
@@ -40,15 +50,18 @@ static int test_clock_updateUptimeMillis_returnsCorrectDelta()
 
 static int test_clock_updateUptimeMillis_handlesIntegersOverflowsCorrectly()
 {
-    clock_updateUptimeMillis(MAX_UPTIME_MILLIS);
-
-    int res;
-    res = assert_clock_updateUptimeMillis_delta(0, 1);
+    unsigned long lastMillis;
+    unsigned long delta;
+    int res = clock_updateUptimeMillis(MAX_UPTIME_MILLIS, &lastMillis, &delta);
     if(res) ContinueError(res, "%d");
 
-    clock_updateUptimeMillis(5);
+    res = assert_clock_updateUptimeMillis_delta(0, 1, &lastMillis);
+    if(res) ContinueError(res, "%d");
 
-    res = assert_clock_updateUptimeMillis_delta(4, MAX_UPTIME_MILLIS);
+    res = clock_updateUptimeMillis(5, &lastMillis, &delta);
+    if(res) ContinueError(res, "%d");
+
+    res = assert_clock_updateUptimeMillis_delta(4, MAX_UPTIME_MILLIS, &lastMillis);
     if(res) ContinueError(res, "%d");
 
     return 0;
