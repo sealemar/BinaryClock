@@ -21,7 +21,7 @@
 
 static int clock_state_hello(ClockState *clockState)
 {
-    const char text[] = " Hello, Sergey!!!";
+    const char text[] = " Hello Sergey!!!";
     unsigned char  pattern[CLOCK_PATTERN_SIZE];
     Bool isLastStep;
 
@@ -29,11 +29,11 @@ static int clock_state_hello(ClockState *clockState)
 
     Call(clock_drawPattern(pattern));
 
-    if(isLastStep) {
+    if(!isLastStep) {
+        ++(clockState->step);
+    } else {
         clockState->step  = 0;
         clockState->state = CLOCK_STATE_SHOW_TIME;
-    } else {
-        ++(clockState->step);
     }
 
     return 0;
@@ -41,13 +41,27 @@ static int clock_state_hello(ClockState *clockState)
 
 static int clock_state_showTime(ClockState *clockState)
 {
-    Call(clock_displayTime(&(clockState->dateTime)));
+    const DateTime *dt    = &(clockState->dateTime);
+    const DateTime *oldDt = &(clockState->oldDateTime);
+
+    if(dt->second != oldDt->second
+    || dt->minute != oldDt->minute
+    || dt->hour   != oldDt->hour) {
+        Call(clock_displayTime(&(clockState->dateTime)));
+    }
     return 0;
 }
 
 static int clock_state_showDate(ClockState *clockState)
 {
-    Call(clock_displayDate(&(clockState->dateTime)));
+    const DateTime *dt    = &(clockState->dateTime);
+    const DateTime *oldDt = &(clockState->oldDateTime);
+
+    if(dt->day   != oldDt->day
+    || dt->month != oldDt->month
+    || dt->year  != oldDt->year) {
+        Call(clock_displayDate(&(clockState->dateTime)));
+    }
     return 0;
 }
 
@@ -123,6 +137,8 @@ int clock_update(ClockState *clockState)
 #endif
 
     Call(ClockStateFunctionMap[clockState->state](clockState));
+
+    memcpy(&(clockState->oldDateTime), &(clockState->dateTime), sizeof(DateTime));
 
     return 0;
 }
