@@ -17,9 +17,11 @@ int setPixelRaw(int x, int y, Bool turnOn);
 
 int emulator_setPixel(int x, int y, Bool turnOn);
 
+int emulator_uptimeMillis(unsigned long *millis);
+
 void emulator_delay(unsigned long);
 
-int clock_init();
+int emulator_init();
 
 //
 // @brief If clock_init() was called, this function must be called

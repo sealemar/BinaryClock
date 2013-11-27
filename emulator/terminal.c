@@ -25,19 +25,19 @@ int main()
     errStream = stderr;
     outStream = stdout;
 
-    int res = clock_init();
-    if(res) ContinueError(res, "%d");
+    Call(emulator_init());
     atexit(atExit);
 
     clock_clearScreen();
 
-    ClockState cs = { 0 };
+    ClockState cs;
+
+    Call(clock_init(&cs));
 
     while(getch() != 27)
     {
         emulator_delay(DELAY_BETWEEN_LOOP_ITERATIONS);
-        res = clock_update(&cs);
-        if(res) ContinueError(res, "%d");
+        Call(clock_update(&cs));
     }
 
 //     res = checkDisplayBinaryNumber();

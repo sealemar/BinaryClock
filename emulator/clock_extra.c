@@ -5,6 +5,7 @@
 #include <ncurses.h>
 #include <errno.h>
 #include <unistd.h>     // for usleep()
+#include <sys/time.h>   // for gettimeofday()
 
 #include <logger.h>
 #include <clock.h>
@@ -163,17 +164,29 @@ int emulator_setPixel(int x, int y, Bool turnOn)
     return 0;
 }
 
+int emulator_uptimeMillis(unsigned long *millis)
+{
+    struct timeval tv;
+    int res = gettimeofday(&tv, NULL);
+    if(res) OriginateErrorEx(errno, "%d", "clock_gettime(CLOCK_MONOTONIC, &ts) failed with %d", errno);
+
+    *millis = tv.tv_usec / 1000 + tv.tv_sec * 1000;
+
+    return 0;
+}
+
 void emulator_delay(unsigned long millis)
 {
     usleep(millis * 1000);
 }
 
 //
-// @brief initializes clock
+// @brief initializes emulator
 //
-int clock_init()
+int emulator_init()
 {
     clock_setPixel = emulator_setPixel;
+    clock_uptimeMillis = emulator_uptimeMillis;
 
     initscr();              // Start curses mode
     raw();                  // Line buffering disabled
@@ -189,16 +202,12 @@ int clock_init()
         init_pair(COLOR_OFF, COLOR_BLUE, COLOR_BLACK);
     }
 
-    int res = createWindows();
-    if(res) ContinueError(res, "%d");
+    Call(createWindows());
 
     refresh();
 
-    res = initWindowBanner();
-    if(res) ContinueError(res, "%d");
-
-    res = initWindowButtons();
-    if(res) ContinueError(res, "%d");
+    Call(initWindowBanner());
+    Call(initWindowButtons());
 
     return 0;
 }

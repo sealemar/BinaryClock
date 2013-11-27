@@ -14,18 +14,9 @@
 
 #define DATE_TIME_BINARY_WIDTH 2
 
-#ifdef PARAM_CHECKS
-#define _clock_displayBinaryNumber(number, width, pos) { \
-    int _res = clock_displayBinaryNumber(number, width, pos); \
-    if(_res) ContinueError(_res, "%d"); }
-#else
-#define _clock_displayBinaryNumber(number, width, pos) \
-    clock_displayBinaryNumber(number, width, pos);
-#endif
-
 
 int (* clock_setPixel)(int x, int y, Bool turnOn) = NULL;
-unsigned long (* clock_uptimeMillis)() = NULL;
+int (* clock_uptimeMillis)(unsigned long *millis) = NULL;
 
 //
 // @brief draws a pattern on the screen
@@ -76,13 +67,7 @@ int clock_displayBinaryNumber(unsigned int number, unsigned int width, unsigned 
 
     for(unsigned int y = 0; y < CLOCK_SCREEN_HEIGHT; ++y) {
         for(unsigned int x = pos, xLast = pos + width; x < xLast; ++x) {
-#ifdef PARAM_CHECKS
-            int res =
-#endif
-            clock_setPixel(x, CLOCK_SCREEN_HEIGHT - y - 1, number & 1U << y);
-#ifdef PARAM_CHECKS
-            if(res) ContinueError(res, "%d");
-#endif
+            Call(clock_setPixel(x, CLOCK_SCREEN_HEIGHT - y - 1, number & 1U << y));
         }
     }
 
@@ -274,20 +259,12 @@ int clock_slideText(
 
     Bool patternIsLastStep;
 
-#ifdef PARAM_CHECKS
-    int ret =
-#else
-    return
-#endif
-    clock_slidePattern(
+    Call(clock_slidePattern(
             CLOCK_ALPHABET[firstCharIndex],
             CLOCK_ALPHABET[secondCharIndex],
             patternStep,
            &patternIsLastStep,
-            pattern);
-#ifdef PARAM_CHECKS
-    if(ret) ContinueError(ret, "%d");
+            pattern));
 
-    return ret;
-#endif
+    return 0;
 }

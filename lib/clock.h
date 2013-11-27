@@ -36,11 +36,13 @@ extern int (* clock_setPixel)(int x, int y, Bool turnOn);
 //
 // @note the implementation needs to set clock_setPixel to point to a real function.
 //       It is stubbed to NULL by default
-// @returns returns the clock uptime in milliseconds
+// @param millis will be set to the clock uptime in milliseconds
+// @returns 0 on ok
+// implementation error if fails
 //
 // @note On Arduino that will be most likely millis() function.
 //
-extern unsigned long (* clock_uptimeMillis)();
+extern int (* clock_uptimeMillis)(unsigned long *millis);
 
 //
 // @brief draws a pattern on the screen

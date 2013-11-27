@@ -21,19 +21,33 @@
 
 static int clock_state_hello(ClockState *clockState)
 {
-    (void)clockState;
+    const char text[] = " Hello, Sergey!!!";
+    unsigned char  pattern[CLOCK_PATTERN_SIZE];
+    Bool isLastStep;
+
+    Call(clock_slideText(text, clockState->step, &isLastStep, pattern));
+
+    Call(clock_drawPattern(pattern));
+
+    if(isLastStep) {
+        clockState->step  = 0;
+        clockState->state = CLOCK_STATE_SHOW_TIME;
+    } else {
+        ++(clockState->step);
+    }
+
     return 0;
 }
 
 static int clock_state_showTime(ClockState *clockState)
 {
-    (void)clockState;
+    Call(clock_displayTime(&(clockState->dateTime)));
     return 0;
 }
 
 static int clock_state_showDate(ClockState *clockState)
 {
-    (void)clockState;
+    Call(clock_displayDate(&(clockState->dateTime)));
     return 0;
 }
 
@@ -62,10 +76,33 @@ static int (* const ClockStateFunctionMap[])(ClockState *) = {
 };
 
 //
+// @brief Initializes clockState
+// @param clockState a structure which holds the entire state of the clock
+// @note call this function before calling clock_update() for the first time
+//
+int clock_init(ClockState *clockState)
+{
+#ifdef PARAM_CHECKS
+    if(clockState == NULL)
+        OriginateErrorEx(EINVAL, "%d", "clockState is NULL");
+#endif
+
+    memset(clockState, 0, sizeof(ClockState));
+
+    unsigned long millis;
+    Call(clock_uptimeMillis(&millis));
+    Call(clock_updateUptimeMillis(millis, &(clockState->lastUptime), &millis));
+
+    return 0;
+}
+
+//
 // @brief Call this function from the main loop
 // @param clockState a structure which holds the entire state of the clock
 // @returns 0 on success
 // EINVAL - if clockState is NULL
+//
+// @note call clock_init() before calling clock_update() for the first time
 //
 int clock_update(ClockState *clockState)
 {
@@ -74,10 +111,10 @@ int clock_update(ClockState *clockState)
         OriginateErrorEx(EINVAL, "%d", "clockState is NULL");
 #endif
 
-    unsigned long delta;
-
-    Call(clock_updateUptimeMillis(0, &(clockState->lastUptime), &delta));
-    Call(dateTime_addMillis(&(clockState->dateTime), delta));
+    unsigned long millis;
+    Call(clock_uptimeMillis(&millis));
+    Call(clock_updateUptimeMillis(millis, &(clockState->lastUptime), &millis));
+    Call(dateTime_addMillis(&(clockState->dateTime), millis));
 
 #ifdef PARAM_CHECKS
     if(clockState->state >= countof(ClockStateFunctionMap)) {
