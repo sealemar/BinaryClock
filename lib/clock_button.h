@@ -5,33 +5,33 @@
 #ifndef BINARY_CLOCK_LIB_CLOCK_BUTTON_H
 #define BINARY_CLOCK_LIB_CLOCK_BUTTON_H
 
-#define CLOCK_BUTTON_MAX_INDEX  4U
+//
+// @brief The maximum amount of buttons which ClockButtons can hold
+//
+#define CLOCK_BUTTON_MAX_COUNT  4U
 
 typedef struct {
     unsigned char buttons;      // first 4 bits are switch state, last 4 bits are pressed state
 } ClockButtons;
 
 //
-// @brief Initialized clockButtons
-// @param clockButtons a pointer to ClockButtons
-// @returns 0 on ok
-// EINVAL - if _clockButtons_ is NULL
-//          if _index_ is greater than the maximum
-//          if _isPressed_ is NULL
+// @warning Internal, don't reference
 //
-int clock_button_init(ClockButtons *clockButtons);
+#define _SWITCH_STATE_PART 4U
+
+//
+// @brief Initialized clockButtons
+// @param clockButtons an actual ClockButtons object (not a pointer to)
+//
+#define clock_button_init(clockButtons) { (clockButtons).buttons = 0; }
 
 //
 // @brief Checks whether the button by a given index is pressed
-// @param clockButtons a pointer to ClockButtons
+// @param clockButtons an actual ClockButtons object (not a pointer to)
 // @param index which button to test
-// @param isPressed the result is returned here
-// @returns 0 on ok
-// EINVAL - if _clockButtons_ is NULL
-//          if _index_ is greater than the maximum
-//          if _isPressed_ is NULL
+// @returns 0 if the button is not pressed
 //
-int clock_button_isPressed(const ClockButtons *clockButtons, size_t index, Bool *isPressed);
+#define clock_button_isPressed(clockButtons, index) ((clockButtons).buttons & (1 << index))
 
 //
 // @brief Checks whether the button by a given index was clicked.
@@ -53,15 +53,13 @@ int clock_button_isPressed(const ClockButtons *clockButtons, size_t index, Bool 
 //        // now the button at index 3 is NOT considered to be clicked
 //
 //
-// @param clockButtons a pointer to ClockButtons
+// @param clockButtons an actual ClockButtons object (not a pointer to)
 // @param index which button to test
-// @param wasClicked the result is returned here
-// @returns 0 on ok
-// EINVAL - if _clockButtons_ is NULL
-//          if _index_ is greater than the maximum
-//          if _isClicked_ is NULL
+// @returns 0 if the button is not clicked
 //
-int clock_button_wasClicked(const ClockButtons *clockButtons, size_t index, Bool *wasClicked);
+#define clock_button_wasClicked(clockButtons, index) ( \
+    ((clockButtons).buttons & (1 << (index + _SWITCH_STATE_PART))) \
+ && (! clock_button_isPressed((clockButtons), index)) )
 
 //
 // @brief Call this function to press or release a button

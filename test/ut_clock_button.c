@@ -24,11 +24,10 @@ static int assert_state(Bool state, Bool expected, size_t index, const char* sta
 static int test_clock_button_press_indexOutOfBounds()
 {
     ClockButtons clockButtons;
-    Bool state;
 
-    int res = clock_button_isPressed(&clockButtons, CLOCK_BUTTON_MAX_INDEX, &state);
+    int res = clock_button_press(&clockButtons, CLOCK_BUTTON_MAX_COUNT, TRUE);
     if(res != EINVAL) {
-        OriginateErrorEx(-1, "%d", "Unexpected error code [%d] from clock_button_isPressed() when index is out of bounds", res);
+        OriginateErrorEx(-1, "%d", "Unexpected error code [%d] from clock_button_press() when index is out of bounds", res);
     }
 
     return 0;
@@ -38,15 +37,13 @@ static int test_clock_button_init_pressedAndClickedAreFalse()
 {
     ClockButtons clockButtons;
 
-    Call(clock_button_init(&clockButtons));
+    clock_button_init(clockButtons);
 
-    for(size_t i = 0; i < CLOCK_BUTTON_MAX_INDEX; ++i) {
-        Bool state;
-
-        Call(clock_button_isPressed(&clockButtons, i, &state));
+    for(size_t i = 0; i < CLOCK_BUTTON_MAX_COUNT; ++i) {
+        Bool state = clock_button_isPressed(clockButtons, i);
         Call(assert_state(state, FALSE, i, StatePressed));
 
-        Call(clock_button_wasClicked(&clockButtons, i, &state));
+        state = clock_button_wasClicked(clockButtons, i);
         Call(assert_state(state, FALSE, i, StateClicked));
     }
 
@@ -57,18 +54,16 @@ static int test_clock_button_press_changesIsPressedState()
 {
     ClockButtons clockButtons;
 
-    Call(clock_button_init(&clockButtons));
+    clock_button_init(clockButtons);
 
-    for(size_t b = 0; b < CLOCK_BUTTON_MAX_INDEX; ++b) {
+    for(size_t b = 0; b < CLOCK_BUTTON_MAX_COUNT; ++b) {
         //
         // Press the button
         //
         Call(clock_button_press(&clockButtons, b, TRUE));
 
-        for(size_t i = 0; i < CLOCK_BUTTON_MAX_INDEX; ++i) {
-            Bool state;
-
-            Call(clock_button_isPressed(&clockButtons, i, &state));
+        for(size_t i = 0; i < CLOCK_BUTTON_MAX_COUNT; ++i) {
+            Bool state = clock_button_isPressed(clockButtons, i);
             Call(assert_state(state, i == b, i, StatePressed));
         }
 
@@ -77,10 +72,8 @@ static int test_clock_button_press_changesIsPressedState()
         //
         Call(clock_button_press(&clockButtons, b, FALSE));
 
-        for(size_t i = 0; i < CLOCK_BUTTON_MAX_INDEX; ++i) {
-            Bool state;
-
-            Call(clock_button_isPressed(&clockButtons, i, &state));
+        for(size_t i = 0; i < CLOCK_BUTTON_MAX_COUNT; ++i) {
+            Bool state = clock_button_isPressed(clockButtons, i);
             Call(assert_state(state, FALSE, i, StatePressed));
         }
     }
@@ -92,18 +85,16 @@ static int test_clock_button_press_doublePressAndDoubleReleaseDontChangeIsPresse
 {
     ClockButtons clockButtons;
 
-    Call(clock_button_init(&clockButtons));
+    clock_button_init(clockButtons);
 
-    for(size_t b = 0; b < CLOCK_BUTTON_MAX_INDEX; ++b) {
+    for(size_t b = 0; b < CLOCK_BUTTON_MAX_COUNT; ++b) {
         //
         // Press the button
         //
         Call(clock_button_press(&clockButtons, b, TRUE));
 
-        for(size_t i = 0; i < CLOCK_BUTTON_MAX_INDEX; ++i) {
-            Bool state;
-
-            Call(clock_button_isPressed(&clockButtons, i, &state));
+        for(size_t i = 0; i < CLOCK_BUTTON_MAX_COUNT; ++i) {
+            Bool state = clock_button_isPressed(clockButtons, i);
             Call(assert_state(state, i == b, i, StatePressed));
         }
 
@@ -112,10 +103,8 @@ static int test_clock_button_press_doublePressAndDoubleReleaseDontChangeIsPresse
         //
         Call(clock_button_press(&clockButtons, b, TRUE));
 
-        for(size_t i = 0; i < CLOCK_BUTTON_MAX_INDEX; ++i) {
-            Bool state;
-
-            Call(clock_button_isPressed(&clockButtons, i, &state));
+        for(size_t i = 0; i < CLOCK_BUTTON_MAX_COUNT; ++i) {
+            Bool state = clock_button_isPressed(clockButtons, i);
             Call(assert_state(state, i == b, i, StatePressed));
         }
 
@@ -124,10 +113,8 @@ static int test_clock_button_press_doublePressAndDoubleReleaseDontChangeIsPresse
         //
         Call(clock_button_press(&clockButtons, b, FALSE));
 
-        for(size_t i = 0; i < CLOCK_BUTTON_MAX_INDEX; ++i) {
-            Bool state;
-
-            Call(clock_button_isPressed(&clockButtons, i, &state));
+        for(size_t i = 0; i < CLOCK_BUTTON_MAX_COUNT; ++i) {
+            Bool state = clock_button_isPressed(clockButtons, i);
             Call(assert_state(state, FALSE, i, StatePressed));
         }
 
@@ -136,10 +123,8 @@ static int test_clock_button_press_doublePressAndDoubleReleaseDontChangeIsPresse
         //
         Call(clock_button_press(&clockButtons, b, FALSE));
 
-        for(size_t i = 0; i < CLOCK_BUTTON_MAX_INDEX; ++i) {
-            Bool state;
-
-            Call(clock_button_isPressed(&clockButtons, i, &state));
+        for(size_t i = 0; i < CLOCK_BUTTON_MAX_COUNT; ++i) {
+            Bool state = clock_button_isPressed(clockButtons, i);
             Call(assert_state(state, FALSE, i, StatePressed));
         }
     }
@@ -152,16 +137,16 @@ static int test_clock_button_press_changesWasClickedStateAfterRelease()
     ClockButtons clockButtons;
     Bool state;
 
-    Call(clock_button_init(&clockButtons));
+    clock_button_init(clockButtons);
 
-    for(size_t b = 0; b < CLOCK_BUTTON_MAX_INDEX; ++b) {
+    for(size_t b = 0; b < CLOCK_BUTTON_MAX_COUNT; ++b) {
         //
         // Press the button
         //
         Call(clock_button_press(&clockButtons, b, TRUE));
 
-        for(size_t i = 0; i < CLOCK_BUTTON_MAX_INDEX; ++i) {
-            Call(clock_button_wasClicked(&clockButtons, i, &state));
+        for(size_t i = 0; i < CLOCK_BUTTON_MAX_COUNT; ++i) {
+            state = clock_button_wasClicked(clockButtons, i);
             Call(assert_state(state, FALSE, i, StateClicked));
         }
 
@@ -170,8 +155,8 @@ static int test_clock_button_press_changesWasClickedStateAfterRelease()
         //
         Call(clock_button_press(&clockButtons, b, FALSE));
 
-        for(size_t i = 0; i < CLOCK_BUTTON_MAX_INDEX; ++i) {
-            Call(clock_button_wasClicked(&clockButtons, i, &state));
+        for(size_t i = 0; i < CLOCK_BUTTON_MAX_COUNT; ++i) {
+            state = clock_button_wasClicked(clockButtons, i);
             Call(assert_state(state, i == b, i, StatePressed));
         }
 
@@ -180,8 +165,8 @@ static int test_clock_button_press_changesWasClickedStateAfterRelease()
         //
         Call(clock_button_press(&clockButtons, b, FALSE));
 
-        for(size_t i = 0; i < CLOCK_BUTTON_MAX_INDEX; ++i) {
-            Call(clock_button_wasClicked(&clockButtons, i, &state));
+        for(size_t i = 0; i < CLOCK_BUTTON_MAX_COUNT; ++i) {
+            state = clock_button_wasClicked(clockButtons, i);
             Call(assert_state(state, FALSE, i, StatePressed));
         }
     }
