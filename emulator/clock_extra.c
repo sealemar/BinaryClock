@@ -141,7 +141,7 @@ int emulator_init()
 
     Call(initWindowBanner());
 
-    clock_clearScreen();
+    Call(clock_clearScreen());
 
     return 0;
 }
@@ -161,8 +161,7 @@ int clock_clearScreen()
     {
         for(int y = 0; y < CLOCK_SCREEN_HEIGHT; ++y)
         {
-            int res = setPixelRaw(x, y, FALSE);
-            if(res) ContinueError(res, "%d");
+            Call(setPixelRaw(x, y, FALSE));
         }
     }
     _wrefresh(WndClockFace);

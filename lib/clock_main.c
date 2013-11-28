@@ -8,7 +8,7 @@
 #endif
 
 #ifndef ARDUINO
-#include <memory.h>
+#include <string.h>
 #endif
 
 #include "clock.h"
@@ -20,17 +20,22 @@
 #define CLOCK_STATE_SHOW_DATE               2
 #define CLOCK_STATE_SHOW_TIME_BIG_ENDIAN    3
 #define CLOCK_STATE_SHOW_DATE_BIG_ENDIAN    4
+#define CLOCK_STATE_SET_TIME                5
 
 //
 // Update animation every 100 milliseconds
 //
-#define CLOCK_STATE_HELLO_ANIMATION_TIME    100U
+#define CLOCK_STATE_HELLO_STEP_TIME    100U
+#define CLOCK_STATE_SET_STEP_TIME      200U
+
+#define updateStepTime(clockState, step) { \
+    if(clockState->stepMillis < (step)) return 0; \
+    clockState->stepMillis %= (step); \
+}
 
 static int clock_state_hello(ClockState *clockState)
 {
-    if(clockState->frameMillis < CLOCK_STATE_HELLO_ANIMATION_TIME) return 0;
-
-    clockState->frameMillis %= CLOCK_STATE_HELLO_ANIMATION_TIME;
+    updateStepTime(clockState, CLOCK_STATE_HELLO_STEP_TIME);
 
     const char text[] = " Hello Sergey!!!";
     unsigned char  pattern[CLOCK_PATTERN_SIZE];
@@ -52,6 +57,19 @@ static int clock_state_hello(ClockState *clockState)
 
 static int clock_state_showTime(ClockState *clockState)
 {
+    //
+    // Need to change state to set time?
+    //
+    if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_SET)) {
+        clockState->step  = 0;
+        clockState->state = CLOCK_STATE_SET_TIME;
+        clockState->stepMillis = CLOCK_STATE_SET_STEP_TIME;
+        return 0;
+    }
+
+    //
+    // Show time
+    //
     const DateTime *dt    = &(clockState->dateTime);
     const DateTime *oldDt = &(clockState->oldDateTime);
 
@@ -88,16 +106,69 @@ static int clock_state_showDateBigEndian(ClockState *clockState)
     return 0;
 }
 
+static int clock_state_setTime(ClockState *clockState)
+{
+    //
+    // Need to change state to show time?
+    //
+    if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_SET)) {
+        clockState->step  = 0;
+        clockState->state = CLOCK_STATE_SHOW_TIME;
+        clockState->stepMillis = 0;
+        return 0;
+    }
+
+    if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_LEFT)) {
+        if(clockState->step < 2) clockState->step += 6;
+        clockState->step -= 2;
+    }
+
+    else if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_RIGHT)) {
+        clockState->step += 2;
+        if(clockState->step > 5) clockState->step -= 6;
+    }
+
+    //
+    // Set time
+    //
+    updateStepTime(clockState, CLOCK_STATE_SET_STEP_TIME);
+
+    // step 0,1 - blink hours
+    // step 2,3 - blink minutes
+    // step 4,5 - blink seconds
+    DateTime dt;
+    memcpy(&dt, &(clockState->dateTime), sizeof(dt));
+    switch(clockState->step) {
+        case 0: dt.hour = 0; clockState->step = 1; break;
+        case 1: clockState->step = 0; break;
+
+        case 2: dt.minute = 0; clockState->step = 3; break;
+        case 3: clockState->step = 2; break;
+
+        case 4: dt.second = 0; clockState->step = 5; break;
+        case 5: clockState->step = 4; break;
+
+#ifdef PARAM_CHECKS
+        default:
+            OriginateErrorEx(EINVAL, "%d", "Unexpected clockState->step = %d. Should be 0 < step < 6", clockState->step);
+#endif
+    }
+    Call(clock_displayTime(&dt));
+
+    return 0;
+}
+
 //
 // ClockStateFunctionMap - a static array of const function pointers
 // to handle ClockState->state
 //
 static int (* const ClockStateFunctionMap[])(ClockState *) = {
-    clock_state_hello,
-    clock_state_showTime,
-    clock_state_showDate,
-    clock_state_showTimeBigEndian,
-    clock_state_showDateBigEndian,
+    clock_state_hello,                //  CLOCK_STATE_HELLO
+    clock_state_showTime,             //  CLOCK_STATE_SHOW_TIME
+    clock_state_showDate,             //  CLOCK_STATE_SHOW_DATE
+    clock_state_showTimeBigEndian,    //  CLOCK_STATE_SHOW_TIME_BIG_ENDIAN
+    clock_state_showDateBigEndian,    //  CLOCK_STATE_SHOW_DATE_BIG_ENDIAN
+    clock_state_setTime,              //  CLOCK_STATE_SET_TIME
 };
 
 //
@@ -113,6 +184,9 @@ int clock_init(ClockState *clockState)
 #endif
 
     memset(clockState, 0, sizeof(ClockState));
+
+    // TODO: remove before release
+    clockState->state = CLOCK_STATE_SHOW_TIME;
 
     unsigned long millis;
     Call(clock_uptimeMillis(&millis));
@@ -141,7 +215,7 @@ int clock_update(ClockState *clockState)
     Call(clock_updateUptimeMillis(millis, &(clockState->lastUptime), &millis));
     Call(dateTime_addMillis(&(clockState->dateTime), millis));
 
-    clockState->frameMillis += millis;
+    clockState->stepMillis += millis;
 
 #ifdef PARAM_CHECKS
     if(clockState->state >= countof(ClockStateFunctionMap)) {
