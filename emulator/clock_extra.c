@@ -10,72 +10,23 @@
 #include <logger.h>
 #include <clock.h>
 #include "clock_extra.h"
+#include "include.h"
+#include "emulator_button.h"
+
+#define GETCH_TIMEOUT 50
 
 static const char BannerStr[] = "BinaryClock Emulator version " TOSTRING(VERSION_MAJOR) "." TOSTRING(VERSION_MINOR)
                                 " Developed by Sergey Markelov";
 
 static WINDOW *WndBanner    = NULL;
 static WINDOW *WndClockFace = NULL;
-static WINDOW *WndButtons   = NULL;
 static WINDOW *WndNotes     = NULL;
-
-typedef struct {
-    const int x;
-    const int y;
-    const char *title;
-    const int ch;       // Character which controls the button. Is compared against getch() result
-    Bool isOn;
-} Button;
-
-static Button Buttons[] = {
-    { 0, 0, "1", '1', FALSE },
-    { 0, 2, "2", '2', FALSE },
-    { 0, 4, "3", '3', FALSE },
-    { 0, 6, "4", '4', FALSE },
-};
-
-#define _destroyWindow(wnd) \
-    if(wnd) { \
-        int _res = delwin(wnd); \
-        if(_res) OriginateErrorEx(_res, "%d", "delwnd(" TOSTRING(wnd) ") returned %d", _res); \
-        wnd = NULL; \
-    }
-
-#define _newwin(wnd, height, width, beginY, beginX) { \
-    wnd = newwin(height, width, beginY, beginX); \
-    if(wnd == NULL) { \
-        OriginateErrorEx(ENOMEM, "%d", "newwin(%d, %d, %d, %d) failed", height, width, beginY, beginX); \
-    } \
-}
-
-#define _mvwprintw(wnd, y, x, format, ...) { \
-    int _res = mvwprintw(wnd, y, x, format, ##__VA_ARGS__); \
-    if(_res == ERR) { \
-        OriginateErrorEx(_res, "%d", "mvwprintw(" TOSTRING(wnd) ", %d, %d, ...) failed with %d", \
-                                     y, x, _res); \
-    } \
-}
-
-#define _mvwaddch(wnd, y, x, ch) { \
-    int _res = mvwaddch(wnd, y, x, ch); \
-    if(_res == ERR) { \
-        OriginateErrorEx(_res, "%d", "mvwaddch(" TOSTRING(wnd) ", %d, %d, " TOSTRING(ch) ") failed with %d", \
-                                    y, x, _res); \
-    } \
-}
-
-#define _wrefresh(wnd) { \
-    int _res = wrefresh(wnd); \
-    if(_res == ERR) { \
-        OriginateErrorEx(_res, "%d", "wrefresh(" TOSTRING(wnd) ") failed with %d", _res); \
-    } \
-}
 
 
 static int destroyWindows()
 {
+    Call(emulator_deinit_buttons());
     _destroyWindow(WndClockFace);
-    _destroyWindow(WndButtons);
     _destroyWindow(WndNotes);
     _destroyWindow(WndBanner);
 
@@ -89,7 +40,7 @@ static int createWindows()
 
     _newwin(WndBanner, 2, 0, 0, 0);
     _newwin(WndClockFace, CLOCK_SCREEN_HEIGHT, CLOCK_SCREEN_WIDTH << 1, 2, 0);
-    _newwin(WndButtons, CLOCK_SCREEN_HEIGHT, 0, 2, (CLOCK_SCREEN_WIDTH << 1) + 3);
+    emulator_init_buttons();
     _newwin(WndNotes, 0, 0, CLOCK_SCREEN_HEIGHT + 5, 0);
 
     return 0;
@@ -99,24 +50,6 @@ static int initWindowBanner()
 {
     _mvwprintw(WndBanner, 0, 0, "%s", BannerStr);
     _wrefresh(WndBanner);
-
-    return 0;
-}
-
-static int initWindowButtons()
-{
-    const Button *btn = Buttons;
-
-    for(size_t i = 0; i < countof(Buttons); ++i, ++btn) {
-        const int attr = has_colors()
-                       ? btn->isOn ? COLOR_PAIR(COLOR_OFF) : COLOR_PAIR(COLOR_OFF)
-                       : 0;
-
-        wattrset(WndButtons, attr);
-        _mvwprintw(WndButtons, btn->y, btn->x, "|%s|", btn->title);
-    }
-
-    _wrefresh(WndButtons);
 
     return 0;
 }
@@ -193,7 +126,7 @@ int emulator_init()
     keypad(stdscr, TRUE);   // We get F1, F2 etc..
     noecho();               // Don't echo() while we do getch
     curs_set(0);            // make the cursor invisible
-    timeout(0);             // getch() in non blocking mode
+    timeout(GETCH_TIMEOUT); // delay for that many milliseconds in getch()
 
     if(has_colors())
     {
@@ -207,7 +140,6 @@ int emulator_init()
     refresh();
 
     Call(initWindowBanner());
-    Call(initWindowButtons());
 
     clock_clearScreen();
 

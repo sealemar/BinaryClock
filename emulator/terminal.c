@@ -9,11 +9,10 @@
 #include <clock_main.h>
 #include <alphabet.h>
 #include "clock_extra.h"
+#include "emulator_button.h"
 
 FILE *errStream;
 FILE *outStream;
-
-#define DELAY_BETWEEN_LOOP_ITERATIONS 100
 
 void atExit()
 {
@@ -31,9 +30,9 @@ int main()
     ClockState cs;
     Call(clock_init(&cs));
 
-    while(getch() != 27)
+    for(int ch = getch(); ch != 27; ch = getch())
     {
-        emulator_delay(DELAY_BETWEEN_LOOP_ITERATIONS);
+        Call(emulator_press_button(&cs.buttons, ch, NULL));
         Call(clock_update(&cs));
     }
 
