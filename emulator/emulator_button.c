@@ -26,8 +26,8 @@ typedef struct {
 
 static const Button Buttons[] = {
     { 0, 0, "1", { '1', ERR, ERR, ERR } },
-    { 0, 2, "2", { '2', ERR, ERR, ERR } },
-    { 0, 4, "3", { '3', ERR, ERR, ERR } },
+    { 0, 2, "2", { '2', '6', ERR, ERR } },
+    { 0, 4, "3", { '3', '6', ERR, ERR } },
     { 0, 6, "4", { '4', ERR, ERR, ERR } },
 };
 

@@ -21,8 +21,17 @@
 #define CLOCK_STATE_SHOW_TIME_BIG_ENDIAN    3
 #define CLOCK_STATE_SHOW_DATE_BIG_ENDIAN    4
 
+//
+// Update animation every 100 milliseconds
+//
+#define CLOCK_STATE_HELLO_ANIMATION_TIME    100U
+
 static int clock_state_hello(ClockState *clockState)
 {
+    if(clockState->frameMillis < CLOCK_STATE_HELLO_ANIMATION_TIME) return 0;
+
+    clockState->frameMillis %= CLOCK_STATE_HELLO_ANIMATION_TIME;
+
     const char text[] = " Hello Sergey!!!";
     unsigned char  pattern[CLOCK_PATTERN_SIZE];
     Bool isLastStep;
@@ -131,6 +140,8 @@ int clock_update(ClockState *clockState)
     Call(clock_uptimeMillis(&millis));
     Call(clock_updateUptimeMillis(millis, &(clockState->lastUptime), &millis));
     Call(dateTime_addMillis(&(clockState->dateTime), millis));
+
+    clockState->frameMillis += millis;
 
 #ifdef PARAM_CHECKS
     if(clockState->state >= countof(ClockStateFunctionMap)) {

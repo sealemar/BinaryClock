@@ -9,12 +9,13 @@
 #include "clock_button.h"
 
 typedef struct {
-    unsigned int state;         // current state of the clock
-    int step;                   // current step of the _state_
-    unsigned long lastUptime;   // in milliseconds
-    DateTime dateTime;          // this gets updated in the beginning of clock_update()
-    DateTime oldDateTime;       // this gets copied from _dateTime_ at the end of clock_update()
-    ClockButtons buttons;       // the state of the clock buttons
+    unsigned int state;           // current state of the clock
+    int step;                     // current step of the _state_
+    unsigned int frameMillis;     // current frame time (for animation)
+    unsigned long lastUptime;     // in milliseconds
+    DateTime dateTime;            // this gets updated in the beginning of clock_update()
+    DateTime oldDateTime;         // this gets copied from _dateTime_ at the end of clock_update()
+    ClockButtons buttons;         // the state of the clock buttons
 } ClockState;
 
 #endif
