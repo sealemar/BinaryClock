@@ -4,9 +4,11 @@
 
 #ifdef PARAM_CHECKS
 #include <errno.h>
-#include <string.h>
-
 #include <logger.h>
+#endif
+
+#ifndef ARDUINO
+#include <memory.h>
 #endif
 
 #include "clock.h"
