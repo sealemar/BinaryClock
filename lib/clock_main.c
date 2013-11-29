@@ -7,9 +7,7 @@
 #include <logger.h>
 #endif
 
-#ifndef ARDUINO
 #include <string.h>
-#endif
 
 #include "clock.h"
 #include "clock_time.h"
@@ -244,7 +242,7 @@ int clock_update(ClockState *clockState)
     unsigned long millis;
     Call(clock_uptimeMillis(&millis));
     Call(clock_updateUptimeMillis(millis, &(clockState->lastUptime), &millis));
-    Call(dateTime_addMillis(&(clockState->dateTime), millis));
+    Call(date_time_addMillis(&(clockState->dateTime), millis));
 
     clockState->stepMillis += millis;
 

@@ -7,7 +7,29 @@
 #include <logger.h>
 #endif
 
+#include <string.h>
+
 #include "date_time.h"
+
+const char *DateTimeMonthsStr[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+
+//
+// @brief Converts fixed width int to string
+// @param n an integer to convert
+// @param str char* where to output the result
+// @param nWidth how many least significant digits to convert
+//
+// @note The result will be zero padded on the left if len(str(n)) < nWidth.
+//       Negative n is not supported
+//
+#define fixedWidthIntToString(n, str, nWidth) { \
+    for(int _i = ((nWidth) - 1), _t = n; \
+        _i >= 0; \
+        --_i, _t /= 10) { \
+\
+        *((str) + _i) = (_t % 10) + '0'; \
+    } \
+}
 
 inline static int _daysInMonth(int month, int year)
 {
@@ -72,7 +94,7 @@ inline static void _normalize(int *minor, int *major, int minorBase)
 //       dt.month = JANUARY;
 //       dt.day   = 31;
 //
-int dateTime_normalize(DateTime *dt)
+int date_time_normalize(DateTime *dt)
 {
 #ifdef PARAM_CHECKS
     if(dt == NULL)
@@ -137,7 +159,7 @@ int dateTime_normalize(DateTime *dt)
 //       uptime with lib/clock_time::clock_updateUptimeMillis()
 //       dateTime_addMillis() calls dateTime_normalize() internally.
 //
-int dateTime_addMillis(DateTime *dt, unsigned long millis)
+int date_time_addMillis(DateTime *dt, unsigned long millis)
 {
 #ifdef PARAM_CHECKS
     if(dt == NULL)
@@ -157,10 +179,104 @@ int dateTime_addMillis(DateTime *dt, unsigned long millis)
     //
     // Now normalize the result
     //
-    int res = dateTime_normalize(dt);
+    int res = date_time_normalize(dt);
 #ifdef PARAM_CHECKS
     if(res) ContinueError(res, "%d");
 #endif
 
     return res;
+}
+
+//
+// @brief prints time from _dt_ to _str_ in format
+//        hh:mm:ss
+//
+// @param dt a pointer to DateTime structure which time needs to be printed
+// @param str a buffer where to print the time. Should be not less than DATE_TIME_TIME_STR_SIZE chars long
+// @returns 0 on ok
+//
+// EINVAL if _dt_ is NULL
+//        if _str_ is NULL
+//
+// ERANGE if dt->hour < 0 or dt->hour >= 24
+//        if dt->minute < 0 or dt->minute >= 60
+//        if dt->second < 0 or dt->second >= 60
+//
+int date_time_timeToStr(const DateTime *dt, char str[DATE_TIME_TIME_STR_SIZE])
+{
+#ifdef PARAM_CHECKS
+    if(dt == NULL) OriginateErrorEx(EINVAL, "%d", "dt is NULL");
+    if(str == NULL) OriginateErrorEx(EINVAL, "%d", "str is NULL");
+    if(dt->hour < 0 || dt->hour >= HOURS_COUNT) {
+        OriginateErrorEx(ERANGE, "%d", "dt->hour = [%d] should be >= 0 and < %d", dt->hour, HOURS_COUNT);
+    }
+    if(dt->minute < 0 || dt->minute >= 60) {
+        OriginateErrorEx(ERANGE, "%d", "dt->minute = [%d] should be >= 0 and < 60", dt->minute);
+    }
+    if(dt->second < 0 || dt->second >= 60) {
+        OriginateErrorEx(ERANGE, "%d", "dt->second = [%d] should be >= 0 and < 60", dt->second);
+    }
+#endif
+
+    int t = dt->hour < 10 ? 1 : 2;
+    fixedWidthIntToString(dt->hour, str, t);
+    str[t] = ':';
+    ++t;
+    fixedWidthIntToString(dt->minute, str + t, 2);
+    t += 2;
+    str[t] = ':';
+    ++t;
+    fixedWidthIntToString(dt->second, str + t, 2);
+    t += 2;
+    str[t] = 0;
+
+    return 0;
+}
+
+//
+// @brief prints date from _dt_ to _str_ in format
+//        MMM DD YYYY
+// @param dt a pointer to DateTime structure which time needs to be printed
+// @param str a buffer where to print the time. Should be not less than DATE_TIME_DATE_STR_SIZE chars long
+// @returns 0 on ok
+//
+// EINVAL if _dt_ is NULL
+//        if _str_ is NULL
+//
+// ERANGE if dt->year < 0 or dt->year > 9999
+//        if dt->month < JANUARY or dt->month > DECEMBER
+//        if dt->day < 0 or dt->day > 31
+//
+// @note This function doesn't check if the date is valid, i.e. Feb 30, 1999.
+//       For that call date_time_normalize()
+//
+int date_time_dateToStr(const DateTime *dt, char str[DATE_TIME_DATE_STR_SIZE])
+{
+#ifdef PARAM_CHECKS
+    if(dt == NULL) OriginateErrorEx(EINVAL, "%d", "dt is NULL");
+    if(str == NULL) OriginateErrorEx(EINVAL, "%d", "str is NULL");
+    if(dt->year < 0 || dt->year > 9999) {
+        OriginateErrorEx(ERANGE, "%d", "dt->year = [%d] should be >= 0 and <= 9999", dt->year);
+    }
+    if(dt->month < JANUARY || dt->month > DECEMBER) {
+        OriginateErrorEx(ERANGE, "%d", "dt->month = [%d] should be >= 0 and < 11", dt->month);
+    }
+    if(dt->day < 0 || dt->day > 31) {
+        OriginateErrorEx(ERANGE, "%d", "dt->day = [%d] should be >= 0 and <= 31", dt->day);
+    }
+#endif
+
+    memcpy(str, DateTimeMonthsStr[dt->month], 3);
+    char *s = str + 3;
+    *s = ' ';
+    ++s;
+    fixedWidthIntToString(dt->day, s, 2);
+    s += 2;
+    *s = ' ';
+    ++s;
+    fixedWidthIntToString(dt->year, s, 4);
+    s += 4;
+    *s = 0;
+
+    return 0;
 }

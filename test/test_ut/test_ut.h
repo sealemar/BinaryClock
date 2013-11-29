@@ -32,4 +32,14 @@ int _runTestSuite(const char *fileName, unsigned long line, const char *func, Te
 #define runTestSuite(testSuite) \
     _runTestSuite(__FILE__, __LINE__, __func__, testSuite, countof(testSuite))
 
+
+//
+// @brief checks if _str_ == _expected_. OriginateError if not
+//
+#define assert_str(str, expected) { \
+    if(strcmp(str, expected)) { \
+        OriginateErrorEx(EINVAL, "%d", "str [%s] != expected [%s]", str, expected); \
+    } \
+}
+
 #endif

@@ -22,6 +22,12 @@
 
 #define HOURS_COUNT 24
 
+// "00:00:00" + '\0'
+#define DATE_TIME_TIME_STR_SIZE 9
+
+// "MMM DD YYYY" + '\0'
+#define DATE_TIME_DATE_STR_SIZE 12
+
 typedef struct {
     int year;
     int month;
@@ -31,6 +37,11 @@ typedef struct {
     int second;
     int millisecond;
 } DateTime;
+
+//
+// @brief three letter month
+//
+extern const char *DateTimeMonthsStr[];
 
 //
 // @brief Normalizes date and time in a given _dt_ by rolling
@@ -54,7 +65,7 @@ typedef struct {
 //       dt.month = JANUARY;
 //       dt.day   = 31;
 //
-int dateTime_normalize(DateTime *dt);
+int date_time_normalize(DateTime *dt);
 
 //
 // @brief Adds a given number of milliseconds to DateTime
@@ -67,6 +78,41 @@ int dateTime_normalize(DateTime *dt);
 //       uptime with lib/clock_time::clock_updateUptimeMillis().
 //       dateTime_addMillis() calls dateTime_normalize() internally.
 //
-int dateTime_addMillis(DateTime *dt, unsigned long millis);
+int date_time_addMillis(DateTime *dt, unsigned long millis);
+
+//
+// @brief prints time from _dt_ to _str_ in format
+//        hh:mm:ss
+// @param dt a pointer to DateTime structure which time needs to be printed
+// @param str a buffer where to print the time. Should be not less than DATE_TIME_TIME_STR_SIZE chars long
+// @returns 0 on ok
+//
+// EINVAL if _dt_ is NULL
+//        if _str_ is NULL
+//
+// ERANGE if dt->hour < 0 or dt->hour >= 24
+//        if dt->minute < 0 or dt->minute >= 60
+//        if dt->second < 0 or dt->second >= 60
+//
+int date_time_timeToStr(const DateTime *dt, char str[DATE_TIME_TIME_STR_SIZE]);
+
+//
+// @brief prints date from _dt_ to _str_ in format
+//        MMM DD YYYY
+// @param dt a pointer to DateTime structure which time needs to be printed
+// @param str a buffer where to print the time. Should be not less than DATE_TIME_DATE_STR_SIZE chars long
+// @returns 0 on ok
+//
+// EINVAL if _dt_ is NULL
+//        if _str_ is NULL
+//
+// ERANGE if dt->year < 0 or dt->year > 9999
+//        if dt->month < JANUARY or dt->month > DECEMBER
+//        if dt->day < 0 or dt->day > 31
+//
+// @note This function doesn't check if the date is valid, i.e. Feb 30, 1999.
+//       For that call date_time_normalize()
+//
+int date_time_dateToStr(const DateTime *dt, char str[DATE_TIME_DATE_STR_SIZE]);
 
 #endif
