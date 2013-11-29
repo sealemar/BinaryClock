@@ -20,6 +20,8 @@
 #define NOVEMBER  10
 #define DECEMBER  11
 
+#define HOURS_COUNT 24
+
 typedef struct {
     int year;
     int month;

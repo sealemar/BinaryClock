@@ -82,7 +82,7 @@ int dateTime_normalize(DateTime *dt)
     _normalize(&(dt->millisecond), &(dt->second), 1000);
     _normalize(&(dt->second),      &(dt->minute),   60);
     _normalize(&(dt->minute),      &(dt->hour),     60);
-    _normalize(&(dt->hour),        &(dt->day),      24);
+    _normalize(&(dt->hour),        &(dt->day), HOURS_COUNT);
 
     //
     // Now process month overflow and underflow.

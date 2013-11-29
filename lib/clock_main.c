@@ -33,6 +33,12 @@
     clockState->stepMillis %= (step); \
 }
 
+//
+// @brief blinks a binary number
+// @param dateTimeValue is one of (second, minute, hour, day, month, year) of DateTime
+//
+#define blinkBinaryNumber(dateTimeValue) { dateTimeValue = (dateTimeValue == 0 ? CLOCK_MAX_BINARY_NUMBER : 0); }
+
 static int clock_state_hello(ClockState *clockState)
 {
     updateStepTime(clockState, CLOCK_STATE_HELLO_STEP_TIME);
@@ -109,23 +115,55 @@ static int clock_state_showDateBigEndian(ClockState *clockState)
 static int clock_state_setTime(ClockState *clockState)
 {
     //
-    // Need to change state to show time?
+    // Go from hours, to minutes, then to seconds, then change the state to show time?
     //
     if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_SET)) {
-        clockState->step  = 0;
-        clockState->state = CLOCK_STATE_SHOW_TIME;
-        clockState->stepMillis = 0;
-        return 0;
-    }
 
-    if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_LEFT)) {
-        if(clockState->step < 2) clockState->step += 6;
-        clockState->step -= 2;
-    }
-
-    else if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_RIGHT)) {
         clockState->step += 2;
-        if(clockState->step > 5) clockState->step -= 6;
+        if(clockState->step > 5) {
+            clockState->step  = 0;
+            clockState->state = CLOCK_STATE_SHOW_TIME;
+            clockState->stepMillis = 0;
+            return 0;
+        }
+    }
+
+    //
+    // Decrease selected time
+    //
+    if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_LEFT)) {
+        if(clockState->step == 0 || clockState->step == 1) {
+            --(clockState->dateTime.hour);
+            if(clockState->dateTime.hour < 0) {
+                clockState->dateTime.hour = HOURS_COUNT - 1;
+            }
+        } else if(clockState->step == 2 || clockState->step == 3) {
+            --(clockState->dateTime.minute);
+            if(clockState->dateTime.minute < 0) {
+                clockState->dateTime.minute = 59;
+            }
+        } else if(clockState->step == 4 || clockState->step == 5) {
+            clockState->dateTime.second = 0;
+        }
+    }
+
+    //
+    // Increase selected time
+    //
+    else if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_RIGHT)) {
+        if(clockState->step == 0 || clockState->step == 1) {
+            ++(clockState->dateTime.hour);
+            if(clockState->dateTime.hour >= HOURS_COUNT) {
+                clockState->dateTime.hour = 0;
+            }
+        } else if(clockState->step == 2 || clockState->step == 3) {
+            ++(clockState->dateTime.minute);
+            if(clockState->dateTime.minute >= 60) {
+                clockState->dateTime.hour = 60;
+            }
+        } else if(clockState->step == 4 || clockState->step == 5) {
+            clockState->dateTime.second = 30;
+        }
     }
 
     //
@@ -139,13 +177,13 @@ static int clock_state_setTime(ClockState *clockState)
     DateTime dt;
     memcpy(&dt, &(clockState->dateTime), sizeof(dt));
     switch(clockState->step) {
-        case 0: dt.hour = 0; clockState->step = 1; break;
+        case 0: blinkBinaryNumber(dt.hour); clockState->step = 1; break;
         case 1: clockState->step = 0; break;
 
-        case 2: dt.minute = 0; clockState->step = 3; break;
+        case 2: blinkBinaryNumber(dt.minute); clockState->step = 3; break;
         case 3: clockState->step = 2; break;
 
-        case 4: dt.second = 0; clockState->step = 5; break;
+        case 4: blinkBinaryNumber(dt.second); clockState->step = 5; break;
         case 5: clockState->step = 4; break;
 
 #ifdef PARAM_CHECKS
