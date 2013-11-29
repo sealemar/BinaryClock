@@ -25,6 +25,8 @@
 
 #define CLOCK_BUTTON_COUNT      4U
 
+#define STATE_TEXT_SIZE       101U
+
 
 typedef struct {
     unsigned int state;           // current state of the clock
@@ -34,6 +36,7 @@ typedef struct {
     DateTime dateTime;            // this gets updated in the beginning of clock_update()
     DateTime oldDateTime;         // this gets copied from _dateTime_ at the end of clock_update()
     ClockButtons buttons;         // the state of the clock buttons
+    char text[STATE_TEXT_SIZE];   // a state may set this to some text
 } ClockState;
 
 #endif

@@ -55,7 +55,7 @@
 #define CLOCK_SMILEY_FACE_SAD   45
 #define CLOCK_ALPHABET_LAST     CLOCK_SMILEY_FACE_SAD
 
-extern const unsigned char CLOCK_ALPHABET[][CLOCK_PATTERN_SIZE];
+extern const unsigned char ClockAlphabet[][CLOCK_PATTERN_SIZE];
 
 #define CLOCK_ALPHABET_SIZE     (CLOCK_ALPHABET_LAST + 1)
 

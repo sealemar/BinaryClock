@@ -36,6 +36,4 @@ int emulator_update(const ClockState *cs);
 //
 void clock_deinit();
 
-int clock_clearScreen();
-
 #endif

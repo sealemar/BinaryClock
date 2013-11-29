@@ -160,18 +160,3 @@ void clock_deinit()
     destroyWindows();
     endwin();
 }
-
-//
-// @brief clears screen turning all pixels off
-//
-int clock_clearScreen()
-{
-    for(int x = 0; x < CLOCK_SCREEN_WIDTH; ++x) {
-        for(int y = 0; y < CLOCK_SCREEN_HEIGHT; ++y) {
-            Call(setPixelRaw(x, y, FALSE));
-        }
-    }
-    _wrefresh(WndClockFace);
-
-    return 0;
-}

@@ -16,8 +16,8 @@
 //
 // Update animation every 100 milliseconds
 //
-#define CLOCK_STATE_HELLO_STEP_TIME    100U
-#define CLOCK_STATE_SET_STEP_TIME      200U
+#define CLOCK_ANIMATION_TEXT_STEP_TIME                  100U
+#define CLOCK_ANIMATION_BLINK_BINARY_NUMBER_STEP_TIME   200U
 
 #define updateStepTime(clockState, step) { \
     if(clockState->stepMillis < (step)) return 0; \
@@ -30,12 +30,41 @@
 //
 #define blinkBinaryNumber(dateTimeValue) { dateTimeValue = (dateTimeValue == 0 ? CLOCK_MAX_BINARY_NUMBER : 0); }
 
-static int clock_state_hello(ClockState *clockState)
-{
-    updateStepTime(clockState, CLOCK_STATE_HELLO_STEP_TIME);
+//
+// @brief Sets the clock state
+// @param clockState a pointer to ClockState
+// @param nextState the state
+// @param nextStepMillis if the next step has animation step time, this should be set to that value, so
+//        that the first frame will be shown immediately
+//
+#define setClockState(clockState, nextState, nextStepMillis) { \
+    clockState->step  = 0; \
+    clockState->state = nextState; \
+    clockState->stepMillis = nextStepMillis; \
+    Call(clock_clearScreen()); \
+}
 
-    const char text[] = " Hello Sergey!!!";
-    unsigned char  pattern[CLOCK_PATTERN_SIZE];
+static const char StateHelloText[] = " Hello Sergey!!!";
+
+//
+// @brief A helper function to slide a text
+// @param clockState
+// @param text a text to slide
+// @param nextState which state should be the next after the text sliding is finished
+// @param nextStepMillis if the next step has animation step time, this should be set to that value, so
+//        that the first frame will be shown immediately
+//
+// @returns 0 on ok
+//
+inline static int slideText(
+        ClockState *clockState,
+        const char *text,
+        unsigned int nextState,
+        unsigned int nextStepMillis)
+{
+    updateStepTime(clockState, CLOCK_ANIMATION_TEXT_STEP_TIME);
+
+    unsigned char pattern[CLOCK_PATTERN_SIZE];
     Bool isLastStep;
 
     Call(clock_slideText(text, clockState->step, &isLastStep, pattern));
@@ -45,9 +74,23 @@ static int clock_state_hello(ClockState *clockState)
     if(!isLastStep) {
         ++(clockState->step);
     } else {
-        clockState->step  = 0;
-        clockState->state = CLOCK_STATE_SHOW_TIME;
+        setClockState(clockState, nextState, nextStepMillis);
     }
+
+    return 0;
+}
+
+static int clock_state_hello(ClockState *clockState)
+{
+    //
+    // Click on CLOCK_BUTTON_SET skips this step
+    //
+    if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_SET)) {
+        setClockState(clockState, CLOCK_STATE_SHOW_TIME, 0);
+        return 0;
+    }
+
+    Call(slideText(clockState, StateHelloText, CLOCK_STATE_SHOW_TIME, 0));
 
     return 0;
 }
@@ -55,12 +98,18 @@ static int clock_state_hello(ClockState *clockState)
 static int clock_state_showTime(ClockState *clockState)
 {
     //
+    // If CLOCK_BUTTON_INFO was clicked -- show time in text
+    //
+    if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_INFO)) {
+        setClockState(clockState, CLOCK_STATE_SHOW_TIME_BIG_ENDIAN, CLOCK_ANIMATION_TEXT_STEP_TIME);
+        return 0;
+    }
+
+    //
     // Need to change state to set time?
     //
     if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_SET)) {
-        clockState->step  = 0;
-        clockState->state = CLOCK_STATE_SET_TIME;
-        clockState->stepMillis = CLOCK_STATE_SET_STEP_TIME;
+        setClockState(clockState, CLOCK_STATE_SET_TIME, CLOCK_ANIMATION_BLINK_BINARY_NUMBER_STEP_TIME);
         return 0;
     }
 
@@ -70,9 +119,11 @@ static int clock_state_showTime(ClockState *clockState)
     const DateTime *dt    = &(clockState->dateTime);
     const DateTime *oldDt = &(clockState->oldDateTime);
 
-    if(dt->second != oldDt->second
+    if(clockState->step == 0
+    || dt->second != oldDt->second
     || dt->minute != oldDt->minute
     || dt->hour   != oldDt->hour) {
+        clockState->step = 1;
         Call(clock_displayTime(&(clockState->dateTime)));
     }
     return 0;
@@ -83,9 +134,11 @@ static int clock_state_showDate(ClockState *clockState)
     const DateTime *dt    = &(clockState->dateTime);
     const DateTime *oldDt = &(clockState->oldDateTime);
 
-    if(dt->day   != oldDt->day
+    if(clockState->step == 0
+    || dt->day   != oldDt->day
     || dt->month != oldDt->month
     || dt->year  != oldDt->year) {
+        clockState->step = 1;
         Call(clock_displayDate(&(clockState->dateTime)));
     }
     return 0;
@@ -93,7 +146,24 @@ static int clock_state_showDate(ClockState *clockState)
 
 static int clock_state_showTimeBigEndian(ClockState *clockState)
 {
-    (void)clockState;
+    //
+    // If CLOCK_BUTTON_INFO was clicked -- show time in binary
+    //
+    if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_INFO)) {
+        setClockState(clockState, CLOCK_STATE_SHOW_TIME, 0);
+        return 0;
+    }
+
+    //
+    // Prepare the text if this is step 0
+    //
+    if(clockState->step == 0) {
+        clockState->text[0] = ' ';
+        Call(date_time_timeToStr( &(clockState->dateTime), clockState->text + 1 ));
+    }
+
+    Call(slideText(clockState, clockState->text, CLOCK_STATE_SHOW_TIME, 0));
+
     return 0;
 }
 
@@ -109,12 +179,9 @@ static int clock_state_setTime(ClockState *clockState)
     // Go from hours, to minutes, then to seconds, then change the state to show time?
     //
     if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_SET)) {
-
         clockState->step += 2;
         if(clockState->step > 5) {
-            clockState->step  = 0;
-            clockState->state = CLOCK_STATE_SHOW_TIME;
-            clockState->stepMillis = 0;
+            setClockState(clockState, CLOCK_STATE_SHOW_TIME, 0);
             return 0;
         }
     }
@@ -160,7 +227,7 @@ static int clock_state_setTime(ClockState *clockState)
     //
     // Set time
     //
-    updateStepTime(clockState, CLOCK_STATE_SET_STEP_TIME);
+    updateStepTime(clockState, CLOCK_ANIMATION_BLINK_BINARY_NUMBER_STEP_TIME);
 
     // step 0,1 - blink hours
     // step 2,3 - blink minutes
@@ -213,9 +280,6 @@ int clock_init(ClockState *clockState)
 #endif
 
     memset(clockState, 0, sizeof(ClockState));
-
-    // TODO: remove before release
-    clockState->state = CLOCK_STATE_SHOW_TIME;
 
     unsigned long millis;
     Call(clock_uptimeMillis(&millis));

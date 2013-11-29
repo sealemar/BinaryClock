@@ -19,7 +19,7 @@
 //     int i = 0;
 //     int ch;
 //     do {
-//         int res = clock_drawPattern(CLOCK_ALPHABET[i]);
+//         int res = clock_drawPattern(ClockAlphabet[i]);
 //         if(res) ContinueError(res, "%d");
 //
 //         ch = getch();
@@ -45,7 +45,7 @@
 //         unsigned char pattern[CLOCK_PATTERN_SIZE];
 //
 //         int res = clock_slideText(text, step, &isLastStep, pattern);
-//         //int res = clock_slidePattern(CLOCK_ALPHABET[CLOCK_SMILEY_FACE_SAD], CLOCK_ALPHABET[CLOCK_SMILEY_FACE_SMILE], step, &isLastStep, pattern);
+//         //int res = clock_slidePattern(ClockAlphabet[CLOCK_SMILEY_FACE_SAD], ClockAlphabet[CLOCK_SMILEY_FACE_SMILE], step, &isLastStep, pattern);
 //         if(res) ContinueError(res, "%d");
 //
 //         res = clock_drawPattern(pattern);

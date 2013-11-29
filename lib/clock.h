@@ -22,6 +22,14 @@
 
 #define CLOCK_PATTERN_SIZE      (CLOCK_SCREEN_HEIGHT)
 
+#include "alphabet.h"
+
+//
+// @brief clears the clock screen
+// @returns after clock_drawPattern()
+//
+#define clock_clearScreen() ( clock_drawPattern(ClockAlphabet[CLOCK_BLANK]) )
+
 //
 // @note the implementation needs to set clock_setPixel to point to a real function.
 //       It is stubbed to NULL by default
@@ -84,9 +92,9 @@ int clock_displayTime(const DateTime *dt);
 int clock_displayDate(const DateTime *dt);
 
 //
-// @brief finds a suitable index from CLOCK_ALPHABET by a given character
+// @brief finds a suitable index from ClockAlphabet by a given character
 // @param ch ASCII character to find an index for
-// @param clockAlphabetIndex a closest suitable index from CLOCK_ALPHABET for _ch_
+// @param clockAlphabetIndex a closest suitable index from ClockAlphabet for _ch_
 // @returns 0 on success
 // ERANGE if an exact match for _ch_ is not found (a closest pattern will be returned, i.e.
 //        if "a" is not found than an index to "A" will be returned. If a closest pattern can't be

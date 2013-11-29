@@ -115,9 +115,9 @@ int clock_displayDate(const DateTime *dt)
 }
 
 //
-// @brief finds a suitable index from CLOCK_ALPHABET by a given character
+// @brief finds a suitable index from ClockAlphabet by a given character
 // @param ch ASCII character to find an index for
-// @param clockAlphabetIndex a closest suitable index from CLOCK_ALPHABET for _ch_
+// @param clockAlphabetIndex a closest suitable index from ClockAlphabet for _ch_
 // @returns 0 on success
 // ERANGE if an exact match for _ch_ is not found (a closest pattern will be returned, i.e.
 //        if "a" is not found than an index to "A" will be returned. If a closest pattern can't be
@@ -260,8 +260,8 @@ int clock_slideText(
     Bool patternIsLastStep;
 
     Call(clock_slidePattern(
-            CLOCK_ALPHABET[firstCharIndex],
-            CLOCK_ALPHABET[secondCharIndex],
+            ClockAlphabet[firstCharIndex],
+            ClockAlphabet[secondCharIndex],
             patternStep,
            &patternIsLastStep,
             pattern));

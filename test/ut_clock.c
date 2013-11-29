@@ -164,11 +164,11 @@ static int test_clock_drawPattern_correct()
 {
     test_clearScreen();
 
-    int res = clock_drawPattern(CLOCK_ALPHABET[CLOCK_1]);
+    int res = clock_drawPattern(ClockAlphabet[CLOCK_1]);
     if(res) ContinueError(res, "%d");
 
-    res = test_compareScreenPattern(CLOCK_ALPHABET[CLOCK_1]);
-    if(res) OriginateErrorEx(res, "%d", "pattern CLOCK_ALPHABET[CLOCK_1] doesn't match the screen");
+    res = test_compareScreenPattern(ClockAlphabet[CLOCK_1]);
+    if(res) OriginateErrorEx(res, "%d", "pattern ClockAlphabet[CLOCK_1] doesn't match the screen");
 
     return 0;
 }
@@ -219,7 +219,7 @@ static int test_clock_slideText_correct()
         res = clock_getAlphabetIndexByCharacter(text[i], &index);
         if(res) ContinueError(res, "%d");
 
-        res = validatePattern(CLOCK_ALPHABET[index], pattern);
+        res = validatePattern(ClockAlphabet[index], pattern);
         if(res) ContinueErrorEx(res, "%d", "pattern is not valid. i = %zu, text = '%s', index = %d", i, text, index);
     }
 
