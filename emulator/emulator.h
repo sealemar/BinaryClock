@@ -2,8 +2,10 @@
 // developed by Sergey Markelov (11/13/2013)
 //
 
-#ifndef BINARY_CLOCK_EMULATOR_CLOCK_EXTRA_H
-#define BINARY_CLOCK_EMULATOR_CLOCK_EXTRA_H
+#ifndef BINARY_CLOCK_EMULATOR_EMULATOR_H
+#define BINARY_CLOCK_EMULATOR_EMULATOR_H
+
+#include <clock_state.h>
 
 #define PIXEL_ON   'o'
 #define PIXEL_OFF  '-'
@@ -22,6 +24,11 @@ int emulator_uptimeMillis(unsigned long *millis);
 void emulator_delay(unsigned long);
 
 int emulator_init();
+
+//
+// @brief call this function from the main loop
+//
+int emulator_update(const ClockState *cs);
 
 //
 // @brief If clock_init() was called, this function must be called

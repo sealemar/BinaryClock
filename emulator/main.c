@@ -8,7 +8,7 @@
 #include <logger.h>
 #include <clock_main.h>
 #include <alphabet.h>
-#include "clock_extra.h"
+#include "emulator.h"
 #include "emulator_button.h"
 
 FILE *errStream;
@@ -32,7 +32,8 @@ int main()
 
     for(int ch = getch(); ch != 27; ch = getch())
     {
-        Call(emulator_press_button(&cs.buttons, ch, NULL));
+        Call(emulator_button_press(&cs.buttons, ch, NULL));
+        Call(emulator_update(&cs));
         Call(clock_update(&cs));
     }
 

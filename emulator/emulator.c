@@ -9,7 +9,7 @@
 
 #include <logger.h>
 #include <clock.h>
-#include "clock_extra.h"
+#include "emulator.h"
 #include "include.h"
 #include "emulator_button.h"
 
@@ -25,7 +25,7 @@ static WINDOW *WndNotes     = NULL;
 
 static int destroyWindows()
 {
-    Call(emulator_deinit_buttons());
+    Call(emulator_button_deinit());
     _destroyWindow(WndClockFace);
     _destroyWindow(WndNotes);
     _destroyWindow(WndBanner);
@@ -40,7 +40,7 @@ static int createWindows()
 
     _newwin(WndBanner, 2, 0, 0, 0);
     _newwin(WndClockFace, CLOCK_SCREEN_HEIGHT, CLOCK_SCREEN_WIDTH << 1, 2, 0);
-    emulator_init_buttons();
+    emulator_button_init();
     _newwin(WndNotes, 0, 0, CLOCK_SCREEN_HEIGHT + 5, 0);
 
     return 0;
@@ -128,8 +128,7 @@ int emulator_init()
     curs_set(0);            // make the cursor invisible
     timeout(GETCH_TIMEOUT); // delay for that many milliseconds in getch()
 
-    if(has_colors())
-    {
+    if(has_colors()) {
         start_color();
         init_pair(COLOR_ON,  COLOR_YELLOW, COLOR_BLACK);
         init_pair(COLOR_OFF, COLOR_BLUE, COLOR_BLACK);
@@ -146,6 +145,16 @@ int emulator_init()
     return 0;
 }
 
+//
+// @brief call this function from the main loop
+//
+int emulator_update(const ClockState *cs)
+{
+    Call(emulator_button_update(cs));
+
+    return 0;
+}
+
 void clock_deinit()
 {
     destroyWindows();
@@ -157,10 +166,8 @@ void clock_deinit()
 //
 int clock_clearScreen()
 {
-    for(int x = 0; x < CLOCK_SCREEN_WIDTH; ++x)
-    {
-        for(int y = 0; y < CLOCK_SCREEN_HEIGHT; ++y)
-        {
+    for(int x = 0; x < CLOCK_SCREEN_WIDTH; ++x) {
+        for(int y = 0; y < CLOCK_SCREEN_HEIGHT; ++y) {
             Call(setPixelRaw(x, y, FALSE));
         }
     }

@@ -15,13 +15,6 @@
 #include "clock_time.h"
 #include "clock_main.h"
 
-#define CLOCK_STATE_HELLO                   0
-#define CLOCK_STATE_SHOW_TIME               1
-#define CLOCK_STATE_SHOW_DATE               2
-#define CLOCK_STATE_SHOW_TIME_BIG_ENDIAN    3
-#define CLOCK_STATE_SHOW_DATE_BIG_ENDIAN    4
-#define CLOCK_STATE_SET_TIME                5
-
 //
 // Update animation every 100 milliseconds
 //

@@ -38,3 +38,10 @@
         OriginateErrorEx(_res, "%d", "wrefresh(" TOSTRING(wnd) ") failed with %d", _res); \
     } \
 }
+
+#define _wattrset(wnd, attr) { \
+    int _res = wattrset(wnd, attr); \
+    if(_res == ERR) { \
+        OriginateErrorEx(_res, "%d", "wattrset(" TOSTRING(wnd) ", " TOSTRING(attr) ") failed with %d", _res); \
+    } \
+}

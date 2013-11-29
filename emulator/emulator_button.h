@@ -15,7 +15,15 @@
 // @returns 0 on ok
 //          EINVAL if _clockButtons_ is NULL
 //
-int emulator_press_button(ClockButtons *clockButtons, int ch, Bool *matched);
+int emulator_button_press(ClockButtons *clockButtons, int ch, Bool *matched);
 
-int emulator_init_buttons();
-int emulator_deinit_buttons();
+//
+// @brief Updates the visual state of emulator's buttons
+// @param clockState - the clock state object
+// @returns 0 on ok
+//          EINVAL if _clockButtons_ is NULL
+//
+int emulator_button_update(const ClockState *clockState);
+
+int emulator_button_init();
+int emulator_button_deinit();

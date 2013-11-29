@@ -7,10 +7,13 @@
 
 #include <logger.h>
 #include <clock.h>
+#include <clock_state.h>
 
-#include "clock_extra.h"
+#include "emulator.h"
 #include "emulator_button.h"
 #include "include.h"
+
+#define BUTTONS_INFO_WND_X 5
 
 static WINDOW *WndButtons = NULL;
 
@@ -31,19 +34,66 @@ static const Button Buttons[] = {
     { 0, 6, "4", { '4', ERR, ERR, ERR } },
 };
 
+static const char *ButtonsDescription[CLOCK_STATE_COUNT][CLOCK_BUTTON_COUNT] = {
+    // CLOCK_STATE_HELLO
+    {
+        "", "Skip", "", "",
+    },
+
+    // CLOCK_STATE_SHOW_TIME
+    {
+        "Show time in text",
+        "Set time",
+        "Show date",
+        "",
+    },
+
+    // CLOCK_STATE_SHOW_DATE
+    {
+        "Show date in text",
+        "Set date",
+        "Show time",
+        "",
+    },
+
+    // CLOCK_STATE_SHOW_TIME_BIG_ENDIAN
+    {
+        "Show time in binary",
+        "Set time",
+        "Show date",
+        "",
+    },
+
+    // CLOCK_STATE_SHOW_DATE_BIG_ENDIAN
+    {
+        "Show date in binary",
+        "Set date",
+        "Show time",
+        "",
+    },
+
+    // CLOCK_STATE_SET_TIME
+    {
+        "",
+        "Set next",
+        "Decrease",
+        "Increase",
+    },
+};
+
 inline static int pressButton(const Button *btn, Bool isPressed)
 {
     const int attr = has_colors()
                    ? isPressed ? COLOR_PAIR(COLOR_ON) : COLOR_PAIR(COLOR_OFF)
                    : 0;
 
-    wattrset(WndButtons, attr);
+    _wattrset(WndButtons, attr);
     _mvwprintw(WndButtons, btn->y, btn->x, "|%s|", btn->title);
 
     return 0;
 }
 
-int emulator_init_buttons()
+int emulator_button_init()
 {
     _newwin(WndButtons, CLOCK_SCREEN_HEIGHT, 0, 2, (CLOCK_SCREEN_WIDTH << 1) + 3);
 
@@ -58,7 +108,7 @@ int emulator_init_buttons()
     return 0;
 }
 
-int emulator_deinit_buttons()
+int emulator_button_deinit()
 {
     _destroyWindow(WndButtons);
     return 0;
@@ -75,7 +125,7 @@ int emulator_deinit_buttons()
 // @returns 0 on ok
 //          EINVAL if _clockButtons_ is NULL
 //
-int emulator_press_button(ClockButtons *clockButtons, int ch, Bool *matched)
+int emulator_button_press(ClockButtons *clockButtons, int ch, Bool *matched)
 {
     if(clockButtons == NULL) OriginateErrorEx(EINVAL, "%d", "clockButtons is NULL");
 
@@ -100,6 +150,28 @@ int emulator_press_button(ClockButtons *clockButtons, int ch, Bool *matched)
 
         Call(clock_button_press(clockButtons, i, isPressed));
         Call(pressButton(btn, isPressed));
+    }
+
+    _wrefresh(WndButtons);
+
+    return 0;
+}
+
+//
+// @brief Updates the visual state of emulator's buttons
+// @param clockState - the clock state object
+// @returns 0 on ok
+//          EINVAL if _clockButtons_ is NULL
+//
+int emulator_button_update(const ClockState *clockState)
+{
+    if(clockState == NULL) OriginateErrorEx(EINVAL, "%d", "clockState is NULL");
+
+    _wattrset(WndButtons, A_NORMAL);
+
+    const Button *btn = Buttons;
+    for(size_t i = 0; i < countof(Buttons); ++i, ++btn) {
+        _mvwprintw(WndButtons, btn->y, BUTTONS_INFO_WND_X, "%-30s", ButtonsDescription[clockState->state][i]);
     }
 
     _wrefresh(WndButtons);
