@@ -43,6 +43,40 @@ typedef enum { FALSE = 0, TRUE } Bool;
 #endif
 
 //
+// @brief Calls any malloc related function and checks if the result is NULL
+// @param var a variable which will get the result
+// @param function a function which allocates memory and returns NULL on failure
+//
+#ifdef PARAM_CHECKS
+#define CallMalloc(var, function) { \
+    var = function; \
+    if(var == NULL) { \
+        OriginateErrorEx(ENOMEM, "%d", "'%s' failed - no memory", TOSTRING(function)); \
+    } \
+}
+#else
+#define CallMalloc(var, function) { var = function; }
+#endif
+
+//
+// @brief Calls any malloc related function and checks if the result is NULL
+// @param function a function which allocates memory and returns NULL on failure
+//
+// @note This macro doesn't return the result.
+//       Example of usage -- initscr() from curses library
+//
+#ifdef PARAM_CHECKS
+#define CallMallocQuiet(function) { \
+    void *_var = function; \
+    if(_var == NULL) { \
+        OriginateErrorEx(ENOMEM, "%d", "'%s' failed - no memory", TOSTRING(function)); \
+    } \
+}
+#else
+#define CallMallocQuiet(function) { function; }
+#endif
+
+//
 // @brief Performs a NULL check on _arg_. OriginateErrorEx(EINVAL, arg + " is NULL") if it is NULL
 //
 #ifdef PARAM_CHECKS

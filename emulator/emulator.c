@@ -40,18 +40,18 @@ static int createWindows()
     int res = destroyWindows();
     if(res) ContinueError(res, "%d");
 
-    _newwin(WndBanner, 2, 0, 0, 0);
-    _newwin(WndClockFace, CLOCK_SCREEN_HEIGHT, CLOCK_SCREEN_WIDTH << 1, 2, 0);
+    CallMalloc( WndBanner, newwin(2, 0, 0, 0) );
+    CallMalloc( WndClockFace, newwin(CLOCK_SCREEN_HEIGHT, CLOCK_SCREEN_WIDTH << 1, 2, 0) );
     emulator_button_init();
-    _newwin(WndNotes, 0, 0, CLOCK_SCREEN_HEIGHT + 5, 0);
+    CallMalloc( WndNotes, newwin(0, 0, CLOCK_SCREEN_HEIGHT + 5, 0) );
 
     return 0;
 }
 
 static int initWindowBanner()
 {
-    _mvwprintw(WndBanner, 0, 0, "%s", BannerStr);
-    _wrefresh(WndBanner);
+    CallNcurses( mvwprintw(WndBanner, 0, 0, "%s", BannerStr) );
+    CallNcurses( wrefresh(WndBanner) );
 
     return 0;
 }
@@ -67,11 +67,11 @@ static int emulator_setPixelRaw(int x, int y, Bool turnOn)
                        ? COLOR_PAIR(COLOR_ON)
                        : COLOR_PAIR(COLOR_OFF);
 
-        _mvwaddch(WndClockFace, y, x, pixel | attr);
+        CallNcurses( mvwaddch(WndClockFace, y, x, pixel | attr) );
     }
     else
     {
-        _mvwaddch(WndClockFace, y, x, pixel);
+        CallNcurses( mvwaddch(WndClockFace, y, x, pixel) );
     }
 
     return 0;
@@ -92,7 +92,7 @@ static int emulator_setPixel(int x, int y, Bool turnOn)
         OriginateErrorEx(EINVAL, "%d", "Invalid _y_ value [%d], should be 0 < y < %d", y, CLOCK_SCREEN_HEIGHT);
 
     Call(emulator_setPixelRaw(x, y, turnOn));
-    _wrefresh(WndClockFace);
+    CallNcurses( wrefresh(WndClockFace) );
 
     return 0;
 }
@@ -135,7 +135,7 @@ static int emulator_clearScreen()
             Call(emulator_setPixelRaw(x, y, FALSE));
         }
     }
-    _wrefresh(WndClockFace);
+    CallNcurses( wrefresh(WndClockFace) );
 
     return 0;
 }
@@ -150,11 +150,11 @@ int emulator_init()
     clock_extern_initDateTime = emulator_initDateTime;
     clock_extern_clearScreen = emulator_clearScreen;
 
-    initscr();              // Start curses mode
-    raw();                  // Line buffering disabled
-    keypad(stdscr, TRUE);   // We get F1, F2 etc..
-    noecho();               // Don't echo() while we do getch
-    curs_set(0);            // make the cursor invisible
+    CallMallocQuiet( initscr() );         // Start curses mode
+    CallNcurses( raw() );                 // Line buffering disabled
+    CallNcurses( keypad(stdscr, TRUE) );  // We get F1, F2 etc..
+    CallNcurses( noecho() );              // Don't echo() while we do getch
+    CallNcurses( curs_set(0) );           // make the cursor invisible
     timeout(GETCH_TIMEOUT); // delay for that many milliseconds in getch()
 
     if(has_colors()) {
@@ -164,11 +164,8 @@ int emulator_init()
     }
 
     Call(createWindows());
-
-    refresh();
-
+    CallNcurses( refresh() );
     Call(initWindowBanner());
-
     Call(clock_extern_clearScreen());
 
     return 0;
@@ -184,8 +181,10 @@ int emulator_update(const ClockState *cs)
     return 0;
 }
 
-void emulator_deinit()
+int emulator_deinit()
 {
-    destroyWindows();
-    endwin();
+    Call(destroyWindows());
+    CallNcurses( endwin() );
+
+    return 0;
 }

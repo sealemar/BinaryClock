@@ -23,6 +23,6 @@ int emulator_update(const ClockState *cs);
 // @brief If clock_init() was called, this function must be called
 //        to deinitialize and free resources.
 //
-void emulator_deinit();
+int emulator_deinit();
 
 #endif

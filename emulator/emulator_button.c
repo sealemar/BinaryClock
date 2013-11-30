@@ -95,15 +95,15 @@ inline static int pressButton(const Button *btn, Bool isPressed)
                    ? isPressed ? COLOR_PAIR(COLOR_ON) : COLOR_PAIR(COLOR_OFF)
                    : 0;
 
-    _wattrset(WndButtons, attr);
-    _mvwprintw(WndButtons, btn->y, btn->x, "|%s|", btn->title);
+    CallNcurses( wattrset(WndButtons, attr) );
+    CallNcurses( mvwprintw(WndButtons, btn->y, btn->x, "|%s|", btn->title) );
 
     return 0;
 }
 
 int emulator_button_init()
 {
-    _newwin(WndButtons, CLOCK_SCREEN_HEIGHT, 0, 2, (CLOCK_SCREEN_WIDTH << 1) + 3);
+    CallMalloc( WndButtons, newwin(CLOCK_SCREEN_HEIGHT, 0, 2, (CLOCK_SCREEN_WIDTH << 1) + 3) );
 
     const Button *btn = Buttons;
 
@@ -111,7 +111,7 @@ int emulator_button_init()
         Call(pressButton(btn, FALSE));
     }
 
-    _wrefresh(WndButtons);
+    CallNcurses( wrefresh(WndButtons) );
 
     return 0;
 }
@@ -160,7 +160,7 @@ int emulator_button_press(ClockButtons *clockButtons, int ch, Bool *matched)
         Call(pressButton(btn, isPressed));
     }
 
-    _wrefresh(WndButtons);
+    CallNcurses( wrefresh(WndButtons) );
 
     return 0;
 }
@@ -175,14 +175,14 @@ int emulator_button_update(const ClockState *clockState)
 {
     NullCheck(clockState);
 
-    _wattrset(WndButtons, A_NORMAL);
+    CallNcurses( wattrset(WndButtons, A_NORMAL) );
 
     const Button *btn = Buttons;
     for(size_t i = 0; i < countof(Buttons); ++i, ++btn) {
-        _mvwprintw(WndButtons, btn->y, BUTTONS_INFO_WND_X, "%-30s", ButtonsDescription[clockState->state][i]);
+        CallNcurses( mvwprintw(WndButtons, btn->y, BUTTONS_INFO_WND_X, "%-30s", ButtonsDescription[clockState->state][i]) );
     }
 
-    _wrefresh(WndButtons);
+    CallNcurses( wrefresh(WndButtons) );
 
     return 0;
 }
