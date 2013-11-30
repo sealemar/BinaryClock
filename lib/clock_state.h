@@ -7,6 +7,7 @@
 
 #include "date_time.h"
 #include "clock_button.h"
+#include "clock.h"
 
 #define CLOCK_STATE_HELLO                   0
 #define CLOCK_STATE_SHOW_TIME               1
@@ -14,8 +15,9 @@
 #define CLOCK_STATE_SHOW_TIME_BIG_ENDIAN    3
 #define CLOCK_STATE_SHOW_DATE_BIG_ENDIAN    4
 #define CLOCK_STATE_SET_TIME                5
+#define CLOCK_STATE_SET_DATE                6
 
-#define CLOCK_STATE_COUNT                   6
+#define CLOCK_STATE_COUNT                   7
 
 
 #define CLOCK_BUTTON_INFO       0U
@@ -26,6 +28,9 @@
 #define CLOCK_BUTTON_COUNT      4U
 
 #define STATE_TEXT_SIZE       101U
+
+#define MIN_YEAR  2000
+#define MAX_YEAR  ( MIN_YEAR + CLOCK_MAX_BINARY_NUMBER )
 
 
 typedef struct {

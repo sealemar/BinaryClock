@@ -85,6 +85,8 @@ int clock_displayTime(const DateTime *dt);
 
 //
 // @brief displays date from a given DateTime
+//        MM DD YY
+//
 // @param dt a pointer to DateTime which date should be displayed
 // @returns 0 on success
 // EINVAL - if _dt_ is NULL

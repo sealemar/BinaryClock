@@ -11,6 +11,7 @@
 
 #include "alphabet.h"
 #include "clock.h"
+#include "clock_state.h" // for MIN_YEAR
 
 #define DATE_TIME_BINARY_WIDTH 2
 
@@ -88,8 +89,8 @@ int clock_displayTime(const DateTime *dt)
 #endif
 
     Call(clock_displayBinaryNumber(dt->hour,   DATE_TIME_BINARY_WIDTH, 0));
-    Call(clock_displayBinaryNumber(dt->minute, DATE_TIME_BINARY_WIDTH, 3));
-    Call(clock_displayBinaryNumber(dt->second, DATE_TIME_BINARY_WIDTH, 6));
+    Call(clock_displayBinaryNumber(dt->minute, DATE_TIME_BINARY_WIDTH, DATE_TIME_BINARY_WIDTH + 1));
+    Call(clock_displayBinaryNumber(dt->second, DATE_TIME_BINARY_WIDTH, ((DATE_TIME_BINARY_WIDTH) * 2) + 2));
 
     return 0;
 }
@@ -107,9 +108,9 @@ int clock_displayDate(const DateTime *dt)
         OriginateErrorEx(EINVAL, "%d", "dt is NULL");
 #endif
 
-    Call(clock_displayBinaryNumber(dt->year % 100, DATE_TIME_BINARY_WIDTH, 0));
-    Call(clock_displayBinaryNumber(dt->month + 1, DATE_TIME_BINARY_WIDTH, 3));
-    Call(clock_displayBinaryNumber(dt->day, DATE_TIME_BINARY_WIDTH, 6));
+    Call(clock_displayBinaryNumber(dt->month + 1, DATE_TIME_BINARY_WIDTH, 0));
+    Call(clock_displayBinaryNumber(dt->day, DATE_TIME_BINARY_WIDTH, DATE_TIME_BINARY_WIDTH + 1));
+    Call(clock_displayBinaryNumber(dt->year - MIN_YEAR, DATE_TIME_BINARY_WIDTH, ((DATE_TIME_BINARY_WIDTH) * 2) + 2));
 
     return 0;
 }

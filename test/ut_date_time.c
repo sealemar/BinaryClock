@@ -393,20 +393,28 @@ static int test_date_time_dateToStr_returnsERANGEIfValuesAreOutOfRange()
 static int test_date_time_daysInMonth_correct()
 {
     int daysInMonth;
+    DateTime dt;
 
-    Call(date_time_daysInMonth(JANUARY, 2013, &daysInMonth));
+    dt.month = JANUARY;
+    dt.year = 2013;
+    Call(date_time_daysInMonth(&dt, &daysInMonth));
     assert_number(daysInMonth, 31, "%d", "%d");
 
-    Call(date_time_daysInMonth(FEBRUARY, 2013, &daysInMonth));
+
+    dt.month = FEBRUARY;
+    Call(date_time_daysInMonth(&dt, &daysInMonth));
     assert_number(daysInMonth, 28, "%d", "%d");
 
-    Call(date_time_daysInMonth(FEBRUARY, 2012, &daysInMonth));
+    dt.year = 2012;
+    Call(date_time_daysInMonth(&dt, &daysInMonth));
     assert_number(daysInMonth, 29, "%d", "%d");
 
-    Call(date_time_daysInMonth(DECEMBER, 2012, &daysInMonth));
+    dt.month = DECEMBER;
+    Call(date_time_daysInMonth(&dt, &daysInMonth));
     assert_number(daysInMonth, 31, "%d", "%d");
 
-    Call(date_time_daysInMonth(APRIL, 2012, &daysInMonth));
+    dt.month = APRIL;
+    Call(date_time_daysInMonth(&dt, &daysInMonth));
     assert_number(daysInMonth, 30, "%d", "%d");
 
     return 0;
@@ -415,9 +423,14 @@ static int test_date_time_daysInMonth_correct()
 static int test_date_time_daysInMonth_returnsERANGEIfMonthIsOutOfRange()
 {
     int daysInMonth;
+    DateTime dt;
 
-    assert_function(date_time_daysInMonth(JANUARY - 1, 2013, &daysInMonth), ERANGE);
-    assert_function(date_time_daysInMonth(DECEMBER + 1, 2013, &daysInMonth), ERANGE);
+    dt.month = JANUARY - 1;
+    dt.year = 2013;
+    assert_function(date_time_daysInMonth(&dt, &daysInMonth), ERANGE);
+
+    dt.month = DECEMBER + 1;
+    assert_function(date_time_daysInMonth(&dt, &daysInMonth), ERANGE);
 
     return 0;
 }

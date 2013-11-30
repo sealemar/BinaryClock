@@ -45,14 +45,14 @@ extern const char *DateTimeMonthsStr[];
 
 //
 // @brief returns the number of days in a month
-// @param month a month to returns the number of days for
-// @param year a year. I.e. leap year February is 29 and non leap is 28 days
+// @param dt a pointer to DateTime
 // @param daysInMonth the result will be returned here
 // @returns 0 on ok
-// EINVAL if _daysInMonth_ is NULL
-// ERANGE if month < JANUARY or month > DECEMBER
+// EINVAL if _dt_ is NULL
+//        if _daysInMonth_ is NULL
+// ERANGE if dt->month < JANUARY or dt->month > DECEMBER
 //
-int date_time_daysInMonth(int month, int year, int *daysInMonth);
+int date_time_daysInMonth(const DateTime *dt, int *daysInMonth);
 
 //
 // @brief Normalizes date and time in a given _dt_ by rolling

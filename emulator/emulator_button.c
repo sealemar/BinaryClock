@@ -79,6 +79,14 @@ static const char *ButtonsDescription[CLOCK_STATE_COUNT][CLOCK_BUTTON_COUNT] = {
         "Decrease",
         "Increase",
     },
+
+    // CLOCK_STATE_SET_DATE
+    {
+        "",
+        "Set next",
+        "Decrease",
+        "Increase",
+    },
 };
 
 inline static int pressButton(const Button *btn, Bool isPressed)
