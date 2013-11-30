@@ -44,6 +44,17 @@ typedef struct {
 extern const char *DateTimeMonthsStr[];
 
 //
+// @brief returns the number of days in a month
+// @param month a month to returns the number of days for
+// @param year a year. I.e. leap year February is 29 and non leap is 28 days
+// @param daysInMonth the result will be returned here
+// @returns 0 on ok
+// EINVAL if _daysInMonth_ is NULL
+// ERANGE if month < JANUARY or month > DECEMBER
+//
+int date_time_daysInMonth(int month, int year, int *daysInMonth);
+
+//
 // @brief Normalizes date and time in a given _dt_ by rolling
 //        any excesses in milliseconds over to seconds, from seconds
 //        over to minutes and so on. It also works correctly with

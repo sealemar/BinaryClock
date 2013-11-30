@@ -31,7 +31,7 @@ const char *DateTimeMonthsStr[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "J
     } \
 }
 
-inline static int _daysInMonth(int month, int year)
+static int _daysInMonth(int month, int year)
 {
     if(month < JANUARY) {
         --year;
@@ -70,6 +70,29 @@ inline static void _normalize(int *minor, int *major, int minorBase)
         }
         *major -= t;
     }
+}
+
+//
+// @brief returns the number of days in a month
+// @param month a month to returns the number of days for
+// @param year a year. I.e. leap year February is 29 and non leap is 28 days
+// @param daysInMonth the result will be returned here
+// @returns 0 on ok
+// EINVAL if _daysInMonth_ is NULL
+// ERANGE if month < JANUARY or month > DECEMBER
+//
+int date_time_daysInMonth(int month, int year, int *daysInMonth)
+{
+#ifdef PARAM_CHECKS
+    if(daysInMonth == NULL)
+        OriginateErrorEx(EINVAL, "%d", "daysInMonth is NULL");
+    if(month < JANUARY || month > DECEMBER)
+        OriginateErrorEx(ERANGE, "%d", "month [%d] should be >= %d and =< %d", month, JANUARY, DECEMBER);
+#endif
+
+    *daysInMonth = _daysInMonth(month, year);
+
+    return 0;
 }
 
 //

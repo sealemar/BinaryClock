@@ -150,10 +150,9 @@ static int test_clock_slidePattern_returnsCorrectResult()
     const unsigned char *patternTo = patterns[8];
     for(unsigned char step = 0; !isLastStep; ++step)
     {
-        int res = clock_slidePattern(patternFrom, patternTo, step, &isLastStep, currentPattern);
-        if(res) ContinueError(res, "%d");
+        Call(clock_slidePattern(patternFrom, patternTo, step, &isLastStep, currentPattern));
 
-        res = validatePattern(patterns[step], currentPattern);
+        int res = validatePattern(patterns[step], currentPattern);
         if(res) ContinueErrorEx(res, "%d", "step = %d", step);
     }
 
@@ -164,10 +163,9 @@ static int test_clock_drawPattern_correct()
 {
     test_clearScreen();
 
-    int res = clock_drawPattern(ClockAlphabet[CLOCK_1]);
-    if(res) ContinueError(res, "%d");
+    Call(clock_drawPattern(ClockAlphabet[CLOCK_1]));
 
-    res = test_compareScreenPattern(ClockAlphabet[CLOCK_1]);
+    int res = test_compareScreenPattern(ClockAlphabet[CLOCK_1]);
     if(res) OriginateErrorEx(res, "%d", "pattern ClockAlphabet[CLOCK_1] doesn't match the screen");
 
     return 0;
@@ -229,15 +227,10 @@ static int test_clock_slideText_correct()
 int validate_getAlphabetIndexByCharacter_ERANGE(unsigned char ch, int expectedAlphabetIndex)
 {
     int index = 0;
-    int res = clock_getAlphabetIndexByCharacter(ch, &index);
-    if(res != ERANGE) {
-        if(res) ContinueError(res, "%d");
-        OriginateErrorEx(res, "%d", "Unexpected error from clock_getAlphabetIndexByCharacter('%c', &index). "
-                                    "Expected ERANGE", ch);
-    }
+    assert_errorCode(clock_getAlphabetIndexByCharacter(ch, &index), ERANGE);
     if(index != expectedAlphabetIndex) {
-        OriginateErrorEx(res, "%d", "Unexpected index from clock_getAlphabetIndexByCharacter('%c', &index). "
-                                    "index = %d, expected = %d", ch, index, expectedAlphabetIndex);
+        OriginateErrorEx(EFAULT, "%d", "Unexpected index from clock_getAlphabetIndexByCharacter('%c', &index). "
+                                       "index = %d, expected = %d", ch, index, expectedAlphabetIndex);
     }
 
     return 0;
@@ -245,18 +238,15 @@ int validate_getAlphabetIndexByCharacter_ERANGE(unsigned char ch, int expectedAl
 
 static int test_clock_getAlphabetIndexByCharacter_returns_ERANGE_andCorrectIndex()
 {
-    int res;
     for(unsigned char ch = 'a'; ch <= 'z'; ++ch) {
-        res = validate_getAlphabetIndexByCharacter_ERANGE(ch, CLOCK_A + (ch - 'a'));
-        if(res) ContinueError(res, "%d");
+        Call(validate_getAlphabetIndexByCharacter_ERANGE(ch, CLOCK_A + (ch - 'a')));
     }
 
     //
     // Test a random character which is not defined in the alphabet.
     // Expected resulting index is CLOCK_BLANK.
     //
-    res = validate_getAlphabetIndexByCharacter_ERANGE('~', CLOCK_BLANK);
-    if(res) ContinueError(res, "%d");
+    Call(validate_getAlphabetIndexByCharacter_ERANGE('~', CLOCK_BLANK));
 
     return 0;
 }

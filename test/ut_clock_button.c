@@ -24,11 +24,7 @@ static int assert_state(Bool state, Bool expected, size_t index, const char* sta
 static int test_clock_button_press_indexOutOfBounds()
 {
     ClockButtons clockButtons;
-
-    int res = clock_button_press(&clockButtons, CLOCK_BUTTON_MAX_COUNT, TRUE);
-    if(res != EINVAL) {
-        OriginateErrorEx(-1, "%d", "Unexpected error code [%d] from clock_button_press() when index is out of bounds", res);
-    }
+    assert_errorCode(clock_button_press(&clockButtons, CLOCK_BUTTON_MAX_COUNT, TRUE), ERANGE);
 
     return 0;
 }

@@ -22,7 +22,7 @@
 // @param isPressed true if the button needs to be pressed
 // @returns 0 on ok
 // EINVAL - if _clockButtons_ is NULL
-//          if _index_ is greater than the maximum
+// ERANGE - if _index_ is greater than the maximum
 //
 int clock_button_press(ClockButtons *clockButtons, size_t index, Bool isPressed)
 {
@@ -30,7 +30,7 @@ int clock_button_press(ClockButtons *clockButtons, size_t index, Bool isPressed)
     if(clockButtons == NULL)
         OriginateErrorEx(EINVAL, "%d", "clockButtons is NULL");
     if(index >= CLOCK_BUTTON_MAX_COUNT)
-        OriginateErrorEx(EINVAL, "%d", "index should be less than %d", CLOCK_BUTTON_MAX_COUNT);
+        OriginateErrorEx(ERANGE, "%d", "index should be less than %d", CLOCK_BUTTON_MAX_COUNT);
 #endif
 
     //

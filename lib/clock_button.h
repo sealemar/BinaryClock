@@ -74,7 +74,7 @@ typedef struct {
 // @param isPressed true if the button needs to be pressed
 // @returns 0 on ok
 // EINVAL - if _clockButtons_ is NULL
-//          if _index_ is greater than the maximum
+// ERANGE - if _index_ is greater than the maximum
 //
 int clock_button_press(ClockButtons *clockButtons, size_t index, Bool isPressed);
 

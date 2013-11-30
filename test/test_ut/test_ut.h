@@ -34,11 +34,33 @@ int _runTestSuite(const char *fileName, unsigned long line, const char *func, Te
 
 
 //
-// @brief checks if _str_ == _expected_. OriginateError if not
+// @brief asserts if _str_ != _expected_
 //
 #define assert_str(str, expected) { \
     if(strcmp(str, expected)) { \
-        OriginateErrorEx(EINVAL, "%d", "str [%s] != expected [%s]", str, expected); \
+        OriginateErrorEx(EFAULT, "%d", "'" TOSTRING(str) "' [%s] != '" TOSTRING(expected) "' [%s]", str, expected); \
+    } \
+}
+
+//
+// @brief asserts if _number_ != _expected_
+//
+#define assert_number(number, expected, numberFormatSpec, expectedFormatSpec) { \
+    if(number != expected) { \
+        OriginateErrorEx(EFAULT, "%d", "'" TOSTRING(number) "' [" numberFormatSpec "] != '" TOSTRING(expected) \
+                                       "' [" expectedFormatSpec "]", number, expected ); \
+    } \
+}
+
+//
+// @brief asserts if _function_ returns _expectedErrorCode_
+//
+#define assert_errorCode(function, expectedErrorCode) { \
+    int _res = function; \
+    if(_res != (expectedErrorCode) ) { \
+        OriginateErrorEx(EFAULT, "%d", "Unexpected error code [%d], %d was expected. " \
+                                       "From '%s'", \
+                                       _res, (expectedErrorCode), TOSTRING(function)); \
     } \
 }
 

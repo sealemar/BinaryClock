@@ -47,10 +47,8 @@ static int test_date_time_addMillis_correct()
 
     memcpy(&dt2, &dt1, sizeof(dt2));
 
-    int res = date_time_addMillis(&dt1, 0);
-    if(res) ContinueError(res, "%d");
-    res = assert_dateTime(&dt1, &dt2);
-    if(res) ContinueError(res, "%d");
+    Call(date_time_addMillis(&dt1, 0));
+    Call(assert_dateTime(&dt1, &dt2));
 
 
     // + 26 + (53 * 60) seconds
@@ -59,10 +57,8 @@ static int test_date_time_addMillis_correct()
     dt2.minute = 0;
     dt2.second = 0;
 
-    res = date_time_addMillis(&dt1, 1000UL * (26 + (53 * 60)));
-    if(res) ContinueError(res, "%d");
-    res = assert_dateTime(&dt1, &dt2);
-    if(res) ContinueError(res, "%d");
+    Call(date_time_addMillis(&dt1, 1000UL * (26 + (53 * 60))));
+    Call(assert_dateTime(&dt1, &dt2));
 
 
     // + ((((((40 * 24) + 20) * 60) + 15) * 60) + 35) * 1000 + 999 milliseconds
@@ -75,10 +71,8 @@ static int test_date_time_addMillis_correct()
     dt2.second      = 35;
     dt2.millisecond = 999;
 
-    res = date_time_addMillis(&dt1, 1000UL * ((((((40 * 24) + 20) * 60) + 15) * 60) + 35) + 999);
-    if(res) ContinueError(res, "%d");
-    res = assert_dateTime(&dt1, &dt2);
-    if(res) ContinueError(res, "%d");
+    Call(date_time_addMillis(&dt1, 1000UL * ((((((40 * 24) + 20) * 60) + 15) * 60) + 35) + 999));
+    Call(assert_dateTime(&dt1, &dt2));
 
 
     // + 34 days and 1 millisecond
@@ -89,10 +83,8 @@ static int test_date_time_addMillis_correct()
     dt2.second      = 36;
     dt2.millisecond = 0;
 
-    res = date_time_addMillis(&dt1, MILLIS_IN_A_DAY * 34 + 1);
-    if(res) ContinueError(res, "%d");
-    res = assert_dateTime(&dt1, &dt2);
-    if(res) ContinueError(res, "%d");
+    Call(date_time_addMillis(&dt1, MILLIS_IN_A_DAY * 34 + 1));
+    Call(assert_dateTime(&dt1, &dt2));
 
 
     // + 28 days
@@ -100,10 +92,8 @@ static int test_date_time_addMillis_correct()
     dt2.month = MARCH;
     dt2.day   = 1;
 
-    res = date_time_addMillis(&dt1, MILLIS_IN_A_DAY * 28);
-    if(res) ContinueError(res, "%d");
-    res = assert_dateTime(&dt1, &dt2);
-    if(res) ContinueError(res, "%d");
+    Call(date_time_addMillis(&dt1, MILLIS_IN_A_DAY * 28));
+    Call(assert_dateTime(&dt1, &dt2));
 
 
     // 2012-02-01 + 28 days == 2012-02-29
@@ -113,10 +103,8 @@ static int test_date_time_addMillis_correct()
     dt1.day = 1;
     dt2.day = 29;
 
-    res = date_time_addMillis(&dt1, MILLIS_IN_A_DAY * 28);
-    if(res) ContinueError(res, "%d");
-    res = assert_dateTime(&dt1, &dt2);
-    if(res) ContinueError(res, "%d");
+    Call(date_time_addMillis(&dt1, MILLIS_IN_A_DAY * 28));
+    Call(assert_dateTime(&dt1, &dt2));
 
     return 0;
 }
@@ -144,10 +132,8 @@ static int test_date_time_normalize_handlesOverflows()
     dt2.minute = 8;
     dt2.second = 0;
 
-    int res = date_time_normalize(&dt1);
-    if(res) ContinueError(res, "%d");
-    res = assert_dateTime(&dt1, &dt2);
-    if(res) ContinueError(res, "%d");
+    Call(date_time_normalize(&dt1));
+    Call(assert_dateTime(&dt1, &dt2));
 
 
     //
@@ -170,10 +156,8 @@ static int test_date_time_normalize_handlesOverflows()
     dt2.second      = 45;
     dt2.millisecond = 1;
 
-    res = date_time_normalize(&dt1);
-    if(res) ContinueError(res, "%d");
-    res = assert_dateTime(&dt1, &dt2);
-    if(res) ContinueError(res, "%d");
+    Call(date_time_normalize(&dt1));
+    Call(assert_dateTime(&dt1, &dt2));
 
     return 0;
 }
@@ -201,10 +185,8 @@ static int test_date_time_normalize_handlesUnderflows()
     dt2.minute = 0;
     dt2.second = 0;
 
-    int res = date_time_normalize(&dt1);
-    if(res) ContinueError(res, "%d");
-    res = assert_dateTime(&dt1, &dt2);
-    if(res) ContinueError(res, "%d");
+    Call(date_time_normalize(&dt1));
+    Call(assert_dateTime(&dt1, &dt2));
 
 
     //
@@ -214,10 +196,8 @@ static int test_date_time_normalize_handlesUnderflows()
     dt1.hour -= 24;
     dt2.day -= 1;
 
-    res = date_time_normalize(&dt1);
-    if(res) ContinueError(res, "%d");
-    res = assert_dateTime(&dt1, &dt2);
-    if(res) ContinueError(res, "%d");
+    Call(date_time_normalize(&dt1));
+    Call(assert_dateTime(&dt1, &dt2));
 
 
     //
@@ -227,10 +207,8 @@ static int test_date_time_normalize_handlesUnderflows()
     dt1.millisecond -= MILLIS_IN_A_DAY;
     dt2.day -= 1;
 
-    res = date_time_normalize(&dt1);
-    if(res) ContinueError(res, "%d");
-    res = assert_dateTime(&dt1, &dt2);
-    if(res) ContinueError(res, "%d");
+    Call(date_time_normalize(&dt1));
+    Call(assert_dateTime(&dt1, &dt2));
 
 
     //
@@ -241,10 +219,8 @@ static int test_date_time_normalize_handlesUnderflows()
     dt2.month = OCTOBER;
     dt2.day = 31;
 
-    res = date_time_normalize(&dt1);
-    if(res) ContinueError(res, "%d");
-    res = assert_dateTime(&dt1, &dt2);
-    if(res) ContinueError(res, "%d");
+    Call(date_time_normalize(&dt1));
+    Call(assert_dateTime(&dt1, &dt2));
 
 
     //
@@ -255,10 +231,8 @@ static int test_date_time_normalize_handlesUnderflows()
     dt2.month = SEPTEMBER;
     dt2.day = 29;
 
-    res = date_time_normalize(&dt1);
-    if(res) ContinueError(res, "%d");
-    res = assert_dateTime(&dt1, &dt2);
-    if(res) ContinueError(res, "%d");
+    Call(date_time_normalize(&dt1));
+    Call(assert_dateTime(&dt1, &dt2));
 
 
     //
@@ -280,10 +254,8 @@ static int test_date_time_normalize_handlesUnderflows()
     dt2.second      =   12;
     dt2.millisecond =  768;
 
-    res = date_time_normalize(&dt1);
-    if(res) ContinueError(res, "%d");
-    res = assert_dateTime(&dt1, &dt2);
-    if(res) ContinueError(res, "%d");
+    Call(date_time_normalize(&dt1));
+    Call(assert_dateTime(&dt1, &dt2));
 
     return 0;
 }
@@ -332,36 +304,21 @@ static int test_date_time_timeToStr_returnsERANGEIfValuesAreOutOfRange()
     dt.minute = 45;
     dt.second = 59;
 
-    int res = date_time_timeToStr(&dt, str);
-    if(res != ERANGE) {
-        OriginateErrorEx(-1, "%d", "Unexpected error code [%d], ERANGE was expected. "
-                                   "From date_time_timeToStr() when dt.hour = %d",
-                                   res, HOURS_COUNT);
-    }
+    assert_errorCode(date_time_timeToStr(&dt, str), ERANGE);
 
 
     dt.hour = 23;
     dt.minute = 60;
     dt.second = 8;
 
-    res = date_time_timeToStr(&dt, str);
-    if(res != ERANGE) {
-        OriginateErrorEx(-1, "%d", "Unexpected error code [%d], ERANGE was expected. "
-                                   "From date_time_timeToStr() when dt.minute = 60",
-                                   res);
-    }
+    assert_errorCode(date_time_timeToStr(&dt, str), ERANGE);
 
 
     dt.hour = 23;
     dt.minute = 6;
     dt.second = -8;
 
-    res = date_time_timeToStr(&dt, str);
-    if(res != ERANGE) {
-        OriginateErrorEx(-1, "%d", "Unexpected error code [%d], ERANGE was expected. "
-                                   "From date_time_timeToStr() when dt.second = -8",
-                                   res);
-    }
+    assert_errorCode(date_time_timeToStr(&dt, str), ERANGE);
 
     return 0;
 }
@@ -414,36 +371,53 @@ static int test_date_time_dateToStr_returnsERANGEIfValuesAreOutOfRange()
     dt.month = JANUARY;
     dt.day = 31;
 
-    int res = date_time_dateToStr(&dt, str);
-    if(res != ERANGE) {
-        OriginateErrorEx(-1, "%d", "Unexpected error code [%d], ERANGE was expected. "
-                                   "From date_time_dateToStr() when dt.year = -1",
-                                   res);
-    }
+    assert_errorCode(date_time_dateToStr(&dt, str), ERANGE);
 
 
     dt.year = 2013;
     dt.month = DECEMBER + 1;
     dt.day = 31;
 
-    res = date_time_dateToStr(&dt, str);
-    if(res != ERANGE) {
-        OriginateErrorEx(-1, "%d", "Unexpected error code [%d], ERANGE was expected. "
-                                   "From date_time_dateToStr() when dt.month = %d",
-                                   res, DECEMBER + 1);
-    }
+    assert_errorCode(date_time_dateToStr(&dt, str), ERANGE);
 
 
     dt.year = 2013;
     dt.month = DECEMBER;
     dt.day = 32;
 
-    res = date_time_dateToStr(&dt, str);
-    if(res != ERANGE) {
-        OriginateErrorEx(-1, "%d", "Unexpected error code [%d], ERANGE was expected. "
-                                   "From date_time_dateToStr() when dt.day = 32",
-                                   res);
-    }
+    assert_errorCode(date_time_dateToStr(&dt, str), ERANGE);
+
+    return 0;
+}
+
+static int test_date_time_daysInMonth_correct()
+{
+    int daysInMonth;
+
+    Call(date_time_daysInMonth(JANUARY, 2013, &daysInMonth));
+    assert_number(daysInMonth, 31, "%d", "%d");
+
+    Call(date_time_daysInMonth(FEBRUARY, 2013, &daysInMonth));
+    assert_number(daysInMonth, 28, "%d", "%d");
+
+    Call(date_time_daysInMonth(FEBRUARY, 2012, &daysInMonth));
+    assert_number(daysInMonth, 29, "%d", "%d");
+
+    Call(date_time_daysInMonth(DECEMBER, 2012, &daysInMonth));
+    assert_number(daysInMonth, 31, "%d", "%d");
+
+    Call(date_time_daysInMonth(APRIL, 2012, &daysInMonth));
+    assert_number(daysInMonth, 30, "%d", "%d");
+
+    return 0;
+}
+
+static int test_date_time_daysInMonth_returnsERANGEIfMonthIsOutOfRange()
+{
+    int daysInMonth;
+
+    assert_errorCode(date_time_daysInMonth(JANUARY - 1, 2013, &daysInMonth), ERANGE);
+    assert_errorCode(date_time_daysInMonth(DECEMBER + 1, 2013, &daysInMonth), ERANGE);
 
     return 0;
 }
@@ -456,6 +430,8 @@ static TestUnit testSuite[] = {
     { test_date_time_timeToStr_returnsERANGEIfValuesAreOutOfRange, "date_time_timeToStr() returns ERANGE if _dt_ values are out of range", FALSE },
     { test_date_time_dateToStr_correct, "date_time_dateToStr() converts date correctly", FALSE },
     { test_date_time_dateToStr_returnsERANGEIfValuesAreOutOfRange, "date_time_dateToStr() returns ERANGE if _dt_ values are out of range", FALSE },
+    { test_date_time_daysInMonth_correct, "date_time_daysInMonth() returns correct result", FALSE },
+    { test_date_time_daysInMonth_returnsERANGEIfMonthIsOutOfRange, "date_time_daysInMonth() returns ERANGE if month is out of range", FALSE },
 };
 
 int ut_date_time()
