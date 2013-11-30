@@ -4,11 +4,13 @@
 
 #include <ncurses.h>
 #include <errno.h>
-#include <unistd.h>     // for usleep()
+#include <time.h>       // for localtime_r()
 #include <sys/time.h>   // for gettimeofday()
 
 #include <logger.h>
 #include <clock.h>
+#include <clock_extern_functions.h>
+
 #include "emulator.h"
 #include "include.h"
 #include "emulator_button.h"
@@ -89,9 +91,7 @@ int emulator_setPixel(int x, int y, Bool turnOn)
     if(y < 0 || y >= CLOCK_SCREEN_HEIGHT)
         OriginateErrorEx(EINVAL, "%d", "Invalid _y_ value [%d], should be 0 < y < %d", y, CLOCK_SCREEN_HEIGHT);
 
-    int res = setPixelRaw(x, y, turnOn);
-    if(res) ContinueError(res, "%d");
-
+    Call(setPixelRaw(x, y, turnOn));
     _wrefresh(WndClockFace);
 
     return 0;
@@ -100,17 +100,32 @@ int emulator_setPixel(int x, int y, Bool turnOn)
 int emulator_uptimeMillis(unsigned long *millis)
 {
     struct timeval tv;
-    int res = gettimeofday(&tv, NULL);
-    if(res) OriginateErrorEx(errno, "%d", "clock_gettime(CLOCK_MONOTONIC, &ts) failed with %d", errno);
+    CallOriginateErrno(gettimeofday(&tv, NULL));
 
     *millis = tv.tv_usec / 1000 + tv.tv_sec * 1000;
 
     return 0;
 }
 
-void emulator_delay(unsigned long millis)
+int emulator_initDateTime(DateTime *dt)
 {
-    usleep(millis * 1000);
+    if(dt == NULL) OriginateErrorEx(EINVAL, "%d", "dt is NULL");
+
+    struct timeval tv;
+    CallOriginateErrno(gettimeofday(&tv, NULL));
+
+    struct tm ts;
+    localtime_r( &tv.tv_sec, &ts );
+
+    dt->millisecond = tv.tv_usec / 1000;
+    dt->second = ts.tm_sec;
+    dt->minute = ts.tm_min;
+    dt->hour   = ts.tm_hour;
+    dt->day    = ts.tm_mday;
+    dt->month  = ts.tm_mon + JANUARY;
+    dt->year   = ts.tm_year + 1900;
+
+    return 0;
 }
 
 //
@@ -120,6 +135,7 @@ int emulator_init()
 {
     clock_setPixel = emulator_setPixel;
     clock_uptimeMillis = emulator_uptimeMillis;
+    clock_initDateTime = emulator_initDateTime;
 
     initscr();              // Start curses mode
     raw();                  // Line buffering disabled

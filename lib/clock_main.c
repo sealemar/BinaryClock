@@ -9,9 +9,9 @@
 
 #include <string.h>
 
-#include "clock.h"
 #include "clock_time.h"
 #include "clock_main.h"
+#include "clock_extern_functions.h"
 
 //
 // In milliseconds
@@ -74,9 +74,6 @@
 // This text will be shown at clock_state_hello
 //
 static const char StateHelloText[] = " Hello Sergey!!!";
-
-// TODO: think about DateTimeInit
-static const DateTime DateTimeInit = { 2013, NOVEMBER, 29, 20, 7, 52, 0 };
 
 //
 // @brief A helper function to slide a text
@@ -464,8 +461,14 @@ int clock_init(ClockState *clockState)
 #endif
 
     memset(clockState, 0, sizeof(ClockState));
-    memcpy( &(clockState->dateTime), &DateTimeInit, sizeof(DateTime));
-    memcpy( &(clockState->oldDateTime), &DateTimeInit, sizeof(DateTime));
+
+    //
+    // Call clock_initDateTime() if the implementation provides it
+    //
+    if(clock_initDateTime != NULL) {
+        Call(clock_initDateTime( &(clockState->dateTime) ));
+        memcpy( &(clockState->oldDateTime), &(clockState->dateTime), sizeof(DateTime) );
+    }
 
     unsigned long millis;
     Call(clock_uptimeMillis(&millis));

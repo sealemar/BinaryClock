@@ -2,7 +2,7 @@
 // developed by Sergey Markelov (11/10/2013)
 //
 
-#include <clock.h>
+#include <clock_extern_functions.h>
 #include "clock_extra.h"
 #include "ut_clock.h"
 #include "ut_clock_time.h"

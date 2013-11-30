@@ -12,12 +12,9 @@
 #include "alphabet.h"
 #include "clock.h"
 #include "clock_state.h" // for MIN_YEAR
+#include "clock_extern_functions.h"
 
 #define DATE_TIME_BINARY_WIDTH 2
-
-
-int (* clock_setPixel)(int x, int y, Bool turnOn) = NULL;
-int (* clock_uptimeMillis)(unsigned long *millis) = NULL;
 
 //
 // @brief draws a pattern on the screen

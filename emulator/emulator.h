@@ -21,7 +21,7 @@ int emulator_setPixel(int x, int y, Bool turnOn);
 
 int emulator_uptimeMillis(unsigned long *millis);
 
-void emulator_delay(unsigned long);
+int emulator_initDateTime(DateTime *dt);
 
 int emulator_init();
 

@@ -27,4 +27,19 @@ typedef enum { FALSE = 0, TRUE } Bool;
 #define Call(function) { (void)function; }
 #endif
 
+//
+// @brief CallOriginateErrno(function) makes a function call taking PARAM_CHECKS macro into
+//        consideration. If the macro is defined, OriginateErrorEx(errno, "%d", description);
+//        will be called if function fails.
+//        If the macro is not defined, the result will be ignored
+//
+#ifdef PARAM_CHECKS
+#define CallOriginateErrno(function) { \
+    int _res = function; \
+    if(_res) OriginateErrorEx(errno, "%d", "'%s' failed with %d", TOSTRING(function), errno); \
+}
+#else
+#define CallOriginateErrno(function) { (void)function; }
+#endif
+
 #endif

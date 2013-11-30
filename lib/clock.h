@@ -31,29 +31,6 @@
 #define clock_clearScreen() ( clock_drawPattern(ClockAlphabet[CLOCK_BLANK]) )
 
 //
-// @note the implementation needs to set clock_setPixel to point to a real function.
-//       It is stubbed to NULL by default
-// @brief switches one pixel on or off
-// @param x x coordinate (0 < x < SCREEN_WIDTH)
-// @param y y coordinate (0 < y < SCREEN_HEIGHT)
-// @param turnOn if not 0, the pixel will be turned on
-// @returns 0 on ok
-// EINVAL - if _x_ or _y_ is out of range
-//
-extern int (* clock_setPixel)(int x, int y, Bool turnOn);
-
-//
-// @note the implementation needs to set clock_setPixel to point to a real function.
-//       It is stubbed to NULL by default
-// @param millis will be set to the clock uptime in milliseconds
-// @returns 0 on ok
-// implementation error if fails
-//
-// @note On Arduino that will be most likely millis() function.
-//
-extern int (* clock_uptimeMillis)(unsigned long *millis);
-
-//
 // @brief draws a pattern on the screen
 // @param pattern should be one of defined in alphabet.h
 // @see alphabet.h
