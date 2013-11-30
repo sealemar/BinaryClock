@@ -34,8 +34,8 @@ static int assert_dateTime(DateTime *dt1, const DateTime *dt2)
 
 static int test_date_time_addMillis_correct()
 {
-    DateTime dt1 = { 0 };
-    DateTime dt2 = { 0 };
+    DateTime dt1;
+    DateTime dt2;
 
     dt1.year        = 2013;
     dt1.month       = NOVEMBER;
@@ -111,8 +111,8 @@ static int test_date_time_addMillis_correct()
 
 static int test_date_time_normalize_handlesOverflows()
 {
-    DateTime dt1 = { 0 };
-    DateTime dt2 = { 0 };
+    DateTime dt1;
+    DateTime dt2;
 
 
     //
@@ -164,8 +164,8 @@ static int test_date_time_normalize_handlesOverflows()
 
 static int test_date_time_normalize_handlesUnderflows()
 {
-    DateTime dt1 = { 0 };
-    DateTime dt2 = { 0 };
+    DateTime dt1;
+    DateTime dt2;
 
 
     //
@@ -304,21 +304,21 @@ static int test_date_time_timeToStr_returnsERANGEIfValuesAreOutOfRange()
     dt.minute = 45;
     dt.second = 59;
 
-    assert_errorCode(date_time_timeToStr(&dt, str), ERANGE);
+    assert_function(date_time_timeToStr(&dt, str), ERANGE);
 
 
     dt.hour = 23;
     dt.minute = 60;
     dt.second = 8;
 
-    assert_errorCode(date_time_timeToStr(&dt, str), ERANGE);
+    assert_function(date_time_timeToStr(&dt, str), ERANGE);
 
 
     dt.hour = 23;
     dt.minute = 6;
     dt.second = -8;
 
-    assert_errorCode(date_time_timeToStr(&dt, str), ERANGE);
+    assert_function(date_time_timeToStr(&dt, str), ERANGE);
 
     return 0;
 }
@@ -371,21 +371,21 @@ static int test_date_time_dateToStr_returnsERANGEIfValuesAreOutOfRange()
     dt.month = JANUARY;
     dt.day = 31;
 
-    assert_errorCode(date_time_dateToStr(&dt, str), ERANGE);
+    assert_function(date_time_dateToStr(&dt, str), ERANGE);
 
 
     dt.year = 2013;
     dt.month = DECEMBER + 1;
     dt.day = 31;
 
-    assert_errorCode(date_time_dateToStr(&dt, str), ERANGE);
+    assert_function(date_time_dateToStr(&dt, str), ERANGE);
 
 
     dt.year = 2013;
     dt.month = DECEMBER;
     dt.day = 32;
 
-    assert_errorCode(date_time_dateToStr(&dt, str), ERANGE);
+    assert_function(date_time_dateToStr(&dt, str), ERANGE);
 
     return 0;
 }
@@ -416,8 +416,8 @@ static int test_date_time_daysInMonth_returnsERANGEIfMonthIsOutOfRange()
 {
     int daysInMonth;
 
-    assert_errorCode(date_time_daysInMonth(JANUARY - 1, 2013, &daysInMonth), ERANGE);
-    assert_errorCode(date_time_daysInMonth(DECEMBER + 1, 2013, &daysInMonth), ERANGE);
+    assert_function(date_time_daysInMonth(JANUARY - 1, 2013, &daysInMonth), ERANGE);
+    assert_function(date_time_daysInMonth(DECEMBER + 1, 2013, &daysInMonth), ERANGE);
 
     return 0;
 }

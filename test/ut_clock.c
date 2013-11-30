@@ -227,7 +227,7 @@ static int test_clock_slideText_correct()
 int validate_getAlphabetIndexByCharacter_ERANGE(unsigned char ch, int expectedAlphabetIndex)
 {
     int index = 0;
-    assert_errorCode(clock_getAlphabetIndexByCharacter(ch, &index), ERANGE);
+    assert_function(clock_getAlphabetIndexByCharacter(ch, &index), ERANGE);
     if(index != expectedAlphabetIndex) {
         OriginateErrorEx(EFAULT, "%d", "Unexpected index from clock_getAlphabetIndexByCharacter('%c', &index). "
                                        "index = %d, expected = %d", ch, index, expectedAlphabetIndex);

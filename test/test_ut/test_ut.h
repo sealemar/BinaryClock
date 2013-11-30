@@ -54,8 +54,11 @@ int _runTestSuite(const char *fileName, unsigned long line, const char *func, Te
 
 //
 // @brief asserts if _function_ returns _expectedErrorCode_
+// @param function is the function itself, not an error code which it returns.
+//        This macro will make the function call. The function must return int
+// @param expectedErrorCode an expected error code fromt the _function_
 //
-#define assert_errorCode(function, expectedErrorCode) { \
+#define assert_function(function, expectedErrorCode) { \
     int _res = function; \
     if(_res != (expectedErrorCode) ) { \
         OriginateErrorEx(EFAULT, "%d", "Unexpected error code [%d], %d was expected. " \
