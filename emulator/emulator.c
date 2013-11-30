@@ -42,7 +42,7 @@ static int createWindows()
 
     CallMalloc( WndBanner, newwin(2, 0, 0, 0) );
     CallMalloc( WndClockFace, newwin(CLOCK_SCREEN_HEIGHT, CLOCK_SCREEN_WIDTH << 1, 2, 0) );
-    emulator_button_init();
+    Call( emulator_button_init() );
     CallMalloc( WndNotes, newwin(0, 0, CLOCK_SCREEN_HEIGHT + 5, 0) );
 
     return 0;
@@ -158,9 +158,9 @@ int emulator_init()
     timeout(GETCH_TIMEOUT); // delay for that many milliseconds in getch()
 
     if(has_colors()) {
-        start_color();
-        init_pair(COLOR_ON,  COLOR_YELLOW, COLOR_BLACK);
-        init_pair(COLOR_OFF, COLOR_BLUE, COLOR_BLACK);
+        CallNcurses( start_color() );
+        CallNcurses( init_pair(COLOR_ON,  COLOR_YELLOW, COLOR_BLACK) );
+        CallNcurses( init_pair(COLOR_OFF, COLOR_BLUE, COLOR_BLACK) );
     }
 
     Call(createWindows());
