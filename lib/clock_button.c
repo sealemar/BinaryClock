@@ -26,9 +26,8 @@
 //
 int clock_button_press(ClockButtons *clockButtons, size_t index, Bool isPressed)
 {
+    NullCheck(clockButtons);
 #ifdef PARAM_CHECKS
-    if(clockButtons == NULL)
-        OriginateErrorEx(EINVAL, "%d", "clockButtons is NULL");
     if(index >= CLOCK_BUTTON_MAX_COUNT)
         OriginateErrorEx(ERANGE, "%d", "index should be less than %d", CLOCK_BUTTON_MAX_COUNT);
 #endif

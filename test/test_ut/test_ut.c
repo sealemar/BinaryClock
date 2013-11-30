@@ -2,12 +2,9 @@
 
 int _runTestSuite(const char *fileName, unsigned long line, const char *func, TestUnit *testSuite, size_t testsCount)
 {
-    if(fileName == NULL)
-        OriginateErrorEx(EINVAL, "%d", "fileName is NULL");
-    if(func == NULL)
-        OriginateErrorEx(EINVAL, "%d", "func is NULL");
-    if(testSuite == NULL)
-        OriginateErrorEx(EINVAL, "%d", "testSuite is NULL");
+    NullCheck(fileName);
+    NullCheck(func);
+    NullCheck(testSuite);
     if(testsCount == 0)
         OriginateErrorEx(EINVAL, "%d", "testsCount is 0");
 

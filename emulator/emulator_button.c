@@ -135,7 +135,7 @@ int emulator_button_deinit()
 //
 int emulator_button_press(ClockButtons *clockButtons, int ch, Bool *matched)
 {
-    if(clockButtons == NULL) OriginateErrorEx(EINVAL, "%d", "clockButtons is NULL");
+    NullCheck(clockButtons);
 
     if(matched != NULL) {
         *matched = FALSE;
@@ -173,7 +173,7 @@ int emulator_button_press(ClockButtons *clockButtons, int ch, Bool *matched)
 //
 int emulator_button_update(const ClockState *clockState)
 {
-    if(clockState == NULL) OriginateErrorEx(EINVAL, "%d", "clockState is NULL");
+    NullCheck(clockState);
 
     _wattrset(WndButtons, A_NORMAL);
 

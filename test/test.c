@@ -2,7 +2,7 @@
 // developed by Sergey Markelov (11/15/2013)
 //
 #include <memory.h>
-#include "clock_extra.h"
+#include "test.h"
 
 static unsigned char Screen[CLOCK_PATTERN_SIZE] = { 0 };
 
@@ -22,15 +22,16 @@ int test_setPixel(int x, int y, Bool turnOn)
     return 0;
 }
 
-void test_clearScreen()
+int test_clearScreen()
 {
     memset(Screen, 0, sizeof(Screen));
+
+    return 0;
 }
 
 int test_compareScreenPattern(const unsigned char pattern[CLOCK_PATTERN_SIZE])
 {
-    if(pattern == NULL)
-        OriginateErrorEx(EINVAL, "%d", "pattern is NULL");
+    NullCheck(pattern);
 
     return memcmp(Screen, pattern, sizeof(Screen));
 }

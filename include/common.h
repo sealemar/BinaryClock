@@ -42,4 +42,16 @@ typedef enum { FALSE = 0, TRUE } Bool;
 #define CallOriginateErrno(function) { (void)function; }
 #endif
 
+//
+// @brief Performs a NULL check on _arg_. OriginateErrorEx(EINVAL, arg + " is NULL") if it is NULL
+//
+#ifdef PARAM_CHECKS
+#define NullCheck(arg) { \
+    if(arg == NULL) \
+        OriginateErrorEx(EINVAL, "%d", "%s is NULL", TOSTRING(arg)); \
+}
+#else
+#define NullCheck(arg) ((void)(arg))
+#endif
+
 #endif

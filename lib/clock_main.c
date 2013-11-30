@@ -11,7 +11,7 @@
 
 #include "clock_time.h"
 #include "clock_main.h"
-#include "clock_extern_functions.h"
+#include "clock_extern.h"
 
 //
 // In milliseconds
@@ -53,7 +53,7 @@
     clockState->step  = 0; \
     clockState->state = nextState; \
     clockState->stepMillis = nextStepMillis; \
-    if(doClearScreen) { Call(clock_clearScreen()); } \
+    if(doClearScreen) { clock_clearScreen(); } \
 }
 
 //
@@ -455,23 +455,20 @@ static int (* const ClockStateFunctionMap[])(ClockState *) = {
 //
 int clock_init(ClockState *clockState)
 {
-#ifdef PARAM_CHECKS
-    if(clockState == NULL)
-        OriginateErrorEx(EINVAL, "%d", "clockState is NULL");
-#endif
+    NullCheck(clockState);
 
     memset(clockState, 0, sizeof(ClockState));
 
     //
     // Call clock_initDateTime() if the implementation provides it
     //
-    if(clock_initDateTime != NULL) {
-        Call(clock_initDateTime( &(clockState->dateTime) ));
+    if(clock_extern_initDateTime != NULL) {
+        Call(clock_extern_initDateTime( &(clockState->dateTime) ));
         memcpy( &(clockState->oldDateTime), &(clockState->dateTime), sizeof(DateTime) );
     }
 
     unsigned long millis;
-    Call(clock_uptimeMillis(&millis));
+    Call(clock_extern_uptimeMillis(&millis));
     Call(clock_updateUptimeMillis(millis, &(clockState->lastUptime), &millis));
 
     return 0;
@@ -487,13 +484,10 @@ int clock_init(ClockState *clockState)
 //
 int clock_update(ClockState *clockState)
 {
-#ifdef PARAM_CHECKS
-    if(clockState == NULL)
-        OriginateErrorEx(EINVAL, "%d", "clockState is NULL");
-#endif
+    NullCheck(clockState);
 
     unsigned long millis;
-    Call(clock_uptimeMillis(&millis));
+    Call(clock_extern_uptimeMillis(&millis));
     Call(clock_updateUptimeMillis(millis, &(clockState->lastUptime), &millis));
     Call(date_time_addMillis(&(clockState->dateTime), millis));
 

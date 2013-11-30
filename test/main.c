@@ -2,8 +2,8 @@
 // developed by Sergey Markelov (11/10/2013)
 //
 
-#include <clock_extern_functions.h>
-#include "clock_extra.h"
+#include <clock_extern.h>
+#include "test.h"
 #include "ut_clock.h"
 #include "ut_clock_time.h"
 #include "ut_date_time.h"
@@ -23,7 +23,8 @@ int main()
 {
     errStream = stderr;
     outStream = stdout;
-    clock_setPixel = test_setPixel;
+    clock_extern_setPixel = test_setPixel;
+    clock_extern_clearScreen = test_clearScreen;
 
     return runTestSuite(testSuites);
 }

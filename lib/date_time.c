@@ -83,11 +83,9 @@ inline static void _normalize(int *minor, int *major, int minorBase)
 //
 int date_time_daysInMonth(const DateTime *dt, int *daysInMonth)
 {
+    NullCheck(dt);
+    NullCheck(daysInMonth);
 #ifdef PARAM_CHECKS
-    if(dt == NULL)
-        OriginateErrorEx(EINVAL, "%d", "dt is NULL");
-    if(daysInMonth == NULL)
-        OriginateErrorEx(EINVAL, "%d", "daysInMonth is NULL");
     if(dt->month < JANUARY || dt->month > DECEMBER)
         OriginateErrorEx(ERANGE, "%d", "month [%d] should be >= %d and =< %d", dt->month, JANUARY, DECEMBER);
 #endif
@@ -121,10 +119,7 @@ int date_time_daysInMonth(const DateTime *dt, int *daysInMonth)
 //
 int date_time_normalize(DateTime *dt)
 {
-#ifdef PARAM_CHECKS
-    if(dt == NULL)
-        OriginateErrorEx(EINVAL, "%d", "dt is NULL");
-#endif
+    NullCheck(dt);
 
     _normalize(&(dt->millisecond), &(dt->second), 1000);
     _normalize(&(dt->second),      &(dt->minute),   60);
@@ -186,10 +181,7 @@ int date_time_normalize(DateTime *dt)
 //
 int date_time_addMillis(DateTime *dt, unsigned long millis)
 {
-#ifdef PARAM_CHECKS
-    if(dt == NULL)
-        OriginateErrorEx(EINVAL, "%d", "dt is NULL");
-#endif
+    NullCheck(dt);
 
     //
     // Since _v_ is unsigned long and all of DateTime member variables
@@ -229,9 +221,9 @@ int date_time_addMillis(DateTime *dt, unsigned long millis)
 //
 int date_time_timeToStr(const DateTime *dt, char str[DATE_TIME_TIME_STR_SIZE])
 {
+    NullCheck(dt);
+    NullCheck(str);
 #ifdef PARAM_CHECKS
-    if(dt == NULL) OriginateErrorEx(EINVAL, "%d", "dt is NULL");
-    if(str == NULL) OriginateErrorEx(EINVAL, "%d", "str is NULL");
     if(dt->hour < 0 || dt->hour >= HOURS_COUNT) {
         OriginateErrorEx(ERANGE, "%d", "dt->hour = [%d] should be >= 0 and < %d", dt->hour, HOURS_COUNT);
     }
@@ -277,9 +269,9 @@ int date_time_timeToStr(const DateTime *dt, char str[DATE_TIME_TIME_STR_SIZE])
 //
 int date_time_dateToStr(const DateTime *dt, char str[DATE_TIME_DATE_STR_SIZE])
 {
+    NullCheck(dt);
+    NullCheck(str);
 #ifdef PARAM_CHECKS
-    if(dt == NULL) OriginateErrorEx(EINVAL, "%d", "dt is NULL");
-    if(str == NULL) OriginateErrorEx(EINVAL, "%d", "str is NULL");
     if(dt->year < 0 || dt->year > 9999) {
         OriginateErrorEx(ERANGE, "%d", "dt->year = [%d] should be >= 0 and <= 9999", dt->year);
     }

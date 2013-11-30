@@ -5,7 +5,7 @@
 #include <string.h>
 
 #include <alphabet.h>
-#include "clock_extra.h"
+#include "test.h"
 #include "ut_clock.h"
 
 static int validatePattern(
@@ -161,7 +161,7 @@ static int test_clock_slidePattern_returnsCorrectResult()
 
 static int test_clock_drawPattern_correct()
 {
-    test_clearScreen();
+    Call(test_clearScreen());
 
     Call(clock_drawPattern(ClockAlphabet[CLOCK_1]));
 
@@ -175,7 +175,7 @@ static int test_clock_displayBinaryNumber_correct()
 {
     unsigned char pat = 3 << 4;
 
-    test_clearScreen();
+    Call(test_clearScreen());
 
     for(unsigned int i = 0, last = (1 << CLOCK_SCREEN_HEIGHT); i < last; ++i) {
         int res = clock_displayBinaryNumber(i, 2, 2);

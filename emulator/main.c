@@ -16,7 +16,7 @@ FILE *outStream;
 
 void atExit()
 {
-    clock_deinit();
+    emulator_deinit();
 }
 
 int main()

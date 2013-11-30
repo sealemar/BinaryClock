@@ -12,17 +12,6 @@
 #define COLOR_ON     1
 #define COLOR_OFF    2
 
-//
-// @brief sets pixel, but doesn't refresh the screen
-//
-int setPixelRaw(int x, int y, Bool turnOn);
-
-int emulator_setPixel(int x, int y, Bool turnOn);
-
-int emulator_uptimeMillis(unsigned long *millis);
-
-int emulator_initDateTime(DateTime *dt);
-
 int emulator_init();
 
 //
@@ -34,6 +23,6 @@ int emulator_update(const ClockState *cs);
 // @brief If clock_init() was called, this function must be called
 //        to deinitialize and free resources.
 //
-void clock_deinit();
+void emulator_deinit();
 
 #endif

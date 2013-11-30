@@ -30,12 +30,8 @@
 //
 int clock_updateUptimeMillis(unsigned long millis, unsigned long *lastMillis, unsigned long *delta)
 {
-#ifdef PARAM_CHECKS
-    if(lastMillis == NULL)
-        OriginateErrorEx(EINVAL, "%d", "lastMillis is NULL");
-    if(delta == NULL)
-        OriginateErrorEx(EINVAL, "%d", "delta is NULL");
-#endif
+    NullCheck(lastMillis);
+    NullCheck(delta);
 
     *delta = 0;
 

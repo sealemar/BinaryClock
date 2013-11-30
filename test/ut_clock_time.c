@@ -10,7 +10,7 @@ static int assert_clock_updateUptimeMillis_delta(
         unsigned long expectedDelta,
         unsigned long *lastMillis)
 {
-    if(lastMillis == NULL) OriginateErrorEx(EINVAL, "%d", "lastMillis is NULL");
+    NullCheck(lastMillis);
 
     unsigned long delta;
     Call(clock_updateUptimeMillis(updateMillis, lastMillis, &delta));

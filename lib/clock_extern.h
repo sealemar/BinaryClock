@@ -8,6 +8,7 @@
 #include "date_time.h"
 
 //
+// @note required
 // @note the implementation needs to set clock_setPixel to point to a real function.
 //       It is stubbed to NULL by default
 // @brief switches one pixel on or off
@@ -17,9 +18,10 @@
 // @returns 0 on ok
 // EINVAL - if _x_ or _y_ is out of range
 //
-extern int (* clock_setPixel)(int x, int y, Bool turnOn);
+extern int (* clock_extern_setPixel)(int x, int y, Bool turnOn);
 
 //
+// @note required
 // @note the implementation needs to set clock_setPixel to point to a real function.
 //       It is stubbed to NULL by default
 // @param millis will be set to the clock uptime in milliseconds
@@ -28,9 +30,19 @@ extern int (* clock_setPixel)(int x, int y, Bool turnOn);
 //
 // @note On Arduino that will be most likely millis() function.
 //
-extern int (* clock_uptimeMillis)(unsigned long *millis);
+extern int (* clock_extern_uptimeMillis)(unsigned long *millis);
 
 //
+// @note optional
+// @brief The implementation may set this pointer to a function in which case
+//        clock_clearScreen() will call it. It will call
+//        clock_drawPattern(ClockAlphabet[CLOCK_BLANK])
+//        otherwise
+//
+extern int (* clock_extern_clearScreen)(void);
+
+//
+// @note optional
 // @brief This pointer to a function is stubbed to NULL by default.
 //        If it is not NULL, then it will be called from
 //        clock_init(ClockState *) and ClockState->DateTime will be
@@ -41,6 +53,6 @@ extern int (* clock_uptimeMillis)(unsigned long *millis);
 //
 // @returns 0 on ok
 //
-extern int (* clock_initDateTime)(DateTime *dt);
+extern int (* clock_extern_initDateTime)(DateTime *dt);
 
 #endif

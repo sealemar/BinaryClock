@@ -9,7 +9,7 @@
 
 #include <logger.h>
 #include <clock.h>
-#include <clock_extern_functions.h>
+#include <clock_extern.h>
 
 #include "emulator.h"
 #include "include.h"
@@ -56,7 +56,7 @@ static int initWindowBanner()
     return 0;
 }
 
-int setPixelRaw(int x, int y, Bool turnOn)
+static int emulator_setPixelRaw(int x, int y, Bool turnOn)
 {
     const int pixel = turnOn ? PIXEL_ON | A_BOLD : PIXEL_OFF | A_DIM;
     x <<= 1;
@@ -84,20 +84,20 @@ int setPixelRaw(int x, int y, Bool turnOn)
 // @param turnOn if not FALSE, the pixel will be turned on
 // @returns 0 on ok
 //
-int emulator_setPixel(int x, int y, Bool turnOn)
+static int emulator_setPixel(int x, int y, Bool turnOn)
 {
     if(x < 0 || x >= CLOCK_SCREEN_WIDTH)
         OriginateErrorEx(EINVAL, "%d", "Invalid _x_ value [%d], should be 0 < x < %d", x, CLOCK_SCREEN_WIDTH);
     if(y < 0 || y >= CLOCK_SCREEN_HEIGHT)
         OriginateErrorEx(EINVAL, "%d", "Invalid _y_ value [%d], should be 0 < y < %d", y, CLOCK_SCREEN_HEIGHT);
 
-    Call(setPixelRaw(x, y, turnOn));
+    Call(emulator_setPixelRaw(x, y, turnOn));
     _wrefresh(WndClockFace);
 
     return 0;
 }
 
-int emulator_uptimeMillis(unsigned long *millis)
+static int emulator_uptimeMillis(unsigned long *millis)
 {
     struct timeval tv;
     CallOriginateErrno(gettimeofday(&tv, NULL));
@@ -107,9 +107,9 @@ int emulator_uptimeMillis(unsigned long *millis)
     return 0;
 }
 
-int emulator_initDateTime(DateTime *dt)
+static int emulator_initDateTime(DateTime *dt)
 {
-    if(dt == NULL) OriginateErrorEx(EINVAL, "%d", "dt is NULL");
+    NullCheck(dt);
 
     struct timeval tv;
     CallOriginateErrno(gettimeofday(&tv, NULL));
@@ -128,14 +128,27 @@ int emulator_initDateTime(DateTime *dt)
     return 0;
 }
 
+static int emulator_clearScreen()
+{
+    for(int x = 0; x < CLOCK_SCREEN_WIDTH; ++x) {
+        for(int y = 0; y < CLOCK_SCREEN_HEIGHT; ++y) {
+            Call(emulator_setPixelRaw(x, y, FALSE));
+        }
+    }
+    _wrefresh(WndClockFace);
+
+    return 0;
+}
+
 //
 // @brief initializes emulator
 //
 int emulator_init()
 {
-    clock_setPixel = emulator_setPixel;
-    clock_uptimeMillis = emulator_uptimeMillis;
-    clock_initDateTime = emulator_initDateTime;
+    clock_extern_setPixel = emulator_setPixel;
+    clock_extern_uptimeMillis = emulator_uptimeMillis;
+    clock_extern_initDateTime = emulator_initDateTime;
+    clock_extern_clearScreen = emulator_clearScreen;
 
     initscr();              // Start curses mode
     raw();                  // Line buffering disabled
@@ -156,7 +169,7 @@ int emulator_init()
 
     Call(initWindowBanner());
 
-    Call(clock_clearScreen());
+    Call(clock_extern_clearScreen());
 
     return 0;
 }
@@ -171,7 +184,7 @@ int emulator_update(const ClockState *cs)
     return 0;
 }
 
-void clock_deinit()
+void emulator_deinit()
 {
     destroyWindows();
     endwin();

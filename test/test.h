@@ -9,7 +9,7 @@
 #include <clock_time.h>
 
 int test_setPixel(int x, int y, Bool turnOn);
-void test_clearScreen();
+int test_clearScreen();
 
 //
 // @brief compares the test screen to a given pattern

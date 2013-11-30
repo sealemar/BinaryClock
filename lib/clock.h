@@ -23,12 +23,22 @@
 #define CLOCK_PATTERN_SIZE      (CLOCK_SCREEN_HEIGHT)
 
 #include "alphabet.h"
+#include "clock_extern.h"
 
 //
-// @brief clears the clock screen
-// @returns after clock_drawPattern()
+// @brief Clears the clock screen.
+//        If the implementation provides clock_extern_clearScreen(),
+//        that function will be used.
+//        clock_drawPattern(ClockAlphabet[CLOCK_BLANK])
+//        will be used otherwise
 //
-#define clock_clearScreen() ( clock_drawPattern(ClockAlphabet[CLOCK_BLANK]) )
+#define clock_clearScreen() { \
+    if(clock_extern_clearScreen != NULL) { \
+        Call( clock_extern_clearScreen() ); \
+    } else { \
+        Call( clock_drawPattern(ClockAlphabet[CLOCK_BLANK]) ); \
+    } \
+}
 
 //
 // @brief draws a pattern on the screen

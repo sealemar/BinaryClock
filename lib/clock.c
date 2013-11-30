@@ -12,7 +12,6 @@
 #include "alphabet.h"
 #include "clock.h"
 #include "clock_state.h" // for MIN_YEAR
-#include "clock_extern_functions.h"
 
 #define DATE_TIME_BINARY_WIDTH 2
 
@@ -26,17 +25,14 @@
 //
 int clock_drawPattern(const unsigned char pattern[CLOCK_PATTERN_SIZE])
 {
-#ifdef PARAM_CHECKS
-    if(pattern == NULL)
-        OriginateErrorEx(EINVAL, "%d", "pattern is NULL");
-#endif
+    NullCheck(pattern);
 
     for(int y = 0; y < CLOCK_SCREEN_HEIGHT; ++y)
     {
         const unsigned char ch = pattern[y];
 
         for(int x = 0; x < CLOCK_SCREEN_WIDTH; ++x)
-            clock_setPixel(x, y, ch & 1 << (CLOCK_SCREEN_WIDTH - x - 1));
+            clock_extern_setPixel(x, y, ch & 1 << (CLOCK_SCREEN_WIDTH - x - 1));
     }
 
     return 0;
@@ -65,7 +61,7 @@ int clock_displayBinaryNumber(unsigned int number, unsigned int width, unsigned 
 
     for(unsigned int y = 0; y < CLOCK_SCREEN_HEIGHT; ++y) {
         for(unsigned int x = pos, xLast = pos + width; x < xLast; ++x) {
-            Call(clock_setPixel(x, CLOCK_SCREEN_HEIGHT - y - 1, number & 1U << y));
+            Call(clock_extern_setPixel(x, CLOCK_SCREEN_HEIGHT - y - 1, number & 1U << y));
         }
     }
 
@@ -80,10 +76,7 @@ int clock_displayBinaryNumber(unsigned int number, unsigned int width, unsigned 
 //
 int clock_displayTime(const DateTime *dt)
 {
-#ifdef PARAM_CHECKS
-    if(dt == NULL)
-        OriginateErrorEx(EINVAL, "%d", "dt is NULL");
-#endif
+    NullCheck(dt);
 
     Call(clock_displayBinaryNumber(dt->hour,   DATE_TIME_BINARY_WIDTH, 0));
     Call(clock_displayBinaryNumber(dt->minute, DATE_TIME_BINARY_WIDTH, DATE_TIME_BINARY_WIDTH + 1));
@@ -100,10 +93,7 @@ int clock_displayTime(const DateTime *dt)
 //
 int clock_displayDate(const DateTime *dt)
 {
-#ifdef PARAM_CHECKS
-    if(dt == NULL)
-        OriginateErrorEx(EINVAL, "%d", "dt is NULL");
-#endif
+    NullCheck(dt);
 
     Call(clock_displayBinaryNumber(dt->month + 1, DATE_TIME_BINARY_WIDTH, 0));
     Call(clock_displayBinaryNumber(dt->day, DATE_TIME_BINARY_WIDTH, DATE_TIME_BINARY_WIDTH + 1));
@@ -125,10 +115,7 @@ int clock_displayDate(const DateTime *dt)
 //
 int clock_getAlphabetIndexByCharacter(unsigned char ch, int *clockAlphabetIndex)
 {
-#ifdef PARAM_CHECKS
-    if(clockAlphabetIndex == NULL)
-        OriginateErrorEx(EINVAL, "%d", "clockAlphabetIndex is NULL");
-#endif
+    NullCheck(clockAlphabetIndex);
 
     if(ch >= '0' && ch <= '9') {
         *clockAlphabetIndex = CLOCK_0 + (ch - '0');
@@ -177,17 +164,13 @@ int clock_slidePattern(
         Bool                *isLastStep,
         unsigned char        pattern[CLOCK_PATTERN_SIZE])
 {
+    NullCheck(patternFrom);
+    NullCheck(patternTo);
+    NullCheck(isLastStep);
+    NullCheck(pattern);
 #ifdef PARAM_CHECKS
-    if(patternFrom == NULL)
-        OriginateErrorEx(EINVAL, "%d", "patternFrom is NULL");
-    if(patternTo == NULL)
-        OriginateErrorEx(EINVAL, "%d", "patternTo is NULL");
     if(step > CLOCK_SCREEN_WIDTH)
         OriginateErrorEx(EINVAL, "%d", "step should be 0 < step[%u] <= CLOCK_SCREEN_WIDTH[%d]", step, CLOCK_SCREEN_WIDTH);
-    if(isLastStep == NULL)
-        OriginateErrorEx(EINVAL, "%d", "isLastStep is NULL");
-    if(pattern == NULL)
-        OriginateErrorEx(EINVAL, "%d", "pattern is NULL");
 #else
     if(step > CLOCK_SCREEN_WIDTH)
     {
@@ -229,15 +212,12 @@ int clock_slideText(
 {
     size_t lastStep = CLOCK_SCREEN_WIDTH * (strlen(text) - 1);
 
+    NullCheck(text);
+    NullCheck(isLastStep);
+    NullCheck(pattern);
 #ifdef PARAM_CHECKS
-    if(text == NULL)
-        OriginateErrorEx(EINVAL, "%d", "text is NULL");
     if(step > lastStep)
         OriginateErrorEx(EINVAL, "%d", "step[%zu] should be <= %zu for text '%s'", step, lastStep, text);
-    if(isLastStep == NULL)
-        OriginateErrorEx(EINVAL, "%d", "isLastStep is NULL");
-    if(pattern == NULL)
-        OriginateErrorEx(EINVAL, "%d", "pattern is NULL");
 #else
     if(step > lastStep) {
         *isLastStep = TRUE;
