@@ -9,7 +9,7 @@ CC             := clang
 # $(POST_INCLUDE) to append includes
 INC            += -I../lib -I../include -include common.h -include stddef.h $(POST_INCLUDE)
 
-MACROS         := -D PARAM_CHECKS
+MACROS         += -D PARAM_CHECKS
 CC_c_FLAGS     := -O0 -g -std=c99 -ftrapv -Wall -Wextra -Werror
 CC_c           := $(CC) $(MACROS) $(INC) $(CC_c_FLAGS)
 SOURCES_DIRS   += .

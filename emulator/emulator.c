@@ -145,10 +145,10 @@ static int emulator_clearScreen()
 //
 int emulator_init()
 {
-    clock_extern_setPixel = emulator_setPixel;
+    clock_extern_setPixel     = emulator_setPixel;
     clock_extern_uptimeMillis = emulator_uptimeMillis;
     clock_extern_initDateTime = emulator_initDateTime;
-    clock_extern_clearScreen = emulator_clearScreen;
+    clock_extern_clearScreen  = emulator_clearScreen;
 
     CallMallocQuiet( initscr() );         // Start curses mode
     CallNcurses( raw() );                 // Line buffering disabled
