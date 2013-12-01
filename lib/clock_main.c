@@ -219,6 +219,14 @@ static int clock_state_showTimeBigEndian(ClockState *clockState)
     }
 
     //
+    // Show date big endian
+    //
+    if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_LEFT)) {
+        setClockState(clockState, CLOCK_STATE_SHOW_DATE_BIG_ENDIAN, CLOCK_ANIMATION_TEXT_STEP_TIME, TRUE);
+        return 0;
+    }
+
+    //
     // Prepare the text if this is step 0
     //
     if(clockState->step == 0) {
@@ -238,6 +246,14 @@ static int clock_state_showDateBigEndian(ClockState *clockState)
     //
     if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_INFO)) {
         setClockState(clockState, CLOCK_STATE_SHOW_DATE, 0, TRUE);
+        return 0;
+    }
+
+    //
+    // Show time big endian
+    //
+    if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_LEFT)) {
+        setClockState(clockState, CLOCK_STATE_SHOW_TIME_BIG_ENDIAN, CLOCK_ANIMATION_TEXT_STEP_TIME, TRUE);
         return 0;
     }
 
@@ -495,7 +511,7 @@ int clock_update(ClockState *clockState)
 
 #ifdef PARAM_CHECKS
     if(clockState->state >= countof(ClockStateFunctionMap)) {
-        OriginateErrorEx(EINVAL, "%d", "clockState->state = %d is not implemented", clockState->state);
+        OriginateErrorEx(EINVAL, "%d", "clockState->state = %u is not implemented", clockState->state);
     }
 #endif
 
