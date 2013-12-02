@@ -73,7 +73,7 @@
 //
 // This text will be shown at clock_state_hello
 //
-static const char StateHelloText[] = " Hello Sergey!!!";
+static const char StateHelloText[] = " Hello Sergey! \001";
 
 //
 // @brief A helper function to slide a text

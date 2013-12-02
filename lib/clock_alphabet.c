@@ -2,7 +2,12 @@
 // developed by Sergey Markelov (11/10/2013)
 //
 
-#include "alphabet.h"
+#ifdef PARAM_CHECKS
+#include <errno.h>
+#include <logger.h>
+#endif
+
+#include "clock_alphabet.h"
 
 //
 // - - - - - - - -      0x00
@@ -489,6 +494,28 @@
 //
 
 //
+// - - - - o - - -      0x08
+// - - - o - - - -      0x10
+// - - o - - - - -      0x20
+// - - o - - - - -      0x20
+// - - o - - - - -      0x20
+// - - - o - - - -      0x10
+// - - - - o - - -      0x08
+// - - - - - - - -      0x00
+//
+
+//
+// - - o - - - - -      0x20
+// - - - o - - - -      0x10
+// - - - - o - - -      0x08
+// - - - - o - - -      0x08
+// - - - - o - - -      0x08
+// - - - o - - - -      0x10
+// - - o - - - - -      0x20
+// - - - - - - - -      0x00
+//
+
+//
 // - - o o o o - -      0x3c
 // - o - - - - o -      0x42
 // o - o - - o - o      0xa5
@@ -510,7 +537,7 @@
 // - - o o o o - -      0x3c
 //
 
-const unsigned char ClockAlphabet[][CLOCK_PATTERN_SIZE] = {
+const unsigned char ClockAlphabet[CLOCK_ALPHABET_SIZE][CLOCK_PATTERN_SIZE] = {
     { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },     // blank
     { 0x38, 0x44, 0x4c, 0x54, 0x64, 0x44, 0x38, 0x00 },     // 0
     { 0x08, 0x18, 0x28, 0x08, 0x08, 0x08, 0x08, 0x00 },     // 1
@@ -555,6 +582,55 @@ const unsigned char ClockAlphabet[][CLOCK_PATTERN_SIZE] = {
     { 0x00, 0x18, 0x18, 0x00, 0x00, 0x18, 0x18, 0x00 },     // :
     { 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x18, 0x00 },     // .
     { 0x18, 0x18, 0x18, 0x18, 0x00, 0x18, 0x18, 0x00 },     // !
+    { 0x08, 0x10, 0x20, 0x20, 0x20, 0x10, 0x08, 0x00 },     // (
+    { 0x20, 0x10, 0x08, 0x08, 0x08, 0x10, 0x20, 0x00 },     // )
     { 0x3c, 0x42, 0xa5, 0x81, 0xa5, 0x99, 0x42, 0x3c },     // smiley face smile
     { 0x3c, 0x42, 0xa5, 0x81, 0x99, 0xa5, 0x42, 0x3c },     // smiley face sad
 };
+
+//
+// @brief finds a suitable index from ClockAlphabet by a given character
+// @param ch ASCII character to find an index for
+// @param clockAlphabetIndex a closest suitable index from ClockAlphabet for _ch_
+// @returns 0 on success
+// ERANGE if an exact match for _ch_ is not found (a closest pattern will be returned, i.e.
+//        if "a" is not found than an index to "A" will be returned. If a closest pattern can't be
+//        identified, an index to blank patter will be returned in _clockAlphabetIndex_)
+//
+// EINVAL if _clockAlphabetIndex_ is NULL
+//
+int clock_alphabet_getIndexByCharacter(unsigned char ch, int *clockAlphabetIndex)
+{
+    NullCheck(clockAlphabetIndex);
+
+    if(ch >= '0' && ch <= '9') {
+        *clockAlphabetIndex = CLOCK_0 + (ch - '0');
+        return 0;
+    }
+    if(ch >= 'A' && ch <= 'Z') {
+        *clockAlphabetIndex = CLOCK_A + (ch - 'A');
+        return 0;
+    }
+    if(ch >= 'a' && ch <= 'z') {
+        *clockAlphabetIndex = CLOCK_A + (ch - 'a');
+        return ERANGE;
+    }
+
+    switch(ch) {
+        case '+': *clockAlphabetIndex = CLOCK_PLUS;                return 0;
+        case '-': *clockAlphabetIndex = CLOCK_MINUS;               return 0;
+        case '*': *clockAlphabetIndex = CLOCK_MULTIPLY;            return 0;
+        case '/': *clockAlphabetIndex = CLOCK_SLASH;               return 0;
+        case ':': *clockAlphabetIndex = CLOCK_COLON;               return 0;
+        case '.': *clockAlphabetIndex = CLOCK_POINT;               return 0;
+        case '!': *clockAlphabetIndex = CLOCK_EXCLAMATION_MARK;    return 0;
+        case '(': *clockAlphabetIndex = CLOCK_OPENING_PARENTHESES; return 0;
+        case ')': *clockAlphabetIndex = CLOCK_CLOSING_PARENTHESES; return 0;
+        case ' ': *clockAlphabetIndex = CLOCK_BLANK;               return 0;
+        case 001: *clockAlphabetIndex = CLOCK_SMILEY_FACE_SMILE;   return 0;
+        case 002: *clockAlphabetIndex = CLOCK_SMILEY_FACE_SAD;     return 0;
+    }
+
+    *clockAlphabetIndex = CLOCK_BLANK;
+    return ERANGE;
+}

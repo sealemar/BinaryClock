@@ -4,7 +4,9 @@
 
 #include <string.h>
 
-#include <alphabet.h>
+#include <clock.h>
+#include <clock_alphabet.h>
+
 #include "test.h"
 #include "ut_clock.h"
 
@@ -214,39 +216,11 @@ static int test_clock_slideText_correct()
         }
 
         int index;
-        res = clock_getAlphabetIndexByCharacter(text[i], &index);
-        if(res) ContinueError(res, "%d");
+        Call(clock_alphabet_getIndexByCharacter(text[i], &index));
 
-        res = validatePattern(ClockAlphabet[index], pattern);
+        int res = validatePattern(ClockAlphabet[index], pattern);
         if(res) ContinueErrorEx(res, "%d", "pattern is not valid. i = %zu, text = '%s', index = %d", i, text, index);
     }
-
-    return 0;
-}
-
-int validate_getAlphabetIndexByCharacter_ERANGE(unsigned char ch, int expectedAlphabetIndex)
-{
-    int index = 0;
-    assert_function(clock_getAlphabetIndexByCharacter(ch, &index), ERANGE);
-    if(index != expectedAlphabetIndex) {
-        OriginateErrorEx(EFAULT, "%d", "Unexpected index from clock_getAlphabetIndexByCharacter('%c', &index). "
-                                       "index = %d, expected = %d", ch, index, expectedAlphabetIndex);
-    }
-
-    return 0;
-}
-
-static int test_clock_getAlphabetIndexByCharacter_returns_ERANGE_andCorrectIndex()
-{
-    for(unsigned char ch = 'a'; ch <= 'z'; ++ch) {
-        Call(validate_getAlphabetIndexByCharacter_ERANGE(ch, CLOCK_A + (ch - 'a')));
-    }
-
-    //
-    // Test a random character which is not defined in the alphabet.
-    // Expected resulting index is CLOCK_BLANK.
-    //
-    Call(validate_getAlphabetIndexByCharacter_ERANGE('~', CLOCK_BLANK));
 
     return 0;
 }
@@ -256,7 +230,6 @@ static TestUnit testSuite[] = {
     { test_clock_drawPattern_correct, "clock_drawPattern() correct", FALSE },
     { test_clock_displayBinaryNumber_correct, "clock_displayBinaryNumber() correct", FALSE },
     { test_clock_slideText_correct, "clock_slideText() correct", FALSE },
-    { test_clock_getAlphabetIndexByCharacter_returns_ERANGE_andCorrectIndex, "clock_getAlphabetIndexByCharacter() returns ERANGE and correct index", FALSE },
 };
 
 int ut_clock()

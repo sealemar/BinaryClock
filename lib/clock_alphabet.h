@@ -2,8 +2,8 @@
 // developed by Sergey Markelov (11/10/2013)
 //
 
-#ifndef BINARY_CLOCK_LIB_ALPHABET_H
-#define BINARY_CLOCK_LIB_ALPHABET_H
+#ifndef BINARY_CLOCK_LIB_CLOCK_ALPHABET_H
+#define BINARY_CLOCK_LIB_CLOCK_ALPHABET_H
 
 #include "clock.h"
 
@@ -51,12 +51,29 @@
 #define CLOCK_COLON             41
 #define CLOCK_POINT             42
 #define CLOCK_EXCLAMATION_MARK  43
-#define CLOCK_SMILEY_FACE_SMILE 44
-#define CLOCK_SMILEY_FACE_SAD   45
+#define CLOCK_OPENING_PARENTHESES 44
+#define CLOCK_CLOSING_PARENTHESES 45
+#define CLOCK_SMILEY_FACE_SMILE 46
+#define CLOCK_SMILEY_FACE_SAD   47
 #define CLOCK_ALPHABET_LAST     CLOCK_SMILEY_FACE_SAD
-
-extern const unsigned char ClockAlphabet[][CLOCK_PATTERN_SIZE];
-
 #define CLOCK_ALPHABET_SIZE     (CLOCK_ALPHABET_LAST + 1)
+
+extern const unsigned char ClockAlphabet[CLOCK_ALPHABET_SIZE][CLOCK_PATTERN_SIZE];
+
+//
+// @brief finds a suitable index from ClockAlphabet by a given character
+// @param ch ASCII character to find an index for
+// @param clockAlphabetIndex a closest suitable index from ClockAlphabet for _ch_
+// @returns 0 on success
+// ERANGE if an exact match for _ch_ is not found (a closest pattern will be returned, i.e.
+//        if "a" is not found than an index to "A" will be returned. If a closest pattern can't be
+//        identified, an index to blank patter will be returned in _clockAlphabetIndex_)
+//
+// EINVAL if _clockAlphabetIndex_ is NULL
+//
+// @note CLOCK_SMILEY_FACE_SMILE is '\001'
+//       CLOCK_SMILEY_FACE_SAD is '\002'
+//
+int clock_alphabet_getIndexByCharacter(unsigned char ch, int *clockAlphabetIndex);
 
 #endif

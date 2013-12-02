@@ -9,7 +9,6 @@
 #include <logger.h>
 #endif
 
-#include "alphabet.h"
 #include "clock.h"
 #include "clock_state.h" // for MIN_YEAR
 
@@ -103,49 +102,6 @@ int clock_displayDate(const DateTime *dt)
 }
 
 //
-// @brief finds a suitable index from ClockAlphabet by a given character
-// @param ch ASCII character to find an index for
-// @param clockAlphabetIndex a closest suitable index from ClockAlphabet for _ch_
-// @returns 0 on success
-// ERANGE if an exact match for _ch_ is not found (a closest pattern will be returned, i.e.
-//        if "a" is not found than an index to "A" will be returned. If a closest pattern can't be
-//        identified, an index to blank patter will be returned in _clockAlphabetIndex_)
-//
-// EINVAL if _clockAlphabetIndex_ is NULL
-//
-int clock_getAlphabetIndexByCharacter(unsigned char ch, int *clockAlphabetIndex)
-{
-    NullCheck(clockAlphabetIndex);
-
-    if(ch >= '0' && ch <= '9') {
-        *clockAlphabetIndex = CLOCK_0 + (ch - '0');
-        return 0;
-    }
-    if(ch >= 'A' && ch <= 'Z') {
-        *clockAlphabetIndex = CLOCK_A + (ch - 'A');
-        return 0;
-    }
-    if(ch >= 'a' && ch <= 'z') {
-        *clockAlphabetIndex = CLOCK_A + (ch - 'a');
-        return ERANGE;
-    }
-
-    switch(ch) {
-        case '+': *clockAlphabetIndex = CLOCK_PLUS;             return 0;
-        case '-': *clockAlphabetIndex = CLOCK_MINUS;            return 0;
-        case '*': *clockAlphabetIndex = CLOCK_MULTIPLY;         return 0;
-        case '/': *clockAlphabetIndex = CLOCK_SLASH;            return 0;
-        case ':': *clockAlphabetIndex = CLOCK_COLON;            return 0;
-        case '.': *clockAlphabetIndex = CLOCK_POINT;            return 0;
-        case '!': *clockAlphabetIndex = CLOCK_EXCLAMATION_MARK; return 0;
-        case ' ': *clockAlphabetIndex = CLOCK_BLANK;            return 0;
-    }
-
-    *clockAlphabetIndex = CLOCK_BLANK;
-    return ERANGE;
-}
-
-//
 // @brief slides pattern from right to left
 // @param patternFrom right-side pattern (which initially appears on the screen)
 // @param patternTo left-side pattern (which is slided to)
@@ -230,8 +186,8 @@ int clock_slideText(
 
     int firstCharIndex  = CLOCK_BLANK;
     int secondCharIndex = CLOCK_BLANK;
-    clock_getAlphabetIndexByCharacter(chPos[0], &firstCharIndex);
-    clock_getAlphabetIndexByCharacter(chPos[1], &secondCharIndex);
+    clock_alphabet_getIndexByCharacter(chPos[0], &firstCharIndex);
+    clock_alphabet_getIndexByCharacter(chPos[1], &secondCharIndex);
 
     *isLastStep = step == lastStep;
 

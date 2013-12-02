@@ -22,7 +22,7 @@
 
 #define CLOCK_PATTERN_SIZE      (CLOCK_SCREEN_HEIGHT)
 
-#include "alphabet.h"
+#include "clock_alphabet.h"
 #include "clock_extern.h"
 
 //
@@ -79,19 +79,6 @@ int clock_displayTime(const DateTime *dt);
 // EINVAL - if _dt_ is NULL
 //
 int clock_displayDate(const DateTime *dt);
-
-//
-// @brief finds a suitable index from ClockAlphabet by a given character
-// @param ch ASCII character to find an index for
-// @param clockAlphabetIndex a closest suitable index from ClockAlphabet for _ch_
-// @returns 0 on success
-// ERANGE if an exact match for _ch_ is not found (a closest pattern will be returned, i.e.
-//        if "a" is not found than an index to "A" will be returned. If a closest pattern can't be
-//        identified, an index to blank patter will be returned in _clockAlphabetIndex_)
-//
-// EINVAL if _clockAlphabetIndex_ is NULL
-//
-int clock_getAlphabetIndexByCharacter(unsigned char ch, int *clockAlphabetIndex);
 
 //
 // @brief slides pattern from right to left

@@ -5,8 +5,8 @@
 #ifndef BINARY_CLOCK_INCLUDE_COMMON_H
 #define BINARY_CLOCK_INCLUDE_COMMON_H
 
-#define VERSION_MAJOR 0
-#define VERSION_MINOR 1
+#define VERSION_MAJOR 1
+#define VERSION_MINOR 0
 
 typedef enum { FALSE = 0, TRUE } Bool;
 

@@ -7,7 +7,6 @@
 
 #include <logger.h>
 #include <clock_main.h>
-#include <alphabet.h>
 #include "emulator.h"
 #include "emulator_button.h"
 

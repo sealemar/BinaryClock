@@ -56,10 +56,12 @@ static const char *ButtonsDescription[CLOCK_STATE_COUNT][CLOCK_BUTTON_COUNT] = {
         "",
     },
 
+    // TODO: think about setting date and time in big endian mode
+
     // CLOCK_STATE_SHOW_TIME_BIG_ENDIAN
     {
         "Show time in binary",
-        "Set time",
+        "",
         "Show date",
         "",
     },
@@ -67,7 +69,7 @@ static const char *ButtonsDescription[CLOCK_STATE_COUNT][CLOCK_BUTTON_COUNT] = {
     // CLOCK_STATE_SHOW_DATE_BIG_ENDIAN
     {
         "Show date in binary",
-        "Set date",
+        "",
         "Show time",
         "",
     },
