@@ -122,7 +122,7 @@ extern const ClockEvent ClockEvents[CLOCK_EVENTS_SIZE];
 // @param year year when the event first occured
 // @param name name of the event
 //
-#define clock_event_initDayOfYear(dayOfYear, year, name) { year, (((dayOfYear) & DAY_OF_WEEK_FLAG) << 5), 0, name }
+#define clock_event_initDayOfYear(dayOfYear, year, name) { year, (((dayOfYear) & 0x01ff) << 5), 0, name }
 
 //
 // @brief These are the helper macros to get the date information from an event.
@@ -136,7 +136,7 @@ extern const ClockEvent ClockEvents[CLOCK_EVENTS_SIZE];
 //
 #define clock_event_getDayOfMonth(event)          ( (event).blob_1 & 0x1f )
 #define clock_event_getMonth(event)               ( (event).blob_2 & 0x0f )
-#define clock_event_getDayOfYear(event)           ( ((event).blob_1 >> 5) & DAY_OF_WEEK_FLAG )
+#define clock_event_getDayOfYear(event)           ( ((event).blob_1 >> 5) & 0x01ff )
 #define clock_event_getDayOfWeek(event)           ( ((event).blob_2 >> 4) & 7 )
 #define clock_event_getWeekOfMonth(event)         ( (((event).blob_1 >> 14) & 3) + 1 )
 #define clock_event_isFromBeginningOfMonth(event) ( ((event).blob_2 >> 7) & 1 )

@@ -24,7 +24,7 @@ static int test_clock_event_initDayOfMonth_correct()
     assert_int(clock_event_getDayOfYear(event), 0);
     assert_int(clock_event_getDayOfWeek(event), 0);
     assert_int(clock_event_getWeekOfMonth(event), ZERO_WEEK_OF_MONTH);
-    assert_int(clock_event_isFromBeginningOfMonth(event), FALSE);
+    assert_true(!clock_event_isFromBeginningOfMonth(event));
 
     return 0;
 }
@@ -46,7 +46,7 @@ static int test_clock_event_initDayOfWeek_correct()
     assert_int(clock_event_getDayOfYear(event), DAY_OF_WEEK_FLAG);
     assert_int(clock_event_getDayOfWeek(event), THURSDAY);
     assert_int(clock_event_getWeekOfMonth(event), 4);
-    assert_int(clock_event_isFromBeginningOfMonth(event), TRUE);
+    assert_true(clock_event_isFromBeginningOfMonth(event));
 
     return 0;
 }
@@ -68,7 +68,7 @@ static int test_clock_event_initDayOfYear_correct()
     assert_int(clock_event_getDayOfYear(event), 256);
     assert_int(clock_event_getDayOfWeek(event), 0);
     assert_int(clock_event_getWeekOfMonth(event), ZERO_WEEK_OF_MONTH);
-    assert_int(clock_event_isFromBeginningOfMonth(event), FALSE);
+    assert_true(!clock_event_isFromBeginningOfMonth(event));
 
     return 0;
 }
