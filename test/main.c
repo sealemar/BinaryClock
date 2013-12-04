@@ -7,6 +7,7 @@
 #include "ut_clock.h"
 #include "ut_clock_alphabet.h"
 #include "ut_clock_button.h"
+#include "ut_clock_event.h"
 #include "ut_clock_time.h"
 #include "ut_date_time.h"
 
@@ -19,6 +20,7 @@ static TestUnit testSuites[] = {
     { ut_date_time, "ut_date_time", FALSE },
     { ut_clock_button, "ut_clock_button", FALSE },
     { ut_clock_alphabet, "ut_clock_alphabet", FALSE },
+    { ut_clock_event, "ut_clock_event", FALSE },
 };
 
 int main()

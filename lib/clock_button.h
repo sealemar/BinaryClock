@@ -11,7 +11,7 @@
 #define CLOCK_BUTTON_MAX_COUNT  4U
 
 typedef struct {
-    unsigned char buttons;      // first 4 bits are switch state, last 4 bits are pressed state
+    uint8_t buttons;      // first 4 bits are switch state, last 4 bits are pressed state
 } ClockButtons;
 
 //

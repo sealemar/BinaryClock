@@ -8,29 +8,29 @@
 #endif
 
 #include "date_time.h"
-#include "clock_events.h"
+#include "clock_event.h"
 
-static int clock_events_initDates()
-{
-    ClockEvent *event = (ClockEvent *)ClockEvents;
-    for(size_t i = 0; i < CLOCK_EVENTS_SIZE; ++i, ++event) {
-        switch(event->dateType) {
-            case DATE_TYPE_MONTH_DAY:
-                for(int month = event->month; month >= JANUARY; --month) {
-                    date_time_daysInMonth();
-                }
-                break;
-            case DATE_TYPE_DAY_OF_YEAR:
-            case DATE_TYPE_MONTH_DAY_OF_WEEK:
-#ifdef PARAM_CHECKS
-            default:
-                OriginateErrorEx(ERANGE, "%d", "event->dateType [%d] is not supported", event->dateType);
-#endif
-        }
-    }
-
-    return 0;
-}
+// static int clock_events_initDates()
+// {
+//     ClockEvent *event = (ClockEvent *)ClockEvents;
+//     for(size_t i = 0; i < CLOCK_EVENTS_SIZE; ++i, ++event) {
+//         switch(event->dateType) {
+//             case DATE_TYPE_MONTH_DAY:
+//                 for(int month = event->month; month >= JANUARY; --month) {
+//                     date_time_daysInMonth();
+//                 }
+//                 break;
+//             case DATE_TYPE_DAY_OF_YEAR:
+//             case DATE_TYPE_MONTH_DAY_OF_WEEK:
+// #ifdef PARAM_CHECKS
+//             default:
+//                 OriginateErrorEx(ERANGE, "%d", "event->dateType [%d] is not supported", event->dateType);
+// #endif
+//         }
+//     }
+//
+//     return 0;
+// }
 
 //
 // @brief Calculates a number of days left to a given event
@@ -60,4 +60,5 @@ int clock_events_daysToEvent(const unsigned short dayOfYear, const ClockEvent *c
 
 int clock_events_init()
 {
+    return 0;
 }

@@ -2,7 +2,7 @@
 // developed by Sergey Markelov (11/19/2013)
 //
 
-#include <memory.h>
+#include <string.h>
 
 #include <date_time.h>
 #include "ut_date_time.h"

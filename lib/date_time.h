@@ -5,20 +5,9 @@
 #ifndef BINARY_CLOCK_LIB_DATE_TIME_H
 #define BINARY_CLOCK_LIB_DATE_TIME_H
 
-#define MILLIS_IN_A_DAY   86400000UL
+#include "date_const.h"
 
-#define JANUARY    0
-#define FEBRUARY   1
-#define MARCH      2
-#define APRIL      3
-#define MAY        4
-#define JUNE       5
-#define JULY       6
-#define AUGUST     7
-#define SEPTEMBER  8
-#define OCTOBER    9
-#define NOVEMBER  10
-#define DECEMBER  11
+#define MILLIS_IN_A_DAY   86400000UL
 
 #define HOURS_COUNT 24
 
