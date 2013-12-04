@@ -63,6 +63,13 @@ int _runTestSuite(const char *fileName, unsigned long line, const char *func, Te
     } \
 }
 
+#define assert_false(value) { \
+    if(value) { \
+        OriginateErrorEx(EFAULT, "%d", "'" TOSTRING(value) "' is true. Expected false" ); \
+    } \
+}
+
+
 //
 // @brief asserts if _function_ returns _expectedErrorCode_
 // @param function is the function itself, not an error code which it returns.

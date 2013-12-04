@@ -16,15 +16,15 @@ static int test_clock_event_initDayOfMonth_correct()
     assert_int(event.year, 1392);
 
     assert_true(clock_event_isDayOfMonthEvent(event));
-    assert_true(!clock_event_isDayOfWeekEvent(event));
-    assert_true(!clock_event_isDayOfWeekYear(event));
+    assert_false(clock_event_isDayOfWeekEvent(event));
+    assert_false(clock_event_isDayOfWeekYear(event));
 
     assert_int(clock_event_getDayOfMonth(event), 4);
     assert_int(clock_event_getMonth(event), APRIL);
     assert_int(clock_event_getDayOfYear(event), 0);
     assert_int(clock_event_getDayOfWeek(event), 0);
     assert_int(clock_event_getWeekOfMonth(event), ZERO_WEEK_OF_MONTH);
-    assert_true(!clock_event_isFromBeginningOfMonth(event));
+    assert_false(clock_event_isFromBeginningOfMonth(event));
 
     return 0;
 }
@@ -37,9 +37,9 @@ static int test_clock_event_initDayOfWeek_correct()
     assert_str(event.name, name);
     assert_int(event.year, 1574);
 
-    assert_true(!clock_event_isDayOfMonthEvent(event));
+    assert_false(clock_event_isDayOfMonthEvent(event));
     assert_true(clock_event_isDayOfWeekEvent(event));
-    assert_true(!clock_event_isDayOfWeekYear(event));
+    assert_false(clock_event_isDayOfWeekYear(event));
 
     assert_int(clock_event_getDayOfMonth(event), 0);
     assert_int(clock_event_getMonth(event), NOVEMBER);
@@ -59,8 +59,8 @@ static int test_clock_event_initDayOfYear_correct()
     assert_str(event.name, name);
     assert_int(event.year, 2009);
 
-    assert_true(!clock_event_isDayOfMonthEvent(event));
-    assert_true(!clock_event_isDayOfWeekEvent(event));
+    assert_false(clock_event_isDayOfMonthEvent(event));
+    assert_false(clock_event_isDayOfWeekEvent(event));
     assert_true(clock_event_isDayOfWeekYear(event));
 
     assert_int(clock_event_getDayOfMonth(event), 0);
@@ -68,7 +68,7 @@ static int test_clock_event_initDayOfYear_correct()
     assert_int(clock_event_getDayOfYear(event), 256);
     assert_int(clock_event_getDayOfWeek(event), 0);
     assert_int(clock_event_getWeekOfMonth(event), ZERO_WEEK_OF_MONTH);
-    assert_true(!clock_event_isFromBeginningOfMonth(event));
+    assert_false(clock_event_isFromBeginningOfMonth(event));
 
     return 0;
 }
