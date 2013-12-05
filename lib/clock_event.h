@@ -154,7 +154,7 @@ extern const ClockEvent ClockEvents[CLOCK_EVENTS_SIZE];
 //
 #define clock_event_isDayOfMonthEvent(event) ( clock_event_getDayOfYear(event) == 0 )
 #define clock_event_isDayOfWeekEvent(event)  ( clock_event_getDayOfYear(event) == DAY_OF_WEEK_FLAG )
-#define clock_event_isDayOfWeekYear(event) \
+#define clock_event_isDayOfYearEvent(event) \
     ( clock_event_getDayOfYear(event) && clock_event_getDayOfYear(event) != DAY_OF_WEEK_FLAG )
 
 //

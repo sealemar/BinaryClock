@@ -36,8 +36,8 @@ static int clock_event_initDates()
     for(size_t i = 0; i < CLOCK_EVENTS_SIZE; ++i, ++event) {
         if(clock_event_isDayOfMonthEvent(*event)) {
             Call(_updateDayOfMonthEvent(event));
-        } else if(clock_event_isDayOfMonthEvent(*event)) {
-        } else if(clock_event_isDayOfMonthEvent(*event)) {
+        } else if(clock_event_isDayOfWeekEvent(*event)) {
+        } else if(clock_event_isDayOfYearEvent(*event)) {
         }
 #ifdef PARAM_CHECKS
         else {

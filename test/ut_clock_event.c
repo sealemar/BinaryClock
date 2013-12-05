@@ -17,7 +17,7 @@ static int test_clock_event_initDayOfMonth_correct()
 
     assert_true(clock_event_isDayOfMonthEvent(event));
     assert_false(clock_event_isDayOfWeekEvent(event));
-    assert_false(clock_event_isDayOfWeekYear(event));
+    assert_false(clock_event_isDayOfYearEvent(event));
 
     assert_int(clock_event_getDayOfMonth(event), 4);
     assert_int(clock_event_getMonth(event), APRIL);
@@ -39,7 +39,7 @@ static int test_clock_event_initDayOfWeek_correct()
 
     assert_false(clock_event_isDayOfMonthEvent(event));
     assert_true(clock_event_isDayOfWeekEvent(event));
-    assert_false(clock_event_isDayOfWeekYear(event));
+    assert_false(clock_event_isDayOfYearEvent(event));
 
     assert_int(clock_event_getDayOfMonth(event), 0);
     assert_int(clock_event_getMonth(event), NOVEMBER);
@@ -61,7 +61,7 @@ static int test_clock_event_initDayOfYear_correct()
 
     assert_false(clock_event_isDayOfMonthEvent(event));
     assert_false(clock_event_isDayOfWeekEvent(event));
-    assert_true(clock_event_isDayOfWeekYear(event));
+    assert_true(clock_event_isDayOfYearEvent(event));
 
     assert_int(clock_event_getDayOfMonth(event), 0);
     assert_int(clock_event_getMonth(event), 0);
