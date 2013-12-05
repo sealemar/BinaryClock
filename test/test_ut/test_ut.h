@@ -52,6 +52,9 @@ int _runTestSuite(const char *fileName, unsigned long line, const char *func, Te
     } \
 }
 
+//
+// @brief asserts int == int
+//
 #define assert_int(number, expected) { assert_number(number, expected, "%d", "%d"); }
 
 //
@@ -63,6 +66,9 @@ int _runTestSuite(const char *fileName, unsigned long line, const char *func, Te
     } \
 }
 
+//
+// @brief asserts if the _value_ is false
+//
 #define assert_false(value) { \
     if(value) { \
         OriginateErrorEx(EFAULT, "%d", "'" TOSTRING(value) "' is true. Expected false" ); \

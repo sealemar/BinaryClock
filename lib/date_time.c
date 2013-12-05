@@ -56,6 +56,30 @@ static int _daysInMonth(int month, int year)
     };
 }
 
+static int _dayOfWeek(int year, int month, int day)
+{
+    //
+    // Gauss's algorithm
+    // to determine day of week in Gregorian Calendar
+    // http://en.wikipedia.org/wiki/Determination_of_the_day_of_the_week#Formulas_derived_from_Gauss.27s_algorithm
+    //
+
+    month -= 2;
+    if(month < JANUARY) {
+        --year;
+        month = (DECEMBER - JANUARY) + 1 - (JANUARY - month);
+    }
+    unsigned int d = month + 1;
+    d = 2.6f * d - 0.2f;
+    d += 5 * (year % 4);
+    d += 4 * (year % 100);
+    d += 6 * (year % 400);
+    d += day;
+    d %= 7;
+
+    return d;
+}
+
 inline static void _normalize(int *minor, int *major, int minorBase)
 {
     if(*minor >= minorBase) {
@@ -262,10 +286,7 @@ int date_time_timeToStr(const DateTime *dt, char str[DATE_TIME_TIME_STR_SIZE])
 //
 // ERANGE if dt->year < 0 or dt->year > 9999
 //        if dt->month < JANUARY or dt->month > DECEMBER
-//        if dt->day < 0 or dt->day > 31
-//
-// @note This function doesn't check if the date is valid, i.e. Feb 30, 1999.
-//       For that call date_time_normalize()
+//        if dt->day <= 0 or dt->day > daysInMonth(dt->month)
 //
 int date_time_dateToStr(const DateTime *dt, char str[DATE_TIME_DATE_STR_SIZE])
 {
@@ -278,8 +299,9 @@ int date_time_dateToStr(const DateTime *dt, char str[DATE_TIME_DATE_STR_SIZE])
     if(dt->month < JANUARY || dt->month > DECEMBER) {
         OriginateErrorEx(ERANGE, "%d", "dt->month = [%d] should be >= 0 and < 11", dt->month);
     }
-    if(dt->day < 0 || dt->day > 31) {
-        OriginateErrorEx(ERANGE, "%d", "dt->day = [%d] should be >= 0 and <= 31", dt->day);
+    int _d = _daysInMonth(dt->month, dt->year);
+    if(dt->day <= 0 || dt->day > _d) {
+        OriginateErrorEx(ERANGE, "%d", "dt->day = [%d] should be > 0 and <= %d", dt->day, _d);
     }
 #endif
 
@@ -294,6 +316,36 @@ int date_time_dateToStr(const DateTime *dt, char str[DATE_TIME_DATE_STR_SIZE])
     fixedWidthIntToString(dt->year, s, 4);
     s += 4;
     *s = 0;
+
+    return 0;
+}
+
+//
+// @brief calculates a day of week for a given date
+// @param year
+// @param month
+// @param day
+// @returns 0 on ok
+// EINVAL if _dayOfWeek_ is NULL
+// ERANGE if _month_ < JANUARY or _month_ > DECEMBER
+//        if _day_ < 0 or _day_ > daysInMonth(month)
+//
+// @note the function doesn't check the date correctness
+//
+int date_time_calculateDayOfWeek(int year, int month, int day, int *dayOfWeek)
+{
+    NullCheck(dayOfWeek);
+#ifdef PARAM_CHECKS
+    if(month < JANUARY || month > DECEMBER) {
+        OriginateErrorEx(ERANGE, "%d", "month = [%d] should be >= 0 and < 11", month);
+    }
+    int _d = _daysInMonth(month, year);
+    if(day <= 0 || day > _d) {
+        OriginateErrorEx(ERANGE, "%d", "day = [%d] should be > 0 and <= %d", day, _d);
+    }
+#endif
+
+    *dayOfWeek = _dayOfWeek(year, month, day);
 
     return 0;
 }

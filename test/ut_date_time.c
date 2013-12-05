@@ -435,6 +435,28 @@ static int test_date_time_daysInMonth_returnsERANGEIfMonthIsOutOfRange()
     return 0;
 }
 
+static int test_date_time_calculateDayOfWeek_correct()
+{
+    int dayOfWeek;
+
+    Call(date_time_calculateDayOfWeek(2013, DECEMBER, 4, &dayOfWeek));
+    assert_int(dayOfWeek, WEDNESDAY);
+
+    Call(date_time_calculateDayOfWeek(2000, JANUARY, 1, &dayOfWeek));
+    assert_int(dayOfWeek, SATURDAY);
+
+    Call(date_time_calculateDayOfWeek(2000, DECEMBER, 31, &dayOfWeek));
+    assert_int(dayOfWeek, SUNDAY);
+
+    Call(date_time_calculateDayOfWeek(1777, APRIL, 30, &dayOfWeek));
+    assert_int(dayOfWeek, WEDNESDAY);
+
+    Call(date_time_calculateDayOfWeek(1582, OCTOBER, 4, &dayOfWeek));
+    assert_int(dayOfWeek, MONDAY);
+
+    return 0;
+}
+
 static TestUnit testSuite[] = {
     { test_date_time_addMillis_correct, "date_time_addMillis() correct", FALSE },
     { test_date_time_normalize_handlesOverflows, "date_time_normalize() handles overflows", FALSE },
@@ -445,6 +467,7 @@ static TestUnit testSuite[] = {
     { test_date_time_dateToStr_returnsERANGEIfValuesAreOutOfRange, "date_time_dateToStr() returns ERANGE if _dt_ values are out of range", FALSE },
     { test_date_time_daysInMonth_correct, "date_time_daysInMonth() returns correct result", FALSE },
     { test_date_time_daysInMonth_returnsERANGEIfMonthIsOutOfRange, "date_time_daysInMonth() returns ERANGE if month is out of range", FALSE },
+    { test_date_time_calculateDayOfWeek_correct, "date_time_calculateDayOfWeek() returns correct result", FALSE },
 };
 
 int ut_date_time()

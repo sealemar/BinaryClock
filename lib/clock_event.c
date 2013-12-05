@@ -10,27 +10,44 @@
 #include "date_time.h"
 #include "clock_event.h"
 
-// static int clock_events_initDates()
-// {
-//     ClockEvent *event = (ClockEvent *)ClockEvents;
-//     for(size_t i = 0; i < CLOCK_EVENTS_SIZE; ++i, ++event) {
-//         switch(event->dateType) {
-//             case DATE_TYPE_MONTH_DAY:
-//                 for(int month = event->month; month >= JANUARY; --month) {
-//                     date_time_daysInMonth();
-//                 }
-//                 break;
-//             case DATE_TYPE_DAY_OF_YEAR:
-//             case DATE_TYPE_MONTH_DAY_OF_WEEK:
-// #ifdef PARAM_CHECKS
-//             default:
-//                 OriginateErrorEx(ERANGE, "%d", "event->dateType [%d] is not supported", event->dateType);
-// #endif
-//         }
-//     }
-//
-//     return 0;
-// }
+#define clock_event_setDayOfWeek(event, dayOfWeek) { \
+    (event).blob_2 &= ~(7 << 4); \
+    (event).blob_2 |= (dayOfWeek & 7) << 4; \
+}
+
+static inline int _updateDayOfMonthEvent(ClockEvent *event)
+{
+    int dayOfWeek;
+
+    Call(date_time_calculateDayOfWeek(
+                event->year,
+                clock_event_getMonth(*event),
+                clock_event_getDayOfMonth(*event),
+                &dayOfWeek));
+
+    clock_event_setDayOfWeek(*event, dayOfWeek);
+
+    return 0;
+}
+
+static int clock_event_initDates()
+{
+    ClockEvent *event = (ClockEvent *)ClockEvents;
+    for(size_t i = 0; i < CLOCK_EVENTS_SIZE; ++i, ++event) {
+        if(clock_event_isDayOfMonthEvent(*event)) {
+            Call(_updateDayOfMonthEvent(event));
+        } else if(clock_event_isDayOfMonthEvent(*event)) {
+        } else if(clock_event_isDayOfMonthEvent(*event)) {
+        }
+#ifdef PARAM_CHECKS
+        else {
+            OriginateErrorEx(ERANGE, "%d", "Unexpected event date init type");
+        }
+#endif
+    }
+
+    return 0;
+}
 
 //
 // @brief Calculates a number of days left to a given event
@@ -46,7 +63,7 @@
 // @note clockEvent should be of an existing day, (i.e. not 34 Feb 2000).
 //       This function doesn't do correctness check.
 //
-int clock_events_daysToEvent(const unsigned short dayOfYear, const ClockEvent *clockEvent, int *daysToEvent)
+int clock_event_daysToEvent(const unsigned short dayOfYear, const ClockEvent *clockEvent, int *daysToEvent)
 {
     NullCheck(clockEvent);
     NullCheck(daysToEvent);
@@ -58,7 +75,9 @@ int clock_events_daysToEvent(const unsigned short dayOfYear, const ClockEvent *c
     return 0;
 }
 
-int clock_events_init()
+int clock_event_init()
 {
+    Call(clock_event_initDates());
+
     return 0;
 }

@@ -108,11 +108,22 @@ int date_time_timeToStr(const DateTime *dt, char str[DATE_TIME_TIME_STR_SIZE]);
 //
 // ERANGE if dt->year < 0 or dt->year > 9999
 //        if dt->month < JANUARY or dt->month > DECEMBER
-//        if dt->day < 0 or dt->day > 31
-//
-// @note This function doesn't check if the date is valid, i.e. Feb 30, 1999.
-//       For that call date_time_normalize()
+//        if dt->day <= 0 or dt->day > daysInMonth(dt->month)
 //
 int date_time_dateToStr(const DateTime *dt, char str[DATE_TIME_DATE_STR_SIZE]);
+
+//
+// @brief calculates a day of week for a given date
+// @param year
+// @param month
+// @param day
+// @returns 0 on ok
+// EINVAL if _dayOfWeek_ is NULL
+// ERANGE if _month_ < JANUARY or _month_ > DECEMBER
+//        if _day_ < 0 or _day_ > daysInMonth(month)
+//
+// @note the function doesn't check the date correctness
+//
+int date_time_calculateDayOfWeek(int year, int month, int day, int *dayOfWeek);
 
 #endif

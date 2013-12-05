@@ -173,6 +173,6 @@ extern const ClockEvent ClockEvents[CLOCK_EVENTS_SIZE];
 //
 int clock_event_daysToEvent(const unsigned short dayOfYear, const ClockEvent *clockEvent, int *daysToEvent);
 
-void clock_event_init();
+int clock_event_init();
 
 #endif
