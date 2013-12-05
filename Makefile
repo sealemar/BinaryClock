@@ -6,7 +6,7 @@
 all: arduino emulator
 
 arduino:
-	make -C arduino
+	-make -C arduino
 
 emulator:
 	make -C emulator
@@ -16,20 +16,20 @@ check:
 
 ctags:
 	make -C include -f Makefile.include ctags
-	make -C arduino ctags
+	-make -C arduino ctags
 	make -C emulator ctags
 	make -C test ctags
 	make -C lib ctags
 
 clean:
-	make -C arduino clean
+	-make -C arduino clean
 	make -C emulator clean
 	make -C test clean
 	make -C lib clean
 	make -C include -f Makefile.include clean
 
 distclean:
-	make -C arduino clean
+	-make -C arduino clean
 	make -C emulator distclean
 	make -C test distclean
 	make -C lib distclean

@@ -2,6 +2,10 @@
 # developed by Sergey Markelov (11/10/2013)
 #
 
+ifndef $(ARDMK_DIR)
+    $(error "ARDMK_DIR is not defined")
+endif
+
 BOARD_TAG    = uno
 MONITOR_PORT = /dev/cu.usb*
 ARDUINO_LIBS =
