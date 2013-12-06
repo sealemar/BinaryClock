@@ -64,7 +64,7 @@
 //
 #define adjustDays(dateTime) { \
     int _d; \
-    Call(date_time_daysInMonth( &(dateTime), &_d )); \
+    Call(date_time_daysInMonth( (dateTime).year, (dateTime).month, &_d )); \
     if( (dateTime).day > _d ) { \
         (dateTime).day = _d; \
     } \
@@ -382,7 +382,7 @@ static int clock_state_setDate(ClockState *clockState)
             --(dt->day);
             if(dt->day < 1) {
                 int d;
-                Call(date_time_daysInMonth(dt, &d));
+                Call(date_time_daysInMonth(dt->year, dt->month, &d));
                 dt->day = d;
             }
         } else if(clockState->step == 4 || clockState->step == 5) {
@@ -407,7 +407,7 @@ static int clock_state_setDate(ClockState *clockState)
         } else if(clockState->step == 2 || clockState->step == 3) {
             ++(dt->day);
             int d;
-            Call(date_time_daysInMonth(dt, &d));
+            Call(date_time_daysInMonth(dt->year, dt->month, &d));
             if(dt->day > d) {
                 dt->day = 1;
             }

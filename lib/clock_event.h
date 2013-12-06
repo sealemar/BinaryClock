@@ -5,7 +5,7 @@
 #ifndef BINARY_CLOCK_LIB_CLOCK_EVENT_FUNCTIONS_H
 #define BINARY_CLOCK_LIB_CLOCK_EVENT_FUNCTIONS_H
 
-#include "date_const.h"
+#include "date_time.h"
 
 //
 // @brief ClockEvent describes an event.
@@ -73,8 +73,13 @@ typedef struct {
     const char *name;                   // event name
 } ClockEvent;
 
+typedef struct {
+    int month;
+    int dayOfWeek;
+    int dayOfMonth;
+} ClockEventDetails;
+
 #define DAY_OF_WEEK_FLAG 0x01ff
-#define ZERO_WEEK_OF_MONTH 1
 
 //
 // @brief ClockEvents is a list of all events of which the clock knows.
@@ -138,7 +143,7 @@ extern const ClockEvent ClockEvents[CLOCK_EVENTS_SIZE];
 #define clock_event_getMonth(event)               ( (event).blob_2 & 0x0f )
 #define clock_event_getDayOfYear(event)           ( ((event).blob_1 >> 5) & 0x01ff )
 #define clock_event_getDayOfWeek(event)           ( ((event).blob_2 >> 4) & 7 )
-#define clock_event_getWeekOfMonth(event)         ( (((event).blob_1 >> 14) & 3) + 1 )
+#define clock_event_getWeekOfMonth(event)         ( ((event).blob_1 >> 14) & 3 )
 #define clock_event_isFromBeginningOfMonth(event) ( ((event).blob_2 >> 7) & 1 )
 
 //
@@ -173,6 +178,30 @@ extern const ClockEvent ClockEvents[CLOCK_EVENTS_SIZE];
 //
 int clock_event_daysToEvent(const unsigned short dayOfYear, const ClockEvent *clockEvent, int *daysToEvent);
 
-int clock_event_init();
+//
+// @brief Calculates event details for a given year
+//
+// @param event a pointer to ClockEvent
+// @param year a year to calculate the event for
+// @param eventDetails a pointer to ClockEventDetails
+//
+// @returns 0 on ok
+//   EINVAL if _event_ is NULL
+//          if _eventDetails_ is NULL
+//
+int clock_event_getEventDetails(const ClockEvent *event, int year, ClockEventDetails *eventDetails);
+
+//
+// @brief
+//
+int clock_event_updateList(ClockEvent *eventsList, size_t sz, const DateTime *dt);
+
+//
+// @brief initializes a list of ClockEvents
+//
+int clock_event_initList(ClockEvent *eventsList, size_t sz, int year);
+
+#define clock_event_init(dateTime) clock_event_initList((ClockEvent *)ClockEvents, CLOCK_EVENTS_SIZE, dateTime)
+#define clock_event_update(dateTime) clock_event_updateList((ClockEvent *)ClockEvents, CLOCK_EVENTS_SIZE, dateTime)
 
 #endif

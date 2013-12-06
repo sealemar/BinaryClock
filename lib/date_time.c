@@ -13,6 +13,8 @@
 
 const char *DateTimeMonthsStr[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
 
+const char *DateTimeDayOfWeekStr[] = { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
+
 //
 // @brief Converts fixed width int to string
 // @param n an integer to convert
@@ -98,23 +100,22 @@ inline static void _normalize(int *minor, int *major, int minorBase)
 
 //
 // @brief returns the number of days in a month
-// @param dt a pointer to DateTime
+// @param year
+// @param month
 // @param daysInMonth the result will be returned here
 // @returns 0 on ok
-// EINVAL if _dt_ is NULL
-//        if _daysInMonth_ is NULL
-// ERANGE if dt->month < JANUARY or dt->month > DECEMBER
+// EINVAL if _daysInMonth_ is NULL
+// ERANGE if month < JANUARY or month > DECEMBER
 //
-int date_time_daysInMonth(const DateTime *dt, int *daysInMonth)
+int date_time_daysInMonth(int year, int month, int *daysInMonth)
 {
-    NullCheck(dt);
     NullCheck(daysInMonth);
 #ifdef PARAM_CHECKS
-    if(dt->month < JANUARY || dt->month > DECEMBER)
-        OriginateErrorEx(ERANGE, "%d", "month [%d] should be >= %d and =< %d", dt->month, JANUARY, DECEMBER);
+    if(month < JANUARY || month > DECEMBER)
+        OriginateErrorEx(ERANGE, "%d", "month [%d] should be >= %d and =< %d", month, JANUARY, DECEMBER);
 #endif
 
-    *daysInMonth = _daysInMonth(dt->month, dt->year);
+    *daysInMonth = _daysInMonth(month, year);
 
     return 0;
 }

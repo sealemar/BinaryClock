@@ -27,21 +27,47 @@ typedef struct {
     int millisecond;
 } DateTime;
 
+#define SUNDAY     0
+#define MONDAY     1
+#define TUESDAY    2
+#define WEDNESDAY  3
+#define THURSDAY   4
+#define FRIDAY     5
+#define SATURDAY   6
+
+#define JANUARY    0
+#define FEBRUARY   1
+#define MARCH      2
+#define APRIL      3
+#define MAY        4
+#define JUNE       5
+#define JULY       6
+#define AUGUST     7
+#define SEPTEMBER  8
+#define OCTOBER    9
+#define NOVEMBER  10
+#define DECEMBER  11
+
 //
 // @brief three letter month
 //
 extern const char *DateTimeMonthsStr[];
 
 //
+// @brief day of week string
+//
+extern const char *DateTimeDayOfWeekStr[];
+
+//
 // @brief returns the number of days in a month
-// @param dt a pointer to DateTime
+// @param year
+// @param month
 // @param daysInMonth the result will be returned here
 // @returns 0 on ok
-// EINVAL if _dt_ is NULL
-//        if _daysInMonth_ is NULL
-// ERANGE if dt->month < JANUARY or dt->month > DECEMBER
+// EINVAL if _daysInMonth_ is NULL
+// ERANGE if month < JANUARY or month > DECEMBER
 //
-int date_time_daysInMonth(const DateTime *dt, int *daysInMonth);
+int date_time_daysInMonth(int year, int month, int *daysInMonth);
 
 //
 // @brief Normalizes date and time in a given _dt_ by rolling
