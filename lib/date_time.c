@@ -72,7 +72,7 @@ static int _dayOfWeek(int year, int month, int day)
         month = (DECEMBER - JANUARY) + 1 - (JANUARY - month);
     }
     unsigned int d = month + 1;
-    d = 2.6f * d - 0.2f;
+    d = (13 * d - 1) / 5;              // [ 2.6 * d - 0.2 ] --- from Gauss's algorithm
     d += 5 * (year % 4);
     d += 4 * (year % 100);
     d += 6 * (year % 400);

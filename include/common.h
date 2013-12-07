@@ -28,6 +28,20 @@ typedef enum { FALSE = 0, TRUE } Bool;
 #endif
 
 //
+// @brief CallEx(function) is the same to Call(function), but if
+//        the function fails, it calls
+//        ContinueErrorEx(functionResult, "%d", format, ...)
+//
+#ifdef PARAM_CHECKS
+#define CallEx(function, format, ...) { \
+    int _res = function; \
+    if(_res) ContinueErrorEx(_res, "%d", format, ##__VA_ARGS__); \
+}
+#else
+#define CallEx(function, format, ...) { (void)function; }
+#endif
+
+//
 // @brief CallOriginateErrno(function) makes a function call taking PARAM_CHECKS macro into
 //        consideration. If the macro is defined, OriginateErrorEx(errno, "%d", description);
 //        will be called if function fails.

@@ -5,8 +5,6 @@
 #ifndef BINARY_CLOCK_LIB_DATE_TIME_H
 #define BINARY_CLOCK_LIB_DATE_TIME_H
 
-#include "date_const.h"
-
 #define MILLIS_IN_A_DAY   86400000UL
 
 #define HOURS_COUNT 24

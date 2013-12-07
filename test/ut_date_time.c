@@ -427,6 +427,9 @@ static int test_date_time_calculateDayOfWeek_correct()
 {
     int dayOfWeek;
 
+    Call(date_time_calculateDayOfWeek(2013, SEPTEMBER, 13, &dayOfWeek));
+    assert_int(dayOfWeek, FRIDAY);
+
     Call(date_time_calculateDayOfWeek(2013, DECEMBER, 4, &dayOfWeek));
     assert_int(dayOfWeek, WEDNESDAY);
 

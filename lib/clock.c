@@ -4,10 +4,10 @@
 
 #ifdef PARAM_CHECKS
 #include <errno.h>
-#include <string.h>
 
 #include <logger.h>
 #endif
+#include <string.h>
 
 #include "clock.h"
 #include "clock_state.h" // for MIN_YEAR
@@ -166,11 +166,12 @@ int clock_slideText(
         Bool          *isLastStep,
         unsigned char  pattern[CLOCK_PATTERN_SIZE])
 {
-    size_t lastStep = CLOCK_SCREEN_WIDTH * (strlen(text) - 1);
-
     NullCheck(text);
     NullCheck(isLastStep);
     NullCheck(pattern);
+
+    size_t lastStep = CLOCK_SCREEN_WIDTH * (strlen(text) - 1);
+
 #ifdef PARAM_CHECKS
     if(step > lastStep)
         OriginateErrorEx(EINVAL, "%d", "step[%zu] should be <= %zu for text '%s'", step, lastStep, text);

@@ -3,9 +3,10 @@
 //
 
 #ifdef PARAM_CHECKS
-#include <errno.h>
 #include <logger.h>
 #endif
+
+#include <errno.h>
 
 #include "clock_alphabet.h"
 

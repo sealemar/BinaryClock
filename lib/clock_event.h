@@ -80,6 +80,8 @@ typedef struct {
 } ClockEventDetails;
 
 #define DAY_OF_WEEK_FLAG 0x01ff
+#define WEEK_FROM_START 1
+#define WEEK_FROM_END   0
 
 //
 // @brief ClockEvents is a list of all events of which the clock knows.
@@ -107,7 +109,7 @@ extern const ClockEvent ClockEvents[CLOCK_EVENTS_SIZE];
 // @brief Initilizer for an event which is set with
 // day of week, week of month, and month
 // @param dayOfWeek day of week. See macros in lib/date_time.h
-// @param weekOfMonth week of the month. [1..4]
+// @param weekOfMonth week of the month. [0..3]
 // @param fromBeginningOfMonth whether the _weekOfMonth_ should be counted from the beginning of the month
 //          This can be any number or TRUE / FALSE which can be treated in the boolean context
 //
@@ -117,7 +119,7 @@ extern const ClockEvent ClockEvents[CLOCK_EVENTS_SIZE];
 //
 #define clock_event_initDayOfWeek(dayOfWeek, weekOfMonth, fromBeginningOfMonth, month, year, name) { \
     year, \
-    ((((weekOfMonth - 1) & 3) << 14) | DAY_OF_WEEK_FLAG << 5), \
+    (((weekOfMonth & 3) << 14) | DAY_OF_WEEK_FLAG << 5), \
     (((fromBeginningOfMonth ? 1 : 0) << 7) | (((dayOfWeek) & 7) << 4) | (month & 0x0f)), \
     name }
 
@@ -192,15 +194,36 @@ int clock_event_daysToEvent(const unsigned short dayOfYear, const ClockEvent *cl
 int clock_event_getEventDetails(const ClockEvent *event, int year, ClockEventDetails *eventDetails);
 
 //
-// @brief
+// @brief Updates a list of ClockEvents by setting the missing date/time parts.
+//        This function should be called on a list of events every time the day changes.
+//        In addition this function should be called after clock_event_initList()
+//        This function updates and then sorts _eventsList_ such that if an event comes before
+//        dateTime->day / dateTime->month than it will be treated like the next year event.
+//        Any other event will be treated as the same to dateTime->year event.
 //
-int clock_event_updateList(ClockEvent *eventsList, size_t sz, const DateTime *dt);
+// @param eventsList a pointer to an array of ClockEvent
+// @param sz the number of elements in _eventsList_
+// @param dateTime a pointer to DateTime for which the event list should be updated
+//
+// @returns 0 on ok
+//   EINVAL if _eventsList_ is NULL
+//
+int clock_event_updateList(ClockEvent *eventsList, size_t sz, const DateTime *dateTime);
 
 //
-// @brief initializes a list of ClockEvents
+// @brief initializes a list of ClockEvents by setting the missing date/time parts
+// @param eventsList a pointer to an array of ClockEvent
+// @param sz the number of elements in _eventsList_
+// @param year a year to init the list to
+//
+// @returns 0 on ok
+//   EINVAL if _eventsList_ is NULL
 //
 int clock_event_initList(ClockEvent *eventsList, size_t sz, int year);
 
+//
+// @brief These are helper macros to init and update global ClockEvent list
+//
 #define clock_event_init(dateTime) clock_event_initList((ClockEvent *)ClockEvents, CLOCK_EVENTS_SIZE, dateTime)
 #define clock_event_update(dateTime) clock_event_updateList((ClockEvent *)ClockEvents, CLOCK_EVENTS_SIZE, dateTime)
 
