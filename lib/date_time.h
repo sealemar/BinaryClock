@@ -46,6 +46,8 @@ typedef struct {
 #define NOVEMBER  10
 #define DECEMBER  11
 
+#define date_time_initDate(year, month, dayOfMonth) { year, month, dayOfMonth, 0, 0, 0, 0 }
+
 //
 // @brief three letter month
 //

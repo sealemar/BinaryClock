@@ -43,6 +43,17 @@ int _runTestSuite(const char *fileName, unsigned long line, const char *func, Te
 }
 
 //
+// @brief asserts if _str_ != _expected_
+//        if the assertion fails, it prints an extra information
+//
+#define assert_str_ex(str, expected, format, ...) { \
+    if(strcmp(str, expected)) { \
+        OriginateErrorEx(EFAULT, "%d", "'" TOSTRING(str) "' [%s] != '" TOSTRING(expected) "' [%s] : " format, \
+                                       str, expected, ##__VA_ARGS__); \
+    } \
+}
+
+//
 // @brief asserts if _number_ != _expected_
 //
 #define assert_number(number, expected, numberFormatSpec, expectedFormatSpec) { \
@@ -56,6 +67,23 @@ int _runTestSuite(const char *fileName, unsigned long line, const char *func, Te
 // @brief asserts int == int
 //
 #define assert_int(number, expected) { assert_number(number, expected, "%d", "%d"); }
+
+//
+// @brief asserts if _number_ != _expected_
+//        if the assertion fails, it prints an extra information
+//
+#define assert_number_ex(number, expected, numberFormatSpec, expectedFormatSpec, format, ...) { \
+    if(number != expected) { \
+        OriginateErrorEx(EFAULT, "%d", "'" TOSTRING(number) "' [" numberFormatSpec "] != '" TOSTRING(expected) \
+                                       "' [" expectedFormatSpec "] : " format, number, expected, ##__VA_ARGS__ ); \
+    } \
+}
+
+//
+// @brief asserts int == int
+//        if the assertion fails, it prints an extra information
+//
+#define assert_int_ex(number, expected, format, ...) { assert_number_ex(number, expected, "%d", "%d", format, ##__VA_ARGS__); }
 
 //
 // @brief asserts if the _value_ is true

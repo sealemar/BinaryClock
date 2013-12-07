@@ -84,38 +84,119 @@ static int test_clock_event_getEventDetails_correct()
         clock_event_initDayOfMonth(25, DECEMBER,    0, "Christmas"),
     };
 
+    struct {
+        const ClockEvent *event;
+        int year;
+        int month;
+        int dayOfMonth;
+        int dayOfWeek;
+    } detailsList[] = {
+        { &events[0], 2013, JANUARY,    1, TUESDAY },
+        { &events[1], 2013, APRIL,      1, MONDAY },
+        { &events[2], 2013, JULY,      26, FRIDAY },
+        { &events[3], 2013, SEPTEMBER, 13, FRIDAY },
+        { &events[4], 2013, NOVEMBER,  28, THURSDAY },
+        { &events[5], 2013, DECEMBER,  25, WEDNESDAY },
+        { &events[3], 2000, SEPTEMBER, 12, TUESDAY },
+    }, *details = detailsList;
+
+    ClockEventDetails d;
+
+    //
+    // code
+    //
+
+    for(size_t i = 0; i < countof(detailsList); ++i, ++details) {
+        Call( clock_event_getEventDetails( details->event, details->year, &d) );
+
+        assert_int_ex(d.dayOfWeek, details->dayOfWeek, "i = %zu", i);
+        assert_int_ex(d.dayOfMonth, details->dayOfMonth, "i = %zu", i);
+        assert_int_ex(d.month, details->month, "i = %zu", i);
+    }
+
+    return 0;
+}
+
+static int test_clock_event_initList_correct()
+{
+    ClockEvent events[] = {
+        clock_event_initDayOfMonth(1,  JANUARY,     0, "New year"),
+        clock_event_initDayOfMonth(1,  APRIL,    1392, "Fool's day"),
+        clock_event_initDayOfWeek (FRIDAY, 0, WEEK_FROM_END, JULY, 2000, "System Administrator Appreciation Day"),
+        clock_event_initDayOfYear (256, 2009, "Programmer's day"),
+        clock_event_initDayOfWeek (THURSDAY, 3, WEEK_FROM_START, NOVEMBER, 1574, "Thanksgiving"),
+        clock_event_initDayOfMonth(25, DECEMBER,    0, "Christmas"),
+    };
+
+    const ClockEventDetails details[] = {
+        clock_event_detailsInit(JANUARY,    1, TUESDAY),
+        clock_event_detailsInit(APRIL,      1, MONDAY),
+        clock_event_detailsInit(JULY,      26, FRIDAY),
+        clock_event_detailsInit(SEPTEMBER, 13, FRIDAY),
+        clock_event_detailsInit(NOVEMBER,  28, THURSDAY),
+        clock_event_detailsInit(DECEMBER,  25, WEDNESDAY),
+    };
+
+    //
+    // code
+    //
+
+    Call( clock_event_initList(events, countof(events), 2013) );
+
+    for(size_t i = 0; i < countof(events); ++i) {
+        assert_int_ex( clock_event_getDayOfWeek(events[i]) , details[i].dayOfWeek, "i = %zu", i);
+        assert_int_ex( clock_event_getDayOfMonth(events[i]) , details[i].dayOfMonth, "i = %zu", i);
+        assert_int_ex( clock_event_getMonth(events[i]) , details[i].month, "i = %zu", i);
+    }
+
+    return 0;
+}
+
+static int test_clock_event_updateList_correct()
+{
+    const char *eventsNames[] = {
+        "New year",
+        "Fool's day",
+        "System Administrator Appreciation Day",
+        "Programmer's day",
+        "Thanksgiving",
+        "Christmas",
+    };
+
+    ClockEvent events[] = {
+        clock_event_initDayOfMonth(25, DECEMBER,    0, eventsNames[5]),
+        clock_event_initDayOfMonth(1,  APRIL,    1392, eventsNames[1]),
+        clock_event_initDayOfMonth(1,  JANUARY,     0, eventsNames[0]),
+        clock_event_initDayOfWeek (THURSDAY, 3, WEEK_FROM_START, NOVEMBER, 1574, eventsNames[4]),
+        clock_event_initDayOfYear (256, 2009, eventsNames[3]),
+        clock_event_initDayOfWeek (FRIDAY, 0, WEEK_FROM_END, JULY, 2000, eventsNames[2]),
+    };
+
+    const ClockEventDetails details[] = {
+        clock_event_detailsInit(JANUARY,    1, WEDNESDAY),  // 2014
+        clock_event_detailsInit(APRIL,      1, TUESDAY),    // 2014
+        clock_event_detailsInit(JULY,      25, FRIDAY),     // 2014
+        clock_event_detailsInit(SEPTEMBER, 13, FRIDAY),     // 2013
+        clock_event_detailsInit(NOVEMBER,  28, THURSDAY),   // 2013
+        clock_event_detailsInit(DECEMBER,  25, WEDNESDAY),  // 2013
+    };
+
     int year = 2013;
-    ClockEventDetails details;
+    const DateTime dt = date_time_initDate(year, SEPTEMBER, 13);
 
-    Call( clock_event_getEventDetails( &(events[0]), year, &details) );
-    assert_int(details.dayOfWeek, TUESDAY);
-    assert_int(details.dayOfMonth, 1);
-    assert_int(details.month, JANUARY);
+    //
+    // code
+    //
 
-    Call( clock_event_getEventDetails( &(events[1]), year, &details) );
-    assert_int(details.dayOfWeek, MONDAY);
-    assert_int(details.dayOfMonth, 1);
-    assert_int(details.month, APRIL);
+    Call( clock_event_initList(events, countof(events), year) );
+    Call( clock_event_updateList(events, countof(events), &dt) );
 
-    Call( clock_event_getEventDetails( &(events[2]), year, &details) );
-    assert_int(details.dayOfWeek, FRIDAY);
-    assert_int(details.dayOfMonth, 26);
-    assert_int(details.month, JULY);
-
-    Call( clock_event_getEventDetails( &(events[3]), year, &details) );
-    assert_int(details.dayOfWeek, FRIDAY);
-    assert_int(details.dayOfMonth, 13);
-    assert_int(details.month, SEPTEMBER);
-
-    Call( clock_event_getEventDetails( &(events[4]), year, &details) );
-    assert_int(details.dayOfWeek, THURSDAY);
-    assert_int(details.dayOfMonth, 28);
-    assert_int(details.month, NOVEMBER);
-
-    Call( clock_event_getEventDetails( &(events[5]), year, &details) );
-    assert_int(details.dayOfWeek, WEDNESDAY);
-    assert_int(details.dayOfMonth, 25);
-    assert_int(details.month, DECEMBER);
+    for(size_t i = 0; i < countof(events); ++i) {
+        assert_str_ex(events[i].name, eventsNames[i], "i = %zu", i);
+        assert_int_ex( clock_event_getDayOfWeek(events[i]) , details[i].dayOfWeek, "i = %zu", i);
+        assert_int_ex( clock_event_getDayOfMonth(events[i]) , details[i].dayOfMonth, "i = %zu", i);
+        assert_int_ex( clock_event_getMonth(events[i]) , details[i].month, "i = %zu", i);
+    }
 
     return 0;
 }
@@ -125,6 +206,8 @@ static TestUnit testSuite[] = {
     { test_clock_event_initDayOfWeek_correct, "clock_event_initDayOfWeek() is correct", FALSE },
     { test_clock_event_initDayOfYear_correct, "clock_event_initDayOfYear() is correct", FALSE },
     { test_clock_event_getEventDetails_correct, "clock_event_getEventDetails() is correct", FALSE },
+    { test_clock_event_initList_correct, "clock_event_initList() is correct", FALSE },
+    { test_clock_event_updateList_correct, "clock_event_updateList() is correct", FALSE },
 };
 
 int ut_clock_event()

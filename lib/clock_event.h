@@ -83,6 +83,8 @@ typedef struct {
 #define WEEK_FROM_START 1
 #define WEEK_FROM_END   0
 
+#define clock_event_detailsInit(month, dayOfMonth, dayOfWeek) { month, dayOfWeek, dayOfMonth }
+
 //
 // @brief ClockEvents is a list of all events of which the clock knows.
 //        These can be personalized events, such as birthdays and other

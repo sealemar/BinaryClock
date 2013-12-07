@@ -237,7 +237,7 @@ int clock_event_updateList(ClockEvent *eventsList, size_t sz, const DateTime *da
         if(clock_event_isBefore(*event, dateTime->month, dateTime->day)) {
             ClockEventDetails eventDetails;
             CallEx( clock_event_getEventDetails(event, dateTime->year + 1, &eventDetails),
-                    "on eventsList[%zu/%zu]", i, sz);
+                    "on eventsList[%zu], size %zu", i, sz);
 
             if(clock_event_detailsIsBefore(eventDetails, dateTime->month, dateTime->day)) {
                 clock_event_setEventDetails(*event, eventDetails);
@@ -275,7 +275,7 @@ int clock_event_initList(ClockEvent *eventsList, size_t sz, int year)
     for(size_t i = 0; i < sz; ++i, ++event) {
         ClockEventDetails eventDetails;
         CallEx( clock_event_getEventDetails(event, year, &eventDetails),
-                "on eventsList[%zu/%zu]", i, sz);
+                "on eventsList[%zu], size %zu", i, sz);
         clock_event_setEventDetails(*event, eventDetails);
     }
 
