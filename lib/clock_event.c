@@ -26,10 +26,11 @@
     (event).blob_2 |= month & 0x0f; \
 }
 
-#define clock_event_setEventDetails(event, eventDetails) { \
+#define clock_event_setEventDetails(event, eventDetails, year) { \
     clock_event_setDayOfWeek((event), (eventDetails).dayOfWeek); \
     clock_event_setDayOfMonth((event), (eventDetails).dayOfMonth); \
     clock_event_setMonth((event), (eventDetails).month); \
+    (event).yearCalculated = year; \
 }
 
 #define clock_event_isBefore(event, month, day) ( \
@@ -232,15 +233,22 @@ int clock_event_updateList(ClockEvent *eventsList, size_t sz, const DateTime *da
     //
     // See if anything needs to be updated
     //
+    int nextYear = dateTime->year + 1;
     ClockEvent *event = eventsList;
     for(size_t i = 0; i < sz; ++i, ++event) {
+
+        // don't recalculate the event if it has been already updated to the next year
+        if(event->yearCalculated == nextYear) {
+            continue;
+        }
+
         if(clock_event_isBefore(*event, dateTime->month, dateTime->day)) {
             ClockEventDetails eventDetails;
-            CallEx( clock_event_getEventDetails(event, dateTime->year + 1, &eventDetails),
+            CallEx( clock_event_getEventDetails(event, nextYear, &eventDetails),
                     "on eventsList[%zu], size %zu", i, sz);
 
             if(clock_event_detailsIsBefore(eventDetails, dateTime->month, dateTime->day)) {
-                clock_event_setEventDetails(*event, eventDetails);
+                clock_event_setEventDetails(*event, eventDetails, nextYear);
                 wasChanged = TRUE;
             }
         }
@@ -276,7 +284,7 @@ int clock_event_initList(ClockEvent *eventsList, size_t sz, int year)
         ClockEventDetails eventDetails;
         CallEx( clock_event_getEventDetails(event, year, &eventDetails),
                 "on eventsList[%zu], size %zu", i, sz);
-        clock_event_setEventDetails(*event, eventDetails);
+        clock_event_setEventDetails(*event, eventDetails, year);
     }
 
     return 0;

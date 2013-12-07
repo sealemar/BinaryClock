@@ -9,8 +9,9 @@
 
 //
 // @brief ClockEvent describes an event.
-// @param year a year of the event
-// @param name a name of the event
+// @param yearStarted the year which the event gets its history started from
+// @param yearCalculated the year which the event is calculated for (initially CLOCK_EVENT_YEAR_NOT_CALCULATED)
+// @param name the name of the event
 // @param blob_1
 //
 //          byte #2     byte #1
@@ -67,10 +68,11 @@
 // @warning Don't work with blob_1 and blob_2 directly, use helper macros below
 //
 typedef struct {
-    const int   year;
+    const int   yearStarted;
+    int         yearCalculated;
     uint16_t    blob_1;
     uint8_t     blob_2;
-    const char *name;                   // event name
+    const char *name;
 } ClockEvent;
 
 typedef struct {
@@ -82,6 +84,7 @@ typedef struct {
 #define DAY_OF_WEEK_FLAG 0x01ff
 #define WEEK_FROM_START 1
 #define WEEK_FROM_END   0
+#define CLOCK_EVENT_YEAR_NOT_CALCULATED (~0)
 
 #define clock_event_detailsInit(month, dayOfMonth, dayOfWeek) { month, dayOfWeek, dayOfMonth }
 
@@ -105,7 +108,8 @@ extern const ClockEvent ClockEvents[CLOCK_EVENTS_SIZE];
 // @param year year when the event first occured
 // @param name name of the event
 //
-#define clock_event_initDayOfMonth(day, month, year, name) { year, (day & 0x1f), (month & 0xf), name }
+#define clock_event_initDayOfMonth(day, month, year, name) \
+    { year, CLOCK_EVENT_YEAR_NOT_CALCULATED, (day & 0x1f), (month & 0xf), name }
 
 //
 // @brief Initilizer for an event which is set with
@@ -121,6 +125,7 @@ extern const ClockEvent ClockEvents[CLOCK_EVENTS_SIZE];
 //
 #define clock_event_initDayOfWeek(dayOfWeek, weekOfMonth, fromBeginningOfMonth, month, year, name) { \
     year, \
+    CLOCK_EVENT_YEAR_NOT_CALCULATED, \
     (((weekOfMonth & 3) << 14) | DAY_OF_WEEK_FLAG << 5), \
     (((fromBeginningOfMonth ? 1 : 0) << 7) | (((dayOfWeek) & 7) << 4) | (month & 0x0f)), \
     name }
@@ -131,7 +136,8 @@ extern const ClockEvent ClockEvents[CLOCK_EVENTS_SIZE];
 // @param year year when the event first occured
 // @param name name of the event
 //
-#define clock_event_initDayOfYear(dayOfYear, year, name) { year, (((dayOfYear) & 0x01ff) << 5), 0, name }
+#define clock_event_initDayOfYear(dayOfYear, year, name) \
+    { year, CLOCK_EVENT_YEAR_NOT_CALCULATED, (((dayOfYear) & 0x01ff) << 5), 0, name }
 
 //
 // @brief These are the helper macros to get the date information from an event.

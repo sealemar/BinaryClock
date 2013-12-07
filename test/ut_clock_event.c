@@ -13,7 +13,7 @@ static int test_clock_event_initDayOfMonth_correct()
     ClockEvent event = clock_event_initDayOfMonth(4, APRIL, 1392, name);
 
     assert_str(event.name, name);
-    assert_int(event.year, 1392);
+    assert_int(event.yearStarted, 1392);
 
     assert_true(clock_event_isDayOfMonthEvent(event));
     assert_false(clock_event_isDayOfWeekEvent(event));
@@ -35,7 +35,7 @@ static int test_clock_event_initDayOfWeek_correct()
     ClockEvent event = clock_event_initDayOfWeek(THURSDAY, 3, WEEK_FROM_START, NOVEMBER, 1574, name);
 
     assert_str(event.name, name);
-    assert_int(event.year, 1574);
+    assert_int(event.yearStarted, 1574);
 
     assert_false(clock_event_isDayOfMonthEvent(event));
     assert_true(clock_event_isDayOfWeekEvent(event));
@@ -57,7 +57,7 @@ static int test_clock_event_initDayOfYear_correct()
     ClockEvent event = clock_event_initDayOfYear(256, 2009, name);
 
     assert_str(event.name, name);
-    assert_int(event.year, 2009);
+    assert_int(event.yearStarted, 2009);
 
     assert_false(clock_event_isDayOfMonthEvent(event));
     assert_false(clock_event_isDayOfWeekEvent(event));
@@ -165,24 +165,35 @@ static int test_clock_event_updateList_correct()
 
     ClockEvent events[] = {
         clock_event_initDayOfMonth(25, DECEMBER,    0, eventsNames[5]),
-        clock_event_initDayOfMonth(1,  APRIL,    1392, eventsNames[1]),
         clock_event_initDayOfMonth(1,  JANUARY,     0, eventsNames[0]),
         clock_event_initDayOfWeek (THURSDAY, 3, WEEK_FROM_START, NOVEMBER, 1574, eventsNames[4]),
+        clock_event_initDayOfMonth(1,  APRIL,    1392, eventsNames[1]),
         clock_event_initDayOfYear (256, 2009, eventsNames[3]),
         clock_event_initDayOfWeek (FRIDAY, 0, WEEK_FROM_END, JULY, 2000, eventsNames[2]),
     };
 
-    const ClockEventDetails details[] = {
-        clock_event_detailsInit(JANUARY,    1, WEDNESDAY),  // 2014
-        clock_event_detailsInit(APRIL,      1, TUESDAY),    // 2014
-        clock_event_detailsInit(JULY,      25, FRIDAY),     // 2014
-        clock_event_detailsInit(SEPTEMBER, 13, FRIDAY),     // 2013
-        clock_event_detailsInit(NOVEMBER,  28, THURSDAY),   // 2013
-        clock_event_detailsInit(DECEMBER,  25, WEDNESDAY),  // 2013
+    struct {
+        int year;
+        int month;
+        int dayOfMonth;
+        int dayOfWeek;
+    } details[] = {
+        { 2019, JANUARY,    1, TUESDAY },
+        { 2019, APRIL,      1, MONDAY },
+        { 2019, JULY,      26, FRIDAY },
+        { 2019, SEPTEMBER, 13, FRIDAY },
+        { 2018, NOVEMBER,  22, THURSDAY },
+        { 2018, DECEMBER,  25, TUESDAY },
     };
 
-    int year = 2013;
-    const DateTime dt = date_time_initDate(year, SEPTEMBER, 13);
+    //
+    // This date is a good one to check when an event is rolled over to the next year.
+    // In 2018 Thanksgiving falls on November 22. In 2019 it is in November 28. So, any day
+    // before November 29 should cause the event calculation for 2018. And only starting
+    // from November 29 it should start calculating to November 28, 2019.
+    //
+    int year = 2018;
+    const DateTime dt = date_time_initDate(year, NOVEMBER, 28);
 
     //
     // code
@@ -193,6 +204,7 @@ static int test_clock_event_updateList_correct()
 
     for(size_t i = 0; i < countof(events); ++i) {
         assert_str_ex(events[i].name, eventsNames[i], "i = %zu", i);
+        assert_int_ex(events[i].yearCalculated, details[i].year, "i = %zu", i);
         assert_int_ex( clock_event_getDayOfWeek(events[i]) , details[i].dayOfWeek, "i = %zu", i);
         assert_int_ex( clock_event_getDayOfMonth(events[i]) , details[i].dayOfMonth, "i = %zu", i);
         assert_int_ex( clock_event_getMonth(events[i]) , details[i].month, "i = %zu", i);
