@@ -277,7 +277,7 @@ int date_time_timeToStr(const DateTime *dt, char str[DATE_TIME_TIME_STR_SIZE])
 
 //
 // @brief prints date from _dt_ to _str_ in format
-//        MMM DD YYYY
+//        MMM DD YYYY DAY_OF_WEEK
 // @param dt a pointer to DateTime structure which time needs to be printed
 // @param str a buffer where to print the time. Should be not less than DATE_TIME_DATE_STR_SIZE chars long
 // @returns 0 on ok
@@ -301,11 +301,14 @@ int date_time_dateToStr(const DateTime *dt, char str[DATE_TIME_DATE_STR_SIZE])
         OriginateErrorEx(ERANGE, "%d", "dt->month = [%d] should be >= 0 and < 11", dt->month);
     }
     int _d = _daysInMonth(dt->month, dt->year);
-    if(dt->day <= 0 || dt->day > _d) {
+    if(dt->day < 1 || dt->day > _d) {
         OriginateErrorEx(ERANGE, "%d", "dt->day = [%d] should be > 0 and <= %d", dt->day, _d);
     }
 #endif
 
+    //
+    // "MMM DD YYYY"
+    //
     memcpy(str, DateTimeMonthsStr[dt->month], 3);
     char *s = str + 3;
     *s = ' ';
@@ -316,7 +319,24 @@ int date_time_dateToStr(const DateTime *dt, char str[DATE_TIME_DATE_STR_SIZE])
     ++s;
     fixedWidthIntToString(dt->year, s, 4);
     s += 4;
-    *s = 0;
+
+    //
+    // " DAY_OF_WEEK"
+    //
+    *s = ' ';
+    ++s;
+
+    int d;
+    Call( date_time_calculateDayOfWeek(dt->year, dt->month, dt->day, &d) );
+#ifdef PARAM_CHECS
+    if(DATE_TIME_TIME_STR_SIZE - (str - s) < strlen(DateTimeDayOfWeekStr[d]) + 1) {
+        OriginateErrorEx(EMSGSIZE, "%d", "str buffer is too small. Buffer size = %zu, required = %zu",
+                                         DATE_TIME_STRING_SIZE,
+                                         DATE_TIME_TIME_STR_SIZE - (str - s),
+                                         DATE_TIME_TIME_STR_SIZE - (str - s) + strlen(DateTimeDayOfWeekStr[d]) + 1);
+    }
+#endif
+    strcpy(s, DateTimeDayOfWeekStr[d]);
 
     return 0;
 }

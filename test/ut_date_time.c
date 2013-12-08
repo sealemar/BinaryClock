@@ -325,39 +325,35 @@ static int test_date_time_timeToStr_returnsERANGEIfValuesAreOutOfRange()
 
 static int test_date_time_dateToStr_correct()
 {
-    if(DATE_TIME_DATE_STR_SIZE != 12) {
-        OriginateErrorEx(-1, "%d", "Unexpected DATE_TIME_DATE_STR_SIZE = %d. Should be 12", DATE_TIME_DATE_STR_SIZE);
+    if(DATE_TIME_DATE_STR_SIZE != 22) {
+        OriginateErrorEx(-1, "%d", "Unexpected DATE_TIME_DATE_STR_SIZE = %d. Should be 22", DATE_TIME_DATE_STR_SIZE);
     }
 
-    DateTime dt;
+    struct {
+        DateTime dt;
+        int dayOfWeek;
+    } dts[] = {
+        { date_time_initDate(2013, NOVEMBER, 28), THURSDAY },
+        { date_time_initDate(1968, JANUARY,  31), WEDNESDAY },
+    }, *dt = dts;
     char str[DATE_TIME_DATE_STR_SIZE];
     char expected[DATE_TIME_DATE_STR_SIZE];
 
-    dt.year = 2013;
-    dt.month = NOVEMBER;
-    dt.day = 28;
+    for(size_t i = 0; i < countof(dts); ++i, ++dt) {
+        Call( date_time_dateToStr( &(dt->dt), str) );
+        sprintf(expected, "%s %02d %04d %s",
+                          DateTimeMonthsStr[dt->dt.month],
+                          dt->dt.day,
+                          dt->dt.year,
+                          DateTimeDayOfWeekStr[dt->dayOfWeek]);
+        assert_str(str, expected);
 
-    Call(date_time_dateToStr(&dt, str));
-    sprintf(expected, "%s %02d %04d", DateTimeMonthsStr[dt.month], dt.day, dt.year);
-    assert_str(str, expected);
-
-
-    dt.year = 1968;
-    dt.month = JANUARY;
-    dt.day = 31;
-
-    Call(date_time_dateToStr(&dt, str));
-    sprintf(expected, "%s %02d %04d", DateTimeMonthsStr[dt.month], dt.day, dt.year);
-    assert_str(str, expected);
-
-
-    dt.year = 100;
-    dt.month = MAY;
-    dt.day = 4;
-
-    Call(date_time_dateToStr(&dt, str));
-    sprintf(expected, "%s %02d %04d", DateTimeMonthsStr[dt.month], dt.day, dt.year);
-    assert_str(str, expected);
+        size_t l = strlen(expected);
+        if(l >= DATE_TIME_DATE_STR_SIZE) {
+            OriginateErrorEx(EFAULT, "%d", "strlen(expected) [%zu] should be less than %d",
+                                           l, DATE_TIME_DATE_STR_SIZE);
+        }
+    }
 
     return 0;
 }

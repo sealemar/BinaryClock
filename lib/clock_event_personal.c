@@ -7,6 +7,7 @@
 //
 
 #include "clock_event.h"
+#include "clock_event_personal.h"
 
 const ClockEvent ClockEvents[CLOCK_EVENTS_SIZE] = {
     clock_event_initDayOfMonth(1,  JANUARY,     0, "New year"),

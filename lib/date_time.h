@@ -12,8 +12,8 @@
 // "00:00:00" + '\0'
 #define DATE_TIME_TIME_STR_SIZE 9
 
-// "MMM DD YYYY" + '\0'
-#define DATE_TIME_DATE_STR_SIZE 12
+// "MMM DD YYYY DAY_OF_WEEK" + '\0'
+#define DATE_TIME_DATE_STR_SIZE 22
 
 typedef struct {
     int year;
@@ -124,7 +124,7 @@ int date_time_timeToStr(const DateTime *dt, char str[DATE_TIME_TIME_STR_SIZE]);
 
 //
 // @brief prints date from _dt_ to _str_ in format
-//        MMM DD YYYY
+//        MMM DD YYYY DAY_OF_WEEK
 // @param dt a pointer to DateTime structure which time needs to be printed
 // @param str a buffer where to print the time. Should be not less than DATE_TIME_DATE_STR_SIZE chars long
 // @returns 0 on ok

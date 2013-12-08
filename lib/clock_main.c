@@ -9,9 +9,10 @@
 
 #include <string.h>
 
-#include "clock_time.h"
-#include "clock_main.h"
+#include "clock_event.h"
 #include "clock_extern.h"
+#include "clock_main.h"
+#include "clock_time.h"
 
 //
 // In milliseconds
@@ -367,6 +368,7 @@ static int clock_state_setDate(ClockState *clockState)
     }
 
     DateTime *dt = &(clockState->dateTime);
+    Bool wasChanged = FALSE;
 
     //
     // Decrease selected time
@@ -392,6 +394,7 @@ static int clock_state_setDate(ClockState *clockState)
             }
             adjustDays(clockState->dateTime);
         }
+        wasChanged = TRUE;
     }
 
     //
@@ -418,6 +421,17 @@ static int clock_state_setDate(ClockState *clockState)
             }
             adjustDays(clockState->dateTime);
         }
+        wasChanged = TRUE;
+    }
+
+    //
+    // Update events
+    //
+    if(wasChanged) {
+        if(clockState->dateTime.year != clockState->oldDateTime.year) {
+            Call( clock_event_init(clockState->dateTime.year) );
+        }
+        Call( clock_event_update( &(clockState->dateTime) ) );
     }
 
     //
@@ -476,16 +490,22 @@ int clock_init(ClockState *clockState)
     memset(clockState, 0, sizeof(ClockState));
 
     //
-    // Call clock_initDateTime() if the implementation provides it
+    // Init clockState->dateTime
     //
     if(clock_extern_initDateTime != NULL) {
-        Call(clock_extern_initDateTime( &(clockState->dateTime) ));
+        Call( clock_extern_initDateTime( &(clockState->dateTime) ) );
         memcpy( &(clockState->oldDateTime), &(clockState->dateTime), sizeof(DateTime) );
+    } else {
+        clockState->dateTime.day    = 1;
+        clockState->oldDateTime.day = 1;
     }
 
     unsigned long millis;
-    Call(clock_extern_uptimeMillis(&millis));
-    Call(clock_updateUptimeMillis(millis, &(clockState->lastUptime), &millis));
+    Call( clock_extern_uptimeMillis(&millis) );
+    Call( clock_updateUptimeMillis(millis, &(clockState->lastUptime), &millis) );
+
+    Call( clock_event_init(clockState->dateTime.year) );
+    Call( clock_event_update( &(clockState->dateTime) ) );
 
     return 0;
 }
@@ -514,6 +534,10 @@ int clock_update(ClockState *clockState)
         OriginateErrorEx(EINVAL, "%d", "clockState->state = %u is not implemented", clockState->state);
     }
 #endif
+
+    if(clockState->dateTime.day != clockState->oldDateTime.day) {
+        Call( clock_event_update( &(clockState->dateTime) ) );
+    }
 
     Call(ClockStateFunctionMap[clockState->state](clockState));
 

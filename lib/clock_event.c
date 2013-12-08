@@ -209,8 +209,8 @@ int clock_event_daysToEvent(const unsigned short dayOfYear, const ClockEvent *cl
 //
 // @brief Updates a list of ClockEvents by setting the missing date/time parts.
 //        This function should be called on a list of events every time the day changes.
-//        In addition this function should be called after clock_event_initList()
-//        This function updates and then sorts _eventsList_ such that if an event comes before
+//        In addition this function should be called after clock_event_initList().
+//        It updates and then sorts _eventsList_ such that if an event comes before
 //        dateTime->day / dateTime->month than it will be treated like the next year event.
 //        Any other event will be treated as the same to dateTime->year event.
 //

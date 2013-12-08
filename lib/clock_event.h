@@ -2,8 +2,8 @@
 // developed by Sergey Markelov (11/30/2013)
 //
 
-#ifndef BINARY_CLOCK_LIB_CLOCK_EVENT_FUNCTIONS_H
-#define BINARY_CLOCK_LIB_CLOCK_EVENT_FUNCTIONS_H
+#ifndef BINARY_CLOCK_LIB_CLOCK_EVENT_H
+#define BINARY_CLOCK_LIB_CLOCK_EVENT_H
 
 #include "date_time.h"
 
@@ -87,19 +87,6 @@ typedef struct {
 #define CLOCK_EVENT_YEAR_NOT_CALCULATED (~0)
 
 #define clock_event_detailsInit(month, dayOfMonth, dayOfWeek) { month, dayOfWeek, dayOfMonth }
-
-//
-// @brief ClockEvents is a list of all events of which the clock knows.
-//        These can be personalized events, such as birthdays and other
-//        special days.
-//
-// @note This array is defined in lib/clock_events_personal.c
-//
-// @note clock_events_init() needs to be called at the program startup and then
-// every time when the year changes.
-//
-#define CLOCK_EVENTS_SIZE 10
-extern const ClockEvent ClockEvents[CLOCK_EVENTS_SIZE];
 
 //
 // @brief Initilizer for an event which is set with month and day
@@ -204,8 +191,8 @@ int clock_event_getEventDetails(const ClockEvent *event, int year, ClockEventDet
 //
 // @brief Updates a list of ClockEvents by setting the missing date/time parts.
 //        This function should be called on a list of events every time the day changes.
-//        In addition this function should be called after clock_event_initList()
-//        This function updates and then sorts _eventsList_ such that if an event comes before
+//        In addition this function should be called after clock_event_initList().
+//        It updates and then sorts _eventsList_ such that if an event comes before
 //        dateTime->day / dateTime->month than it will be treated like the next year event.
 //        Any other event will be treated as the same to dateTime->year event.
 //
@@ -232,7 +219,9 @@ int clock_event_initList(ClockEvent *eventsList, size_t sz, int year);
 //
 // @brief These are helper macros to init and update global ClockEvent list
 //
-#define clock_event_init(dateTime) clock_event_initList((ClockEvent *)ClockEvents, CLOCK_EVENTS_SIZE, dateTime)
+#define clock_event_init(year)       clock_event_initList  ((ClockEvent *)ClockEvents, CLOCK_EVENTS_SIZE, year)
 #define clock_event_update(dateTime) clock_event_updateList((ClockEvent *)ClockEvents, CLOCK_EVENTS_SIZE, dateTime)
+
+#include "clock_event_personal.h"
 
 #endif
