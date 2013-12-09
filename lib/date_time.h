@@ -5,6 +5,10 @@
 #ifndef BINARY_CLOCK_LIB_DATE_TIME_H
 #define BINARY_CLOCK_LIB_DATE_TIME_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define MILLIS_IN_A_DAY   86400000UL
 
 #define HOURS_COUNT 24
@@ -151,5 +155,9 @@ int date_time_dateToStr(const DateTime *dt, char str[DATE_TIME_DATE_STR_SIZE]);
 // @note the function doesn't check the date correctness
 //
 int date_time_calculateDayOfWeek(int year, int month, int day, int *dayOfWeek);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

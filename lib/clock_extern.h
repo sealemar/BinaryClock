@@ -5,6 +5,10 @@
 #ifndef BINARY_CLOCK_LIB_CLOCK_EXTERN_FUNCTIONS_H
 #define BINARY_CLOCK_LIB_CLOCK_EXTERN_FUNCTIONS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "date_time.h"
 
 //
@@ -54,5 +58,9 @@ extern int (* clock_extern_clearScreen)(void);
 // @returns 0 on ok
 //
 extern int (* clock_extern_initDateTime)(DateTime *dt);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

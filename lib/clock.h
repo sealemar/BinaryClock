@@ -5,6 +5,10 @@
 #ifndef BINARY_CLOCK_LIB_CLOCK_H
 #define BINARY_CLOCK_LIB_CLOCK_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "date_time.h"
 
 //
@@ -118,5 +122,9 @@ int clock_slideText(
         size_t         step,
         Bool          *isLastStep,
         unsigned char  pattern[CLOCK_PATTERN_SIZE]);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

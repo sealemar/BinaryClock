@@ -5,6 +5,10 @@
 #ifndef BINARY_CLOCK_LIB_CLOCK_BUTTON_H
 #define BINARY_CLOCK_LIB_CLOCK_BUTTON_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 //
 // @brief The maximum amount of buttons which ClockButtons can hold
 //
@@ -77,5 +81,9 @@ typedef struct {
 // ERANGE - if _index_ is greater than the maximum
 //
 int clock_button_press(ClockButtons *clockButtons, size_t index, Bool isPressed);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

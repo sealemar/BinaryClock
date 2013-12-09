@@ -5,6 +5,10 @@
 #ifndef BINARY_CLOCK_LIB_CLOCK_EVENT_H
 #define BINARY_CLOCK_LIB_CLOCK_EVENT_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "date_time.h"
 
 //
@@ -231,5 +235,9 @@ int clock_event_initList(ClockEvent *eventsList, size_t sz, int year);
 int clock_event_findClosestFromList(const ClockEvent *eventsList, size_t sz, int month, int dayOfMonth, int *index);
 
 #include "clock_event_personal.h"
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

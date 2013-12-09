@@ -2,14 +2,17 @@
 # developed by Sergey Markelov (11/10/2013)
 #
 
-ifndef $(ARDMK_DIR)
+ifndef ARDMK_DIR
     $(error "ARDMK_DIR is not defined")
 endif
 
-BOARD_TAG    = uno
-MONITOR_PORT = /dev/cu.usb*
-ARDUINO_LIBS =
-MONITOR_CMD  = screen -c /dev/null
+BOARD_TAG     = uno
+MONITOR_PORT  = /dev/cu.usb*
+ARDUINO_LIBS  = lib
+USER_LIB_PATH := $(realpath ..)
+MONITOR_CMD   = screen -c /dev/null
+CPPFLAGS      = -include ../include/common.h -include stdint.h
+CFLAGS        = -std=c99 -include stddef.h
 
 include $(ARDMK_DIR)/Arduino.mk
 

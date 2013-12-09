@@ -5,6 +5,10 @@
 #ifndef BINARY_CLOCK_LIB_CLOCK_ALPHABET_H
 #define BINARY_CLOCK_LIB_CLOCK_ALPHABET_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "clock.h"
 
 #define CLOCK_BLANK              0
@@ -76,5 +80,9 @@ extern const unsigned char ClockAlphabet[CLOCK_ALPHABET_SIZE][CLOCK_PATTERN_SIZE
 //       CLOCK_SMILEY_FACE_SAD is '\002'
 //
 int clock_alphabet_getIndexByCharacter(unsigned char ch, int *clockAlphabetIndex);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

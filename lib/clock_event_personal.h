@@ -5,6 +5,10 @@
 #ifndef BINARY_CLOCK_LIB_CLOCK_EVENT_PERSONAL_H
 #define BINARY_CLOCK_LIB_CLOCK_EVENT_PERSONAL_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define CLOCK_EVENTS_SIZE 6
 
 #include "clock_event.h"
@@ -23,5 +27,9 @@
 //          EVENT_STRING_BUFFER_SIZE - 4 - DATE_TIME_DATE_STR_SIZE
 //
 extern ClockEvent ClockEvents[CLOCK_EVENTS_SIZE];
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

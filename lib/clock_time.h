@@ -5,6 +5,10 @@
 #ifndef BINARY_CLOCK_LIB_CLOCK_TIME_H
 #define BINARY_CLOCK_LIB_CLOCK_TIME_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "clock_state.h"
 
 #define MAX_UPTIME_MILLIS (~(0UL))
@@ -29,5 +33,9 @@
 //       This number will overflow (go back to zero), after approximately 50 days.
 //
 int clock_updateUptimeMillis(unsigned long millis, unsigned long *lastMillis, unsigned long *delta);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

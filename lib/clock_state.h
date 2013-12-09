@@ -5,6 +5,10 @@
 #ifndef BINARY_CLOCK_LIB_CLOCK_STATE_H
 #define BINARY_CLOCK_LIB_CLOCK_STATE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "date_time.h"
 #include "clock_button.h"
 #include "clock.h"
@@ -52,5 +56,9 @@ typedef struct {
         int         index;       // index of the currently shown event (default is CLOCK_EVENT_INDEX_LOOKUP, meaning look up the next closest event)
     } events;                              // events information
 } ClockState;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

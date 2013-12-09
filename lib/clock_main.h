@@ -5,6 +5,10 @@
 #ifndef BINARY_CLOCK_LIB_CLOCK_MAIN_H
 #define BINARY_CLOCK_LIB_CLOCK_MAIN_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "clock_state.h"
 
 //
@@ -23,5 +27,9 @@ int clock_init(ClockState *clockState);
 // @note call clock_init() before calling clock_update() for the first time
 //
 int clock_update(ClockState *clockState);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
