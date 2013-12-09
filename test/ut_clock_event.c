@@ -213,6 +213,53 @@ static int test_clock_event_updateList_correct()
     return 0;
 }
 
+static int test_clock_event_findClosestFromList_correct()
+{
+    ClockEvent events[] = {
+        clock_event_initDayOfMonth(1,  JANUARY,     0, "New year"),
+        clock_event_initDayOfMonth(1,  APRIL,    1392, "Fool's day"),
+        clock_event_initDayOfWeek (FRIDAY, 0, WEEK_FROM_END, JULY, 2000, "System Administrator Appreciation Day"),
+        clock_event_initDayOfYear (256, 2009, "Programmer's day"),
+        clock_event_initDayOfWeek (THURSDAY, 3, WEEK_FROM_START, NOVEMBER, 1574, "Thanksgiving"),
+        clock_event_initDayOfMonth(25, DECEMBER,    0, "Christmas"),
+    };
+
+    struct {
+        int month;
+        int day;
+        int index;
+    } eventsIndeces[] = {
+        { JANUARY,    1, 0 },
+        { MARCH,     31, 1 },
+        { APRIL,      1, 1 },
+        { SEPTEMBER, 13, 3 },
+        { NOVEMBER,  27, 4 },
+        { NOVEMBER,  28, 4 },
+        { NOVEMBER,  29, 5 },
+        { DECEMBER,  25, 5 },
+        { DECEMBER,  26, 0 },
+    }, *eventIndex = eventsIndeces;
+
+    int year = 2013;
+    const DateTime dt = date_time_initDate(year, NOVEMBER, 28);
+
+    //
+    // code
+    //
+
+    Call( clock_event_initList(events, countof(events), year) );
+    Call( clock_event_updateList(events, countof(events), &dt) );
+
+    for(size_t i = 0; i < countof(eventsIndeces); ++i, ++eventIndex) {
+        int index;
+        Call( clock_event_findClosestFromList( events, countof(events), eventIndex->month, eventIndex->day, &index) );
+
+        assert_int_ex(index, eventIndex->index, "i = %zu", i);
+    }
+
+    return 0;
+}
+
 static TestUnit testSuite[] = {
     { test_clock_event_initDayOfMonth_correct, "clock_event_initDayOfMonth() is correct", FALSE },
     { test_clock_event_initDayOfWeek_correct, "clock_event_initDayOfWeek() is correct", FALSE },
@@ -220,6 +267,7 @@ static TestUnit testSuite[] = {
     { test_clock_event_getEventDetails_correct, "clock_event_getEventDetails() is correct", FALSE },
     { test_clock_event_initList_correct, "clock_event_initList() is correct", FALSE },
     { test_clock_event_updateList_correct, "clock_event_updateList() is correct", FALSE },
+    { test_clock_event_findClosestFromList_correct, "clock_event_findClosestFromList() is correct", FALSE },
 };
 
 int ut_clock_event()

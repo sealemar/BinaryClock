@@ -7,6 +7,7 @@
 #include <logger.h>
 #endif
 
+#include <string.h>
 #include <stdlib.h> // for qsort()
 
 #include "clock_event.h"
@@ -178,30 +179,29 @@ int clock_event_getEventDetails(const ClockEvent *event, int year, ClockEventDet
 }
 
 //
-// @brief Calculates a number of days left to a given event
-// @param dayOfYear a day of year from which the number of days should be calculated.
-//                  Usually now() in days starting from the January, 1 this year.
-// @param clockEvent a specific event to calculate the number of days to
-// @param daysToEvent the number of days will be returned here
-//
+// @brief prints an event to string
+// @param event
+// @param str a string to output to
 // @returns 0 on ok
-//   EINVAL if clockEvent is NULL
-//          if daysToEvent is NULL
+//   EINVAL if _event_ is NULL
+//          if _str_ is NULL
 //
-// @note clockEvent should be of an existing day, (i.e. not 34 Feb 2000).
-//       This function doesn't do correctness check.
+//   EOVERFLOW if _strSize_ is to small
 //
-int clock_event_daysToEvent(const unsigned short dayOfYear, const ClockEvent *clockEvent, int *daysToEvent)
+int clock_event_toStr(const ClockEvent *event, char str[EVENT_STRING_BUFFER_SIZE])
 {
-    NullCheck(clockEvent);
-    NullCheck(daysToEvent);
-#ifdef PARAM_CHECKS
-    if(dayOfYear > 366 || dayOfYear == 0) {
-        OriginateErrorEx(EINVAL, "%d", "dayOfYear should be <= 366 and > 0");
-    }
-#endif
-    (void)dayOfYear;
+    NullCheck(event);
+    NullCheck(str);
 
+    size_t nameLen = strlen(event->name);
+
+    strcpy(str, event->name);
+    str += nameLen;
+    strcpy(str, " - ");
+    str += 3;
+
+    DateTime dt = date_time_initDate(event->yearCalculated, clock_event_getMonth(*event), clock_event_getDayOfMonth(*event));
+    Call( date_time_dateToStr(&dt, str) );
 
     return 0;
 }
@@ -285,6 +285,49 @@ int clock_event_initList(ClockEvent *eventsList, size_t sz, int year)
         CallEx( clock_event_getEventDetails(event, year, &eventDetails),
                 "on eventsList[%zu], size %zu", i, sz);
         clock_event_setEventDetails(*event, eventDetails, year);
+    }
+
+    return 0;
+}
+
+//
+// @brief finds the next closest to _month_ and _dayOfMonth_ event from _eventsList_
+// @param eventsList
+// @param sz the number of elements in _eventsList_
+// @param month
+// @param dayOfMonth
+// @param index the result will be returned here
+// @returns 0 on ok
+//   EINVAL if _eventsList_ is NULL
+//   EINVAL if _index_ is NULL
+//   ERANGE if _month_ is < JANUARY of _month_ is > DECEMBER
+//   ERANGE if _dayOfMonth_ is < 1 or _dayOfMonth_ is > daysInMonth(month)
+//
+int clock_event_findClosestFromList(const ClockEvent *eventsList, size_t sz, int month, int dayOfMonth, int *index)
+{
+    NullCheck(eventsList);
+    NullCheck(index);
+#if PARAM_CHECKS
+    if(month < JANUARY || month > DECEMBER) {
+        OriginateErrorEx(ERANGE, "%d", "month = [%d] should be >= %d and < %d", month, JANUARY, DECEMBER);
+    }
+    int _d;
+    Call( date_time_daysInMonth(0, month, &_d) ); // leap year to account for February 29
+    if(dayOfMonth < 1 || dayOfMonth > _d) {
+        OriginateErrorEx(ERANGE, "%d", "dayOfMonth = [%d] should be > 0 and <= %d", dayOfMonth, _d);
+    }
+#endif
+
+    *index = 0;
+
+    if(sz == 0) return 0;
+
+    const ClockEvent *event = eventsList;
+    for(size_t i = 0; i < sz; ++i, ++event) {
+        if( ! clock_event_isBefore(*event, month, dayOfMonth)) {
+            *index = i;
+            break;
+        }
     }
 
     return 0;

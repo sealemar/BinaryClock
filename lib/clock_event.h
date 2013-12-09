@@ -88,6 +88,9 @@ typedef struct {
 
 #define clock_event_detailsInit(month, dayOfMonth, dayOfWeek) { month, dayOfWeek, dayOfMonth }
 
+#include "clock_state.h"
+#define EVENT_STRING_BUFFER_SIZE STATE_TEXT_SIZE
+
 //
 // @brief Initilizer for an event which is set with month and day
 // @param day day of month
@@ -160,20 +163,16 @@ typedef struct {
     ( clock_event_getDayOfYear(event) && clock_event_getDayOfYear(event) != DAY_OF_WEEK_FLAG )
 
 //
-// @brief Calculates a number of days left to a given event
-// @param dayOfYear a day of year from which the number of days should be calculated.
-//                  Usually now() in days starting from the January, 1 this year.
-// @param clockEvent a specific event to calculate the number of days to
-// @param daysToEvent the number of days will be returned here
-//
+// @brief prints an event to string
+// @param event
+// @param str a string to output to
 // @returns 0 on ok
-//   EINVAL if clockEvent is NULL
-//          if daysToEvent is NULL
+//   EINVAL if _event_ is NULL
+//          if _str_ is NULL
 //
-// @note clockEvent should be of an existing day, (i.e. not 34 Feb 2000).
-//       This function doesn't do correctness check.
+//   EOVERFLOW if _strSize_ is to small
 //
-int clock_event_daysToEvent(const unsigned short dayOfYear, const ClockEvent *clockEvent, int *daysToEvent);
+int clock_event_toStr(const ClockEvent *event, char str[EVENT_STRING_BUFFER_SIZE]);
 
 //
 // @brief Calculates event details for a given year
@@ -217,10 +216,19 @@ int clock_event_updateList(ClockEvent *eventsList, size_t sz, const DateTime *da
 int clock_event_initList(ClockEvent *eventsList, size_t sz, int year);
 
 //
-// @brief These are helper macros to init and update global ClockEvent list
+// @brief finds the next closest to _month_ and _dayOfMonth_ event from _eventsList_
+// @param eventsList
+// @param sz the number of elements in _eventsList_
+// @param month
+// @param dayOfMonth
+// @param index the result will be returned here
+// @returns 0 on ok
+//   EINVAL if _eventsList_ is NULL
+//   EINVAL if _index_ is NULL
+//   ERANGE if _month_ is < JANUARY of _month_ is > DECEMBER
+//   ERANGE if _dayOfMonth_ is < 1 or _dayOfMonth_ is > daysInMonth(month)
 //
-#define clock_event_init(year)       clock_event_initList  ((ClockEvent *)ClockEvents, CLOCK_EVENTS_SIZE, year)
-#define clock_event_update(dateTime) clock_event_updateList((ClockEvent *)ClockEvents, CLOCK_EVENTS_SIZE, dateTime)
+int clock_event_findClosestFromList(const ClockEvent *eventsList, size_t sz, int month, int dayOfMonth, int *index);
 
 #include "clock_event_personal.h"
 

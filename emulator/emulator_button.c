@@ -45,7 +45,7 @@ static const char *ButtonsDescription[CLOCK_STATE_COUNT][CLOCK_BUTTON_COUNT] = {
         "Show time in text",
         "Set time",
         "Show date",
-        "",
+        "Show events",
     },
 
     // CLOCK_STATE_SHOW_DATE
@@ -53,7 +53,7 @@ static const char *ButtonsDescription[CLOCK_STATE_COUNT][CLOCK_BUTTON_COUNT] = {
         "Show date in text",
         "Set date",
         "Show time",
-        "",
+        "Show events",
     },
 
     // TODO: think about setting date and time in big endian mode
@@ -63,7 +63,7 @@ static const char *ButtonsDescription[CLOCK_STATE_COUNT][CLOCK_BUTTON_COUNT] = {
         "Show time in binary",
         "",
         "Show date",
-        "",
+        "Show events",
     },
 
     // CLOCK_STATE_SHOW_DATE_BIG_ENDIAN
@@ -71,7 +71,7 @@ static const char *ButtonsDescription[CLOCK_STATE_COUNT][CLOCK_BUTTON_COUNT] = {
         "Show date in binary",
         "",
         "Show time",
-        "",
+        "Show events",
     },
 
     // CLOCK_STATE_SET_TIME
@@ -88,6 +88,14 @@ static const char *ButtonsDescription[CLOCK_STATE_COUNT][CLOCK_BUTTON_COUNT] = {
         "Set next",
         "Decrease",
         "Increase",
+    },
+
+    // CLOCK_STATE_SHOW_EVENTS
+    {
+        "Show time",
+        "",
+        "Previos event",
+        "Next event",
     },
 };
 

@@ -16,8 +16,9 @@
 #define CLOCK_STATE_SHOW_DATE_BIG_ENDIAN    4
 #define CLOCK_STATE_SET_TIME                5
 #define CLOCK_STATE_SET_DATE                6
+#define CLOCK_STATE_SHOW_EVENTS             7
 
-#define CLOCK_STATE_COUNT                   7
+#define CLOCK_STATE_COUNT                   8
 
 
 #define CLOCK_BUTTON_INFO       0U
@@ -32,16 +33,24 @@
 #define MIN_YEAR  2000
 #define MAX_YEAR  ( MIN_YEAR + CLOCK_MAX_BINARY_NUMBER )
 
+#define CLOCK_EVENT_INDEX_LOOKUP (-1)
+
+#include "clock_event.h"
 
 typedef struct {
-    unsigned int state;           // current state of the clock
-    int step;                     // current step of the _state_
-    unsigned int stepMillis;      // current step time (for animation)
-    unsigned long lastUptime;     // in milliseconds
-    DateTime dateTime;            // this gets updated in the beginning of clock_update()
-    DateTime oldDateTime;         // this gets copied from _dateTime_ at the end of clock_update()
-    ClockButtons buttons;         // the state of the clock buttons
-    char text[STATE_TEXT_SIZE];   // a state may set this to some text
+    unsigned int  state;                   // current state of the clock
+    int           step;                    // current step of the _state_
+    unsigned int  stepMillis;              // current step time (for animation)
+    unsigned long lastUptime;              // in milliseconds
+    DateTime      dateTime;                // this gets updated in the beginning of clock_update()
+    DateTime      oldDateTime;             // this gets copied from _dateTime_ at the end of clock_update()
+    ClockButtons  buttons;                 // the state of the clock buttons
+    char          text[STATE_TEXT_SIZE];   // a state may set this to some text
+    struct {
+        ClockEvent *ptr;         // the pointer to the head of the events array
+        size_t      size;        // the size of the events array
+        int         index;       // index of the currently shown event (default is CLOCK_EVENT_INDEX_LOOKUP, meaning look up the next closest event)
+    } events;                              // events information
 } ClockState;
 
 #endif

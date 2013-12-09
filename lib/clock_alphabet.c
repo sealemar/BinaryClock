@@ -517,6 +517,17 @@
 //
 
 //
+// - - - o o - - -      0x18
+// - - - o o - - -      0x18
+// - - - - o - - -      0x08
+// - - - o - - - -      0x10
+// - - - - - - - -      0x00
+// - - - - - - - -      0x00
+// - - - - - - - -      0x00
+// - - - - - - - -      0x00
+//
+
+//
 // - - o o o o - -      0x3c
 // - o - - - - o -      0x42
 // o - o - - o - o      0xa5
@@ -585,6 +596,7 @@ const unsigned char ClockAlphabet[CLOCK_ALPHABET_SIZE][CLOCK_PATTERN_SIZE] = {
     { 0x18, 0x18, 0x18, 0x18, 0x00, 0x18, 0x18, 0x00 },     // !
     { 0x08, 0x10, 0x20, 0x20, 0x20, 0x10, 0x08, 0x00 },     // (
     { 0x20, 0x10, 0x08, 0x08, 0x08, 0x10, 0x20, 0x00 },     // )
+    { 0x18, 0x18, 0x08, 0x10, 0x00, 0x00, 0x00, 0x00 },     // '
     { 0x3c, 0x42, 0xa5, 0x81, 0xa5, 0x99, 0x42, 0x3c },     // smiley face smile
     { 0x3c, 0x42, 0xa5, 0x81, 0x99, 0xa5, 0x42, 0x3c },     // smiley face sad
 };
@@ -627,6 +639,7 @@ int clock_alphabet_getIndexByCharacter(unsigned char ch, int *clockAlphabetIndex
         case '!': *clockAlphabetIndex = CLOCK_EXCLAMATION_MARK;    return 0;
         case '(': *clockAlphabetIndex = CLOCK_OPENING_PARENTHESES; return 0;
         case ')': *clockAlphabetIndex = CLOCK_CLOSING_PARENTHESES; return 0;
+        case '\'': *clockAlphabetIndex = CLOCK_TICK;               return 0;
         case ' ': *clockAlphabetIndex = CLOCK_BLANK;               return 0;
         case 001: *clockAlphabetIndex = CLOCK_SMILEY_FACE_SMILE;   return 0;
         case 002: *clockAlphabetIndex = CLOCK_SMILEY_FACE_SAD;     return 0;

@@ -58,6 +58,22 @@
 }
 
 //
+// @brief checks a button and changes the state if it was clicked
+// @param clockState a pointer to ClockState
+// @param buttonId the button to check
+// @param nextState the state to change to if the button was clicked
+// @param nextStepMillis if the next step has animation step time, this should be set to that value, so
+//        that the first frame will be shown immediately
+// @param doClearScreen if true the clock screen will be first cleared
+//
+#define checkButton(clockState, buttonId, nextState, nextStepMillis, doClearScreen) { \
+    if(clock_button_wasClicked(clockState->buttons, buttonId)) { \
+        setClockState(clockState, nextState, nextStepMillis, doClearScreen); \
+        return 0; \
+    } \
+}
+
+//
 // @brief Adjusts days after the month was changed. If the new month has fewer days
 //        than the old one, then dateTime.day will be set to the new max.
 //
@@ -76,6 +92,33 @@
 //
 static const char StateHelloText[] = " Hello Sergey! \001";
 
+static const char NoEventsStr[] = " No events \002";
+
+//
+// @brief a callback function for slideText()
+//
+static int showEventsSlideTextCompletesCallback(ClockState *clockState)
+{
+    if( (size_t)clockState->events.index == clockState->events.size - 1) {
+        clockState->events.index = 0;
+    } else {
+        ++(clockState->events.index);
+    }
+
+    int index;
+    Call( clock_event_findClosestFromList(clockState->events.ptr, clockState->events.size,
+                                            clockState->dateTime.month, clockState->dateTime.day,
+                                            &index ) );
+
+    if(clockState->events.index == index) {
+        setClockState(clockState, CLOCK_STATE_SHOW_TIME, 0, TRUE);
+    } else {
+        setClockState(clockState, clockState->state, CLOCK_ANIMATION_TEXT_STEP_TIME, TRUE);
+    }
+
+    return 0;
+}
+
 //
 // @brief A helper function to slide a text
 // @param clockState
@@ -83,6 +126,9 @@ static const char StateHelloText[] = " Hello Sergey! \001";
 // @param nextState which state should be the next after the text sliding is finished
 // @param nextStepMillis if the next step has animation step time, this should be set to that value, so
 //        that the first frame will be shown immediately
+// @param callback an optional pointer to a callback function which should be called when the slideText()
+//                 completes. If it is not NULL, _nextState_ and _nextStepMillis_ will be ignored and
+//                 the callback will be called.
 //
 // @returns 0 on ok
 //
@@ -90,7 +136,8 @@ static int slideText(
         ClockState *clockState,
         const char *text,
         unsigned int nextState,
-        unsigned int nextStepMillis)
+        unsigned int nextStepMillis,
+        int (* callback)(ClockState *clockState))
 {
     updateStepTime(clockState, CLOCK_ANIMATION_TEXT_STEP_TIME);
 
@@ -104,7 +151,11 @@ static int slideText(
     if(!isLastStep) {
         ++(clockState->step);
     } else {
-        setClockState(clockState, nextState, nextStepMillis, TRUE);
+        if(callback) {
+            Call( callback(clockState) );
+        } else {
+            setClockState(clockState, nextState, nextStepMillis, TRUE);
+        }
     }
 
     return 0;
@@ -112,44 +163,27 @@ static int slideText(
 
 static int clock_state_hello(ClockState *clockState)
 {
-    //
-    // Click on CLOCK_BUTTON_SET skips this step
-    //
-    if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_SET)) {
-        setClockState(clockState, CLOCK_STATE_SHOW_TIME, 0, TRUE);
-        return 0;
-    }
+    checkButton(clockState, CLOCK_BUTTON_SET,
+                CLOCK_STATE_SHOW_TIME, 0, TRUE);
 
-    Call(slideText(clockState, StateHelloText, CLOCK_STATE_SHOW_TIME, 0));
+    Call(slideText(clockState, StateHelloText, CLOCK_STATE_SHOW_TIME, 0, NULL));
 
     return 0;
 }
 
 static int clock_state_showTime(ClockState *clockState)
 {
-    //
-    // If CLOCK_BUTTON_INFO was clicked -- show time in text
-    //
-    if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_INFO)) {
-        setClockState(clockState, CLOCK_STATE_SHOW_TIME_BIG_ENDIAN, CLOCK_ANIMATION_TEXT_STEP_TIME, TRUE);
-        return 0;
-    }
+    checkButton(clockState, CLOCK_BUTTON_INFO,
+                CLOCK_STATE_SHOW_TIME_BIG_ENDIAN, CLOCK_ANIMATION_TEXT_STEP_TIME, TRUE);
 
-    //
-    // Need to change state to set time?
-    //
-    if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_SET)) {
-        setClockState(clockState, CLOCK_STATE_SET_TIME, CLOCK_ANIMATION_BLINK_BINARY_NUMBER_STEP_TIME, FALSE);
-        return 0;
-    }
+    checkButton(clockState, CLOCK_BUTTON_SET,
+                CLOCK_STATE_SET_TIME, CLOCK_ANIMATION_BLINK_BINARY_NUMBER_STEP_TIME, FALSE);
 
-    //
-    // Show date
-    //
-    if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_LEFT)) {
-        setClockState(clockState, CLOCK_STATE_SHOW_DATE, 0, TRUE);
-        return 0;
-    }
+    checkButton(clockState, CLOCK_BUTTON_LEFT,
+                CLOCK_STATE_SHOW_DATE, 0, TRUE);
+
+    checkButton(clockState, CLOCK_BUTTON_RIGHT,
+                CLOCK_STATE_SHOW_EVENTS, CLOCK_ANIMATION_TEXT_STEP_TIME, TRUE);
 
     //
     // Show time
@@ -169,29 +203,17 @@ static int clock_state_showTime(ClockState *clockState)
 
 static int clock_state_showDate(ClockState *clockState)
 {
-    //
-    // If CLOCK_BUTTON_INFO was clicked -- show date in text
-    //
-    if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_INFO)) {
-        setClockState(clockState, CLOCK_STATE_SHOW_DATE_BIG_ENDIAN, CLOCK_ANIMATION_TEXT_STEP_TIME, TRUE);
-        return 0;
-    }
+    checkButton(clockState, CLOCK_BUTTON_INFO,
+                CLOCK_STATE_SHOW_DATE_BIG_ENDIAN, CLOCK_ANIMATION_TEXT_STEP_TIME, TRUE);
 
-    //
-    // Need to change state to set date?
-    //
-    if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_SET)) {
-        setClockState(clockState, CLOCK_STATE_SET_DATE, CLOCK_ANIMATION_BLINK_BINARY_NUMBER_STEP_TIME, FALSE);
-        return 0;
-    }
+    checkButton(clockState, CLOCK_BUTTON_SET,
+                CLOCK_STATE_SET_DATE, CLOCK_ANIMATION_BLINK_BINARY_NUMBER_STEP_TIME, FALSE);
 
-    //
-    // Show time
-    //
-    if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_LEFT)) {
-        setClockState(clockState, CLOCK_STATE_SHOW_TIME, 0, TRUE);
-        return 0;
-    }
+    checkButton(clockState, CLOCK_BUTTON_LEFT,
+                CLOCK_STATE_SHOW_TIME, 0, TRUE);
+
+    checkButton(clockState, CLOCK_BUTTON_RIGHT,
+                CLOCK_STATE_SHOW_EVENTS, CLOCK_ANIMATION_TEXT_STEP_TIME, TRUE);
 
     //
     // Show date
@@ -211,21 +233,14 @@ static int clock_state_showDate(ClockState *clockState)
 
 static int clock_state_showTimeBigEndian(ClockState *clockState)
 {
-    //
-    // If CLOCK_BUTTON_INFO was clicked -- show time in binary
-    //
-    if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_INFO)) {
-        setClockState(clockState, CLOCK_STATE_SHOW_TIME, 0, TRUE);
-        return 0;
-    }
+    checkButton(clockState, CLOCK_BUTTON_INFO,
+                CLOCK_STATE_SHOW_TIME, 0, TRUE);
 
-    //
-    // Show date big endian
-    //
-    if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_LEFT)) {
-        setClockState(clockState, CLOCK_STATE_SHOW_DATE_BIG_ENDIAN, CLOCK_ANIMATION_TEXT_STEP_TIME, TRUE);
-        return 0;
-    }
+    checkButton(clockState, CLOCK_BUTTON_LEFT,
+                CLOCK_STATE_SHOW_DATE_BIG_ENDIAN, CLOCK_ANIMATION_TEXT_STEP_TIME, TRUE);
+
+    checkButton(clockState, CLOCK_BUTTON_RIGHT,
+                CLOCK_STATE_SHOW_EVENTS, CLOCK_ANIMATION_TEXT_STEP_TIME, TRUE);
 
     //
     // Prepare the text if this is step 0
@@ -235,28 +250,21 @@ static int clock_state_showTimeBigEndian(ClockState *clockState)
         Call(date_time_timeToStr( &(clockState->dateTime), clockState->text + 1 ));
     }
 
-    Call(slideText(clockState, clockState->text, CLOCK_STATE_SHOW_TIME, 0));
+    Call(slideText(clockState, clockState->text, CLOCK_STATE_SHOW_TIME, 0, NULL));
 
     return 0;
 }
 
 static int clock_state_showDateBigEndian(ClockState *clockState)
 {
-    //
-    // If CLOCK_BUTTON_INFO was clicked -- show date in binary
-    //
-    if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_INFO)) {
-        setClockState(clockState, CLOCK_STATE_SHOW_DATE, 0, TRUE);
-        return 0;
-    }
+    checkButton(clockState, CLOCK_BUTTON_INFO,
+                CLOCK_STATE_SHOW_DATE, 0, TRUE);
 
-    //
-    // Show time big endian
-    //
-    if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_LEFT)) {
-        setClockState(clockState, CLOCK_STATE_SHOW_TIME_BIG_ENDIAN, CLOCK_ANIMATION_TEXT_STEP_TIME, TRUE);
-        return 0;
-    }
+    checkButton(clockState, CLOCK_BUTTON_LEFT,
+                CLOCK_STATE_SHOW_TIME_BIG_ENDIAN, CLOCK_ANIMATION_TEXT_STEP_TIME, TRUE);
+
+    checkButton(clockState, CLOCK_BUTTON_RIGHT,
+                CLOCK_STATE_SHOW_EVENTS, CLOCK_ANIMATION_TEXT_STEP_TIME, TRUE);
 
     //
     // Prepare the text if this is step 0
@@ -266,7 +274,7 @@ static int clock_state_showDateBigEndian(ClockState *clockState)
         Call(date_time_dateToStr( &(clockState->dateTime), clockState->text + 1 ));
     }
 
-    Call(slideText(clockState, clockState->text, CLOCK_STATE_SHOW_DATE, 0));
+    Call(slideText(clockState, clockState->text, CLOCK_STATE_SHOW_DATE, 0, NULL));
 
     return 0;
 }
@@ -429,9 +437,9 @@ static int clock_state_setDate(ClockState *clockState)
     //
     if(wasChanged) {
         if(clockState->dateTime.year != clockState->oldDateTime.year) {
-            Call( clock_event_init(clockState->dateTime.year) );
+            Call( clock_event_initList(clockState->events.ptr, clockState->events.size, clockState->dateTime.year) );
         }
-        Call( clock_event_update( &(clockState->dateTime) ) );
+        Call( clock_event_updateList(clockState->events.ptr, clockState->events.size, &(clockState->dateTime) ) );
     }
 
     //
@@ -464,6 +472,77 @@ static int clock_state_setDate(ClockState *clockState)
     return 0;
 }
 
+static int clock_state_showEvents(ClockState *clockState)
+{
+    NullCheck(clockState->events.ptr);
+
+#ifdef PARAM_CHECKS
+    if(clockState->events.size == 0) {
+        OriginateErrorEx(EINVAL, "%d", "clockState->events.size is zero");
+    }
+#endif
+
+    //
+    // Look up the next closest event
+    //
+    if(clockState->events.index == CLOCK_EVENT_INDEX_LOOKUP) {
+        Call( clock_event_findClosestFromList(clockState->events.ptr, clockState->events.size,
+                                              clockState->dateTime.month, clockState->dateTime.day,
+                                              &(clockState->events.index) ) );
+    }
+
+    //
+    // Show date
+    //
+    if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_INFO)) {
+        clockState->events.index = CLOCK_EVENT_INDEX_LOOKUP;
+        setClockState(clockState, CLOCK_STATE_SHOW_TIME, 0, TRUE);
+        return 0;
+    }
+
+    //
+    // Previous event
+    //
+    if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_LEFT)) {
+        if(clockState->events.index == 0) {
+            clockState->events.index = clockState->events.size - 1;
+        } else {
+            --(clockState->events.index);
+        }
+        setClockState(clockState, clockState->state, CLOCK_ANIMATION_TEXT_STEP_TIME, TRUE);
+        return 0;
+    }
+
+    //
+    // Next event
+    //
+    if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_RIGHT)) {
+        if( (size_t)clockState->events.index == clockState->events.size - 1) {
+            clockState->events.index = 0;
+        } else {
+            ++(clockState->events.index);
+        }
+        setClockState(clockState, clockState->state, CLOCK_ANIMATION_TEXT_STEP_TIME, TRUE);
+        return 0;
+    }
+
+    //
+    // Show event
+    //
+    if(clockState->step == 0) {
+        if(clockState->events.size == 0) {
+            strcpy(clockState->text, NoEventsStr);
+        } else {
+            clockState->text[0] = ' ';
+            Call( clock_event_toStr( &(clockState->events.ptr[clockState->events.index]), clockState->text + 1) );
+        }
+    }
+
+    Call(slideText(clockState, clockState->text, 0, 0, showEventsSlideTextCompletesCallback));
+
+    return 0;
+}
+
 //
 // ClockStateFunctionMap - a static array of const function pointers
 // to handle ClockState->state
@@ -476,6 +555,7 @@ static int (* const ClockStateFunctionMap[])(ClockState *) = {
     clock_state_showDateBigEndian,    //  CLOCK_STATE_SHOW_DATE_BIG_ENDIAN
     clock_state_setTime,              //  CLOCK_STATE_SET_TIME
     clock_state_setDate,              //  CLOCK_STATE_SET_DATE
+    clock_state_showEvents,           //  CLOCK_STATE_SHOW_EVENTS
 };
 
 //
@@ -504,8 +584,12 @@ int clock_init(ClockState *clockState)
     Call( clock_extern_uptimeMillis(&millis) );
     Call( clock_updateUptimeMillis(millis, &(clockState->lastUptime), &millis) );
 
-    Call( clock_event_init(clockState->dateTime.year) );
-    Call( clock_event_update( &(clockState->dateTime) ) );
+    clockState->events.ptr   = ClockEvents;
+    clockState->events.size  = CLOCK_EVENTS_SIZE;
+    clockState->events.index = CLOCK_EVENT_INDEX_LOOKUP;
+
+    Call( clock_event_initList(clockState->events.ptr, clockState->events.size, clockState->dateTime.year) );
+    Call( clock_event_updateList(clockState->events.ptr, clockState->events.size, &(clockState->dateTime) ) );
 
     return 0;
 }
@@ -536,7 +620,7 @@ int clock_update(ClockState *clockState)
 #endif
 
     if(clockState->dateTime.day != clockState->oldDateTime.day) {
-        Call( clock_event_update( &(clockState->dateTime) ) );
+        Call( clock_event_updateList(clockState->events.ptr, clockState->events.size, &(clockState->dateTime) ) );
     }
 
     Call(ClockStateFunctionMap[clockState->state](clockState));
