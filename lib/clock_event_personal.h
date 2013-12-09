@@ -19,6 +19,9 @@
 // @note clock_events_init() needs to be called at the program startup and then
 // every time when the year changes.
 //
+// @warning make sure, that ClockEvent.name is not longer than
+//          EVENT_STRING_BUFFER_SIZE - 4 - DATE_TIME_DATE_STR_SIZE
+//
 extern ClockEvent ClockEvents[CLOCK_EVENTS_SIZE];
 
 #endif
