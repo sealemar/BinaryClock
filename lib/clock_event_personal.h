@@ -19,15 +19,6 @@
 // @note clock_events_init() needs to be called at the program startup and then
 // every time when the year changes.
 //
-// @warning make sure that event.name is lesser than
-//
-//          STATE_TEXT_SIZE - stren(" on " + date_time_dateToStr()) - 1
-//          STATE_TEXT_SIZE - stren(" in %d days") - 1
-//
-//          event.name + " on " + date_time_dateToStr()
-//          or
-//          event.name + " in %d days"
-//
 extern ClockEvent ClockEvents[CLOCK_EVENTS_SIZE];
 
 #endif

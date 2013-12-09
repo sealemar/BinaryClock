@@ -72,7 +72,7 @@ typedef struct {
     int         yearCalculated;
     uint16_t    blob_1;
     uint8_t     blob_2;
-    const char *name;
+    const char *name;           // not longer than EVENT_STRING_BUFFER_SIZE - 4 - DATE_TIME_DATE_STR_SIZE
 } ClockEvent;
 
 typedef struct {
