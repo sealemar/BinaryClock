@@ -93,9 +93,14 @@ static const char *ButtonsDescription[CLOCK_STATE_COUNT][CLOCK_BUTTON_COUNT] = {
     // CLOCK_STATE_SHOW_EVENTS
     {
         "Show time",
-        "",
+        "Show event year info",
         "Previos event",
         "Next event",
+    },
+
+    // CLOCK_STATE_SHOW_EVENT_YEAR_INFO
+    {
+        "", "Skip", "", "",
     },
 };
 

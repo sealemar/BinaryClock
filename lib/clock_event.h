@@ -174,9 +174,23 @@ typedef struct {
 //   EINVAL if _event_ is NULL
 //          if _str_ is NULL
 //
-//   EOVERFLOW if _strSize_ is to small
-//
 int clock_event_toStr(const ClockEvent *event, char str[EVENT_STRING_BUFFER_SIZE]);
+
+//
+// @brief prints the event year information to string
+// @param event
+// @param str a string to output to
+// @returns 0 on ok
+//   EINVAL if _event_ is NULL
+//          if _str_ is NULL
+//
+// @note the output is:
+//       YEARS_FROM_EVENT years - started in YEARS_STARTED
+//       example, today is JANUARY 2013. Sysadmin's Day first started in 2000, so
+//       it will print
+//       13 years - started in 2000
+//
+int clock_event_yearInfoToStr(const ClockEvent *event, char str[EVENT_STRING_BUFFER_SIZE]);
 
 //
 // @brief Calculates event details for a given year

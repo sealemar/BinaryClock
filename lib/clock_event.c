@@ -45,6 +45,28 @@
 )
 
 //
+// @brief Converts an int to string
+// @param n an integer to convert
+// @param str char* where to output the result
+//
+static void intToString(int n, char *str)
+{
+    if(n == 0) {
+        str[0] = '0';
+        str[1] = 0;
+    } else {
+        int i = 0;
+        for(int t = n; t; t /= 10, ++i);
+
+        str[i] = 0;
+        --i;
+        for(int t = n; i >= 0; --i, t /= 10) {
+            str[i] = (t % 10) + '0';
+        }
+    }
+}
+
+//
 // @brief qsort() comparator for ClockEvent
 //
 static int _clock_event_compare(const void *l, const void *r)
@@ -202,6 +224,34 @@ int clock_event_toStr(const ClockEvent *event, char str[EVENT_STRING_BUFFER_SIZE
 
     DateTime dt = date_time_initDate(event->yearCalculated, clock_event_getMonth(*event), clock_event_getDayOfMonth(*event));
     Call( date_time_dateToStr(&dt, str) );
+
+    return 0;
+}
+
+//
+// @brief prints the event year information to string
+// @param event
+// @param str a string to output to
+// @returns 0 on ok
+//   EINVAL if _event_ is NULL
+//          if _str_ is NULL
+//
+// @note the output is:
+//       YEARS_FROM_EVENT years - started in YEARS_STARTED
+//       example, today is JANUARY 2013. Sysadmin's Day first started in 2000, so
+//       it will print
+//       13 years - started in 2000
+//
+int clock_event_yearInfoToStr(const ClockEvent *event, char str[EVENT_STRING_BUFFER_SIZE])
+{
+    NullCheck(event);
+    NullCheck(str);
+
+    intToString(event->yearCalculated - event->yearStarted, str);
+    str += strlen(str);
+    strcpy(str, " years - started in ");
+    str += strlen(str);
+    intToString(event->yearStarted, str);
 
     return 0;
 }

@@ -492,6 +492,12 @@ static int clock_state_showEvents(ClockState *clockState)
     }
 
     //
+    // Show event year information
+    //
+    checkButton(clockState, CLOCK_BUTTON_SET,
+                CLOCK_STATE_SHOW_EVENT_YEAR_INFO, CLOCK_ANIMATION_TEXT_STEP_TIME, TRUE);
+
+    //
     // Show date
     //
     if(clock_button_wasClicked(clockState->buttons, CLOCK_BUTTON_INFO)) {
@@ -543,6 +549,49 @@ static int clock_state_showEvents(ClockState *clockState)
     return 0;
 }
 
+static int clock_state_showEventYearInfo(ClockState *clockState)
+{
+    NullCheck(clockState->events.ptr);
+
+#ifdef PARAM_CHECKS
+    if(clockState->events.size == 0) {
+        OriginateErrorEx(EINVAL, "%d", "clockState->events.size is zero");
+    }
+#endif
+
+    //
+    // Look up the next closest event
+    //
+    if(clockState->events.index == CLOCK_EVENT_INDEX_LOOKUP) {
+        Call( clock_event_findClosestFromList(clockState->events.ptr, clockState->events.size,
+                                              clockState->dateTime.month, clockState->dateTime.day,
+                                              &(clockState->events.index) ) );
+    }
+
+    //
+    // Skip
+    //
+    checkButton(clockState, CLOCK_BUTTON_SET,
+                CLOCK_STATE_SHOW_EVENTS, CLOCK_ANIMATION_TEXT_STEP_TIME, TRUE);
+
+    //
+    // Show event year information
+    //
+    if(clockState->step == 0) {
+        if(clockState->events.size == 0) {
+            strcpy(clockState->text, NoEventsStr);
+        } else {
+            clockState->text[0] = ' ';
+            Call( clock_event_yearInfoToStr( &(clockState->events.ptr[clockState->events.index]), clockState->text + 1) );
+        }
+    }
+
+    Call(slideText(clockState, clockState->text, CLOCK_STATE_SHOW_EVENTS, CLOCK_ANIMATION_TEXT_STEP_TIME, NULL));
+
+    return 0;
+}
+
+
 //
 // ClockStateFunctionMap - a static array of const function pointers
 // to handle ClockState->state
@@ -556,6 +605,7 @@ static int (* const ClockStateFunctionMap[])(ClockState *) = {
     clock_state_setTime,              //  CLOCK_STATE_SET_TIME
     clock_state_setDate,              //  CLOCK_STATE_SET_DATE
     clock_state_showEvents,           //  CLOCK_STATE_SHOW_EVENTS
+    clock_state_showEventYearInfo,    //  CLOCK_STATE_SHOW_EVENT_YEAR_INFO
 };
 
 //

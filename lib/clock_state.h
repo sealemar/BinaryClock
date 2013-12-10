@@ -21,8 +21,9 @@ extern "C" {
 #define CLOCK_STATE_SET_TIME                5
 #define CLOCK_STATE_SET_DATE                6
 #define CLOCK_STATE_SHOW_EVENTS             7
+#define CLOCK_STATE_SHOW_EVENT_YEAR_INFO    8
 
-#define CLOCK_STATE_COUNT                   8
+#define CLOCK_STATE_COUNT                   9
 
 
 #define CLOCK_BUTTON_INFO       0U
