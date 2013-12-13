@@ -90,9 +90,9 @@
 //
 // This text will be shown at clock_state_hello
 //
-static const char StateHelloText[] = " Hello Sergey! \001";
+static const char StateHelloText[] = " Hello Sergey! \001 ";
 
-static const char NoEventsStr[] = " No events \002";
+static const char NoEventsStr[] = " No events \002 ";
 
 //
 // @brief a callback function for slideText()

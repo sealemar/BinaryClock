@@ -26,12 +26,12 @@
 // PH -> 74HC595 [Q7]  /
 //
 
-#define DUTY_CYCLE_MILLIS 15
+#define DUTY_CYCLE_MILLIS 13
 
-#define BUTTON_1_PIN 5
-#define BUTTON_2_PIN 4
-#define BUTTON_3_PIN 3
-#define BUTTON_4_PIN 2
+#define BUTTON_1_PIN 6
+#define BUTTON_2_PIN 5
+#define BUTTON_3_PIN 4
+#define BUTTON_4_PIN 3
 
 // Pin connected to ST_CP of 74HC595
 #define LATCH_PIN 8
@@ -40,7 +40,7 @@
 // Pin connected to DS of 74HC595
 #define DATA_PIN  11
 
-static byte ScreenColumns[CLOCK_PATTERN_SIZE] = { ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0 };
+static byte ScreenRows[CLOCK_PATTERN_SIZE] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // static const int cols[] = { P1, P2, P3, P4, P5, P6, P7, P8 };
 // static const int rows[] = { PA, PB, PC, PD, PE, PF, PG, PH };
@@ -49,26 +49,36 @@ static ClockState clockState;
 
 static void display()
 {
-    for(size_t i = 0; i < countof(ScreenColumns); ++i) {
+    //
+    // A little trick:
+    // Iterate beyond the end of ScreenRows, so that the last iteration
+    // clears the screen:
+    // (1 << 8) & 0xff = 0 -> clear screen
+    // in that situation the last row won't stay lit permanently, but will
+    // obey DUTY_CYCLE_MILLIS
+    //
+    for(size_t i = 0; i < countof(ScreenRows) + 1; ++i) {
         // Take the latchPin low so the LEDs don't change while you're sending in bits:
         digitalWrite(LATCH_PIN, LOW);
 
         // Shift out the bits
         // First shift rows, then columns, because shift register for rows comes after columns
-        shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, 1 << i);
-        shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, ScreenColumns[i]);
+        shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, ScreenRows[i]);
+        shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, ~(1 << i));
 
         // Take the latch pin high so the LEDs will light up:
         digitalWrite(LATCH_PIN, HIGH);
+//
+//         delay(1);
     }
 }
 
 static int arduino_setPixel(int x, int y, Bool turnOn)
 {
     if(turnOn) {
-        ScreenColumns[y] &= ~(1 << x);
+        ScreenRows[x] |= 1 << y;
     } else {
-        ScreenColumns[y] |= 1 << x;
+        ScreenRows[x] &= ~(1 << y);
     }
 
     return 0;
@@ -82,7 +92,7 @@ static int arduino_uptimeMillis(unsigned long *milliseconds)
 
 static int arduino_clearScreen()
 {
-    memset(&ScreenColumns, 0xFF, sizeof(ScreenColumns));
+    memset(&ScreenRows, 0, sizeof(ScreenRows));
 
     return 0;
 }
