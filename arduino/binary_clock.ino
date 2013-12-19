@@ -40,10 +40,8 @@
 // Pin connected to DS of 74HC595
 #define DATA_PIN  11
 
-static byte ScreenRows[CLOCK_PATTERN_SIZE] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+static byte ScreenRows[CLOCK_PATTERN_SIZE] = { 0 };
 
-// static const int cols[] = { P1, P2, P3, P4, P5, P6, P7, P8 };
-// static const int rows[] = { PA, PB, PC, PD, PE, PF, PG, PH };
 static const int buttons[] = { BUTTON_1_PIN, BUTTON_2_PIN, BUTTON_3_PIN, BUTTON_4_PIN };
 static ClockState clockState;
 
@@ -64,7 +62,12 @@ static void display()
         // Shift out the bits
         // First shift rows, then columns, because shift register for rows comes after columns
         shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, ScreenRows[i]);
-        shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, ~(1 << i));
+
+        // Columns are cathodes, thus walking 0 should be used, but I account for
+        // ULN2803, which inverts that
+        // http://forum.arduino.cc/index.php?topic=78585.msg594284#msg594284
+        // http://www.thebox.myzen.co.uk/Workshop/LED_Matrix.html
+        shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, 1 << i);
 
         // Take the latch pin high so the LEDs will light up:
         digitalWrite(LATCH_PIN, HIGH);
@@ -133,9 +136,9 @@ void setup()
 
 void loop()
 {
-    for(size_t i = 0; i < countof(buttons); ++i) {
-        Call(clock_button_press( &(clockState.buttons), i, digitalRead(buttons[i]) == HIGH ? TRUE : FALSE));
-    }
+//     for(size_t i = 0; i < countof(buttons); ++i) {
+//         Call(clock_button_press( &(clockState.buttons), i, digitalRead(buttons[i]) == HIGH ? TRUE : FALSE));
+//     }
     Call(clock_update(&clockState));
 
     display();

@@ -6,6 +6,17 @@ ifndef ARDMK_DIR
     $(error "ARDMK_DIR is not defined")
 endif
 
+#
+# Arduino as ISP programmer
+#
+ISP_PROG	  := stk500v1
+ISP_PORT      = /dev/cu.usb*
+AVRDUDE_ISP_BAUDRATE := 19200
+AVRDUDE_OPTS  := -v
+
+#
+# General info
+#
 BOARD_TAG     = uno
 MONITOR_PORT  = /dev/cu.usb*
 ARDUINO_LIBS  = lib
