@@ -116,6 +116,7 @@ static int arduino_initDateTime(DateTime *dt)
 
 void setup()
 {
+    // Clock interface implementation
     clock_extern_setPixel     = arduino_setPixel;
     clock_extern_uptimeMillis = arduino_uptimeMillis;
     clock_extern_initDateTime = arduino_initDateTime;
@@ -127,7 +128,8 @@ void setup()
     pinMode(DATA_PIN,  OUTPUT);
 
     for(size_t i = 0; i < countof(buttons); ++i) {
-        pinMode(buttons[i], INPUT);
+        pinMode(buttons[i], INPUT);           // set pin to input
+        digitalWrite(buttons[i], HIGH);       // turn on internal pullup resistors
     }
 
     clock_clearScreen();
@@ -136,9 +138,9 @@ void setup()
 
 void loop()
 {
-//     for(size_t i = 0; i < countof(buttons); ++i) {
-//         Call(clock_button_press( &(clockState.buttons), i, digitalRead(buttons[i]) == HIGH ? TRUE : FALSE));
-//     }
+    for(size_t i = 0; i < countof(buttons); ++i) {
+        Call(clock_button_press( &(clockState.buttons), i, digitalRead(buttons[i]) == HIGH ? TRUE : FALSE));
+    }
     Call(clock_update(&clockState));
 
     display();
