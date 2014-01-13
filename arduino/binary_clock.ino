@@ -28,10 +28,10 @@
 
 #define DUTY_CYCLE_MILLIS 13
 
-#define BUTTON_1_PIN 6
-#define BUTTON_2_PIN 5
+#define BUTTON_1_PIN 2
+#define BUTTON_2_PIN 3
 #define BUTTON_3_PIN 4
-#define BUTTON_4_PIN 3
+#define BUTTON_4_PIN 5
 
 // Pin connected to ST_CP of 74HC595
 #define LATCH_PIN 8
@@ -104,9 +104,9 @@ static int arduino_initDateTime(DateTime *dt)
 {
     memset(dt, 0, sizeof(DateTime));
 
-    dt->year   = 2013;
-    dt->month  = DECEMBER;
-    dt->day    = 10;
+    dt->year   = 2014;
+    dt->month  = JANUARY;
+    dt->day    = 12;
     dt->hour   = 9;
     dt->minute = 17;
     dt->second = 41;
@@ -130,6 +130,9 @@ void setup()
     for(size_t i = 0; i < countof(buttons); ++i) {
         pinMode(buttons[i], INPUT);           // set pin to input
         digitalWrite(buttons[i], HIGH);       // turn on internal pullup resistors
+
+        // Note that internal pull-up resistor switches the state of a button.
+        // To check if a button is pressed, test digitalRead(ButtonPin) == HIGH
     }
 
     clock_clearScreen();
@@ -139,10 +142,10 @@ void setup()
 void loop()
 {
     for(size_t i = 0; i < countof(buttons); ++i) {
-        Call(clock_button_press( &(clockState.buttons), i, digitalRead(buttons[i]) == HIGH ? TRUE : FALSE));
+        Call(clock_button_press( &(clockState.buttons), i, digitalRead(buttons[i]) == LOW ? TRUE : FALSE));
     }
     Call(clock_update(&clockState));
 
     display();
-    delay(DUTY_CYCLE_MILLIS);
+//     delay(DUTY_CYCLE_MILLIS);
 }
