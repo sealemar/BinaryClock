@@ -12,7 +12,7 @@ endif
 ISP_PROG	  := stk500v1
 ISP_PORT      = /dev/cu.usb*
 AVRDUDE_ISP_BAUDRATE := 19200
-AVRDUDE_OPTS  := -v
+AVRDUDE_OPTS  := -D -v
 
 #
 # General info
