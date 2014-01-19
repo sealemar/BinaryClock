@@ -39,7 +39,8 @@
 // PH -> 74HC595 [Q7]  /
 //
 
-#define DUTY_CYCLE_MILLIS 13
+#define DISPLAY_MILLIS 2
+#define CLOCK_UPDATE_MILLIS 50
 
 #define BUTTON_1_PIN 2
 #define BUTTON_2_PIN 3
@@ -57,6 +58,8 @@ static byte ScreenRows[CLOCK_PATTERN_SIZE] = { 0 };
 
 static const int buttons[] = { BUTTON_1_PIN, BUTTON_2_PIN, BUTTON_3_PIN, BUTTON_4_PIN };
 static ClockState clockState;
+static unsigned long lastDisplayMillis     = 0;
+static unsigned long lastClockUpdateMillis = 0;
 
 static void display()
 {
@@ -66,7 +69,7 @@ static void display()
     // clears the screen:
     // (1 << 8) & 0xff = 0 -> clear screen
     // in that situation the last row won't stay lit permanently, but will
-    // obey DUTY_CYCLE_MILLIS
+    // obey DISPLAY_MILLIS
     //
     for(size_t i = 0; i < countof(ScreenRows) + 1; ++i) {
         // Take the latchPin low so the LEDs don't change while you're sending in bits:
@@ -84,8 +87,6 @@ static void display()
 
         // Take the latch pin high so the LEDs will light up:
         digitalWrite(LATCH_PIN, HIGH);
-//
-//         delay(1);
     }
 }
 
@@ -119,9 +120,9 @@ static int arduino_initDateTime(DateTime *dt)
 
     dt->year   = 2014;
     dt->month  = JANUARY;
-    dt->day    = 12;
-    dt->hour   = 21;
-    dt->minute = 0;
+    dt->day    = 19;
+    dt->hour   = 14;
+    dt->minute = 2;
     dt->second = 0;
 
     return 0;
@@ -154,11 +155,27 @@ void setup()
 
 void loop()
 {
-    for(size_t i = 0; i < countof(buttons); ++i) {
-        Call(clock_button_press( &(clockState.buttons), i, digitalRead(buttons[i]) == LOW ? TRUE : FALSE));
-    }
-    Call(clock_update(&clockState));
+    unsigned long m = millis();
 
-    display();
-//     delay(DUTY_CYCLE_MILLIS);
+    //
+    // Update BinaryClock state
+    // account for overflows
+    //
+    if(m < lastClockUpdateMillis || m - lastClockUpdateMillis > CLOCK_UPDATE_MILLIS) {
+        for(size_t i = 0; i < countof(buttons); ++i) {
+            Call(clock_button_press( &(clockState.buttons), i, digitalRead(buttons[i]) == LOW ? TRUE : FALSE));
+        }
+
+        Call(clock_update(&clockState));
+        m = lastClockUpdateMillis = millis();
+    }
+
+    //
+    // Display
+    // account for overflows
+    //
+    if(m < lastDisplayMillis || m - lastDisplayMillis > DISPLAY_MILLIS) {
+        display();
+        lastDisplayMillis = millis();
+    }
 }
