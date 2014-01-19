@@ -16,7 +16,7 @@
 #
 
 ifndef ARDMK_DIR
-    $(error "ARDMK_DIR is not defined")
+    $(error "ARDMK_DIR is not defined, probably you forgot to set up https://github.com/sudar/Arduino-Makefile")
 endif
 
 #
