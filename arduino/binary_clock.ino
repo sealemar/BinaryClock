@@ -146,7 +146,7 @@ void setup()
         digitalWrite(buttons[i], HIGH);       // turn on internal pullup resistors
 
         // Note that internal pull-up resistor switches the state of a button.
-        // To check if a button is pressed, test digitalRead(ButtonPin) == HIGH
+        // To check if a button is pressed, test digitalRead(ButtonPin) == LOW
     }
 
     clock_clearScreen();
