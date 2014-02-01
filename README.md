@@ -4,6 +4,7 @@ BinaryClock
 More about the project is on my blog:
 
 [I talk about software](http://sealemar.blogspot.com/2014/02/binaryclock-binary-clock-diy.html)
+
 [I talk about hardware](http://sealemar.blogspot.com/2014/02/binaryclock-hardware.html)
 
 Here I talk only about the tools which you will need to compile the software.
