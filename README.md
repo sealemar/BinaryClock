@@ -27,4 +27,4 @@ This is a list of tools you will (or may) need to work with the code. This list 
 - ViM, [MacVim](https://code.google.com/p/macvim) for Mac
 
 **For the schematic:**
-- [Fritzing](http://fritzing.org/home)
+- [Fritzing](http://fritzing.org)
