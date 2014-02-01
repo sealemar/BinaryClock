@@ -52,7 +52,7 @@
 // depends on the speed of the program main loop and the delay in
 // the main loop.
 //
-#define CLOCK_ANIMATION_TEXT_STEP_TIME                  100U
+#define CLOCK_ANIMATION_TEXT_STEP_TIME                   70U
 #define CLOCK_ANIMATION_BLINK_BINARY_NUMBER_STEP_TIME   200U
 
 //
@@ -122,7 +122,7 @@
 //
 // This text will be shown at clock_state_hello
 //
-static const char StateHelloText[] = " Hello Sergey! \001 ";
+static const char StateHelloText[] = "BinaryClock by sealemar v." TOSTRING(VERSION_MAJOR) "." TOSTRING(VERSION_MINOR) " \001 ";
 
 static const char NoEventsStr[] = " No events \002 ";
 

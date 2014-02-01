@@ -34,9 +34,6 @@ extern FILE *outStream;
 #define STANDARD_PREFIX         ""
 #define ERROR_CONTINUE_PREFIX   " ----> "
 
-#define STRINGIFY(x) #x
-#define TOSTRING(x)  STRINGIFY(x)
-
 #define LogRaw(stream, format, ...) \
     { fprintf(stream, format, ##__VA_ARGS__); }
 

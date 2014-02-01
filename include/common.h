@@ -24,6 +24,9 @@
 #define VERSION_MAJOR 1
 #define VERSION_MINOR 0
 
+#define STRINGIFY(x) #x
+#define TOSTRING(x)  STRINGIFY(x)
+
 typedef enum { FALSE = 0, TRUE } Bool;
 
 #define countof(x) (sizeof(x) / sizeof(*x))
