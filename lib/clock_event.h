@@ -113,17 +113,17 @@ typedef struct {
 #define EVENT_STRING_BUFFER_SIZE STATE_TEXT_SIZE
 
 //
-// @brief Initilizer for an event which is set with month and day
+// @brief Initializer for an event which is set with month and day
 // @param day day of month
 // @param month month of the event
-// @param year year when the event first occured
+// @param year year when the event first occurred
 // @param name name of the event
 //
 #define clock_event_initDayOfMonth(day, month, year, name) \
     { year, CLOCK_EVENT_YEAR_NOT_CALCULATED, (day & 0x1f), (month & 0xf), name }
 
 //
-// @brief Initilizer for an event which is set with
+// @brief Initializer for an event which is set with
 // day of week, week of month, and month
 // @param dayOfWeek day of week. See macros in lib/date_time.h
 // @param weekOfMonth week of the month. [0..3]
@@ -131,7 +131,7 @@ typedef struct {
 //          This can be any number or TRUE / FALSE which can be treated in the boolean context
 //
 // @param month month of the event
-// @param year year when the event first occured
+// @param year year when the event first occurred
 // @param name name of the event
 //
 #define clock_event_initDayOfWeek(dayOfWeek, weekOfMonth, fromBeginningOfMonth, month, year, name) { \
@@ -142,9 +142,9 @@ typedef struct {
     name }
 
 //
-// @brief Initilizer for an event which is set with day of the year
+// @brief Initializer for an event which is set with day of the year
 // @param dayOfYear day of year
-// @param year year when the event first occured
+// @param year year when the event first occurred
 // @param name name of the event
 //
 #define clock_event_initDayOfYear(dayOfYear, year, name) \
