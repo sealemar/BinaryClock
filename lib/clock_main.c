@@ -122,7 +122,11 @@
 //
 // This text will be shown at clock_state_hello
 //
-static const char StateHelloText[] = "BinaryClock by sealemar v." TOSTRING(VERSION_MAJOR) "." TOSTRING(VERSION_MINOR) " \001 ";
+static const char StateHelloText[] = "BinaryClock by sealemar v."
+                                     TOSTRING(VERSION_MAJOR) "."
+                                     TOSTRING(VERSION_MINOR) "."
+                                     TOSTRING(VERSION_FIX)
+                                     " \001 ";
 
 static const char NoEventsStr[] = " No events \002 ";
 

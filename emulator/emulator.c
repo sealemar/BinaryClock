@@ -32,7 +32,10 @@
 
 #define GETCH_TIMEOUT 50
 
-static const char BannerStr[] = "BinaryClock Emulator version " TOSTRING(VERSION_MAJOR) "." TOSTRING(VERSION_MINOR)
+static const char BannerStr[] = "BinaryClock by sealemar v."
+                                TOSTRING(VERSION_MAJOR) "."
+                                TOSTRING(VERSION_MINOR) "."
+                                TOSTRING(VERSION_FIX)
                                 " Developed by Sergey Markelov";
 
 static WINDOW *WndBanner    = NULL;

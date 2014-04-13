@@ -314,6 +314,41 @@ static int test_clock_event_yearInfoToStr_correct()
     return 0;
 }
 
+static int test_clock_event_yearInfoToStr_afterDateIncreaseDecrease_correct()
+{
+    ClockEvent event = clock_event_initDayOfMonth(1,  APRIL, 1392, "Fool's day");
+
+    const char *expectedStr = "621 years - started in 1392";
+    const char *expectedNextStr = "622 years - started in 1392";
+
+    int year = 2013;
+    DateTime dt = date_time_initDate(year, MARCH, 13);
+
+    //
+    // code
+    //
+
+    Call( clock_event_initList(&event, 1, year) );
+    Call( clock_event_updateList(&event, 1, &dt) );
+
+    char str[EVENT_STRING_BUFFER_SIZE];
+
+    Call( clock_event_yearInfoToStr(&event, str) );
+    assert_str(expectedStr, str);
+
+    dt.month++;
+    Call( clock_event_updateList(&event, 1, &dt) );
+    Call( clock_event_yearInfoToStr(&event, str) );
+    assert_str(expectedNextStr, str);
+
+    dt.month--;
+    Call( clock_event_updateList(&event, 1, &dt) );
+    Call( clock_event_yearInfoToStr(&event, str) );
+    assert_str(expectedStr, str);
+
+    return 0;
+}
+
 static TestUnit testSuite[] = {
     { test_clock_event_initDayOfMonth_correct, "clock_event_initDayOfMonth() is correct", FALSE },
     { test_clock_event_initDayOfWeek_correct, "clock_event_initDayOfWeek() is correct", FALSE },
@@ -323,6 +358,7 @@ static TestUnit testSuite[] = {
     { test_clock_event_updateList_correct, "clock_event_updateList() is correct", FALSE },
     { test_clock_event_findClosestFromList_correct, "clock_event_findClosestFromList() is correct", FALSE },
     { test_clock_event_yearInfoToStr_correct, "clock_event_yearInfoToStr() is correct", FALSE },
+    { test_clock_event_yearInfoToStr_afterDateIncreaseDecrease_correct, "test_clock_event_yearInfoToStr_afterDateIncreaseDecrease_correct() is correct1", FALSE },
 };
 
 int ut_clock_event()

@@ -119,10 +119,10 @@ static int arduino_initDateTime(DateTime *dt)
     memset(dt, 0, sizeof(DateTime));
 
     dt->year   = 2014;
-    dt->month  = JANUARY;
-    dt->day    = 19;
-    dt->hour   = 14;
-    dt->minute = 2;
+    dt->month  = APRIL;
+    dt->day    = 13;
+    dt->hour   = 0;
+    dt->minute = 10;
     dt->second = 0;
 
     return 0;

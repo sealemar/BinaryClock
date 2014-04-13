@@ -303,19 +303,27 @@ int clock_event_updateList(ClockEvent *eventsList, size_t sz, const DateTime *da
     int nextYear = dateTime->year + 1;
     ClockEvent *event = eventsList;
     for(size_t i = 0; i < sz; ++i, ++event) {
-
-        // don't recalculate the event if it has been already updated to the next year
-        if(event->yearCalculated == nextYear) {
-            continue;
-        }
-
         if(clock_event_isBefore(*event, dateTime->month, dateTime->day)) {
+            // don't recalculate the event if it has been already updated to the next year
+            if(event->yearCalculated == nextYear) {
+                continue;
+            }
+
             ClockEventDetails eventDetails;
             CallEx( clock_event_getEventDetails(event, nextYear, &eventDetails),
                     "on eventsList[%zu], size %zu", i, sz);
 
             if(clock_event_detailsIsBefore(eventDetails, dateTime->month, dateTime->day)) {
                 clock_event_setEventDetails(*event, eventDetails, nextYear);
+                wasChanged = TRUE;
+            }
+        } else if(event->yearCalculated == nextYear) {
+            ClockEventDetails eventDetails;
+            CallEx( clock_event_getEventDetails(event, dateTime->year, &eventDetails),
+                    "on eventsList[%zu], size %zu", i, sz);
+
+            if( ! clock_event_detailsIsBefore(eventDetails, dateTime->month, dateTime->day)) {
+                clock_event_setEventDetails(*event, eventDetails, dateTime->year);
                 wasChanged = TRUE;
             }
         }
