@@ -53,7 +53,7 @@ CTAGS_SOURCES = $(wildcard *.ino) $(wildcard *.[ch])
 CTAGS         = ctags --sort=yes --fields=+ilaS --extra=+q
 CTAGS_FILE   := ../etc/arduino.tags
 
-clean: remove-ctags
+clean:: remove-ctags
 
 remove-ctags:
 	rm -f $(CTAGS_FILE)
